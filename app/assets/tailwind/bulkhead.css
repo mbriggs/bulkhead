@@ -1,0 +1,241 @@
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Primary — indigo */
+  --color-primary-50: var(--color-indigo-50);
+  --color-primary-100: var(--color-indigo-100);
+  --color-primary-200: var(--color-indigo-200);
+  --color-primary-300: var(--color-indigo-300);
+  --color-primary-400: var(--color-indigo-400);
+  --color-primary-500: var(--color-indigo-500);
+  --color-primary-600: var(--color-indigo-600);
+  --color-primary-700: var(--color-indigo-700);
+  --color-primary-800: var(--color-indigo-800);
+  --color-primary-900: var(--color-indigo-900);
+  --color-primary-950: var(--color-indigo-950);
+
+  /* Danger — red */
+  --color-danger-50: var(--color-red-50);
+  --color-danger-100: var(--color-red-100);
+  --color-danger-200: var(--color-red-200);
+  --color-danger-300: var(--color-red-300);
+  --color-danger-400: var(--color-red-400);
+  --color-danger-500: var(--color-red-500);
+  --color-danger-600: var(--color-red-600);
+  --color-danger-700: var(--color-red-700);
+  --color-danger-800: var(--color-red-800);
+  --color-danger-900: var(--color-red-900);
+  --color-danger-950: var(--color-red-950);
+
+  /* Success — emerald */
+  --color-success-50: var(--color-emerald-50);
+  --color-success-100: var(--color-emerald-100);
+  --color-success-200: var(--color-emerald-200);
+  --color-success-300: var(--color-emerald-300);
+  --color-success-400: var(--color-emerald-400);
+  --color-success-500: var(--color-emerald-500);
+  --color-success-600: var(--color-emerald-600);
+  --color-success-700: var(--color-emerald-700);
+  --color-success-800: var(--color-emerald-800);
+  --color-success-900: var(--color-emerald-900);
+  --color-success-950: var(--color-emerald-950);
+
+  /* Warning — amber */
+  --color-warning-50: var(--color-amber-50);
+  --color-warning-100: var(--color-amber-100);
+  --color-warning-200: var(--color-amber-200);
+  --color-warning-300: var(--color-amber-300);
+  --color-warning-400: var(--color-amber-400);
+  --color-warning-500: var(--color-amber-500);
+  --color-warning-600: var(--color-amber-600);
+  --color-warning-700: var(--color-amber-700);
+  --color-warning-800: var(--color-amber-800);
+  --color-warning-900: var(--color-amber-900);
+  --color-warning-950: var(--color-amber-950);
+
+  /* Info — blue */
+  --color-info-50: var(--color-blue-50);
+  --color-info-100: var(--color-blue-100);
+  --color-info-200: var(--color-blue-200);
+  --color-info-300: var(--color-blue-300);
+  --color-info-400: var(--color-blue-400);
+  --color-info-500: var(--color-blue-500);
+  --color-info-600: var(--color-blue-600);
+  --color-info-700: var(--color-blue-700);
+  --color-info-800: var(--color-blue-800);
+  --color-info-900: var(--color-blue-900);
+  --color-info-950: var(--color-blue-950);
+}
+
+@layer utilities {
+  /* Text selection — primary color for visual coherence in rendered markdown. */
+  .prose ::selection {
+    background-color: theme(--color-primary-100);
+  }
+  .dark .prose ::selection {
+    background-color: theme(--color-primary-900);
+  }
+
+  .link {
+    @apply text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors;
+  }
+  .link-icon {
+    @apply cursor-pointer text-zinc-400 hover:text-primary-600 dark:text-zinc-500 dark:hover:text-primary-400 transition-colors;
+  }
+  .link-title {
+    @apply cursor-pointer text-zinc-900 hover:text-primary-600 dark:text-zinc-100 dark:hover:text-primary-400 transition-colors;
+  }
+
+  /* Compact prose for supplementary content (revision notes). Flattens headings
+     to body-text size so they read as subtle section labels, not titles.
+     No color override — headings inherit body color so <strong> doesn't
+     end up darker than headings. */
+  .prose-compact :is(h1, h2, h3, h4, h5, h6) {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+  }
+
+  /* Plan prose for long multi-section documents (implementation plans).
+     Restores heading hierarchy and adds subtle dividers between top-level
+     sections so the document is scannable without being visually noisy. */
+  .prose-plan :is(h2) {
+    font-size: 0.9375rem;
+    line-height: 1.375rem;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    padding-top: 1.25em;
+    border-top: 1px solid theme(--color-zinc-200);
+  }
+  .dark .prose-plan :is(h2) {
+    border-top-color: theme(--color-zinc-700);
+  }
+  .prose-plan > :first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-plan :is(h3, h4, h5, h6) {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    margin-top: 1em;
+    margin-bottom: 0.25em;
+  }
+
+  /* Sidebar prose for dense summary blurbs. Strips nearly all vertical rhythm
+     so rendered markdown reads as compact body text — suitable for sidebar
+     cards where space is tight. */
+  .prose-sidebar {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: theme(--color-zinc-500);
+  }
+  .dark .prose-sidebar {
+    color: theme(--color-zinc-400);
+  }
+  .prose-sidebar :is(h1, h2, h3, h4, h5, h6) {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: inherit;
+  }
+  .prose-sidebar :is(p, ul, ol, blockquote, pre) {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+  }
+  .prose-sidebar :first-child {
+    margin-top: 0;
+  }
+  .prose-sidebar :last-child {
+    margin-bottom: 0;
+  }
+
+  /* Reader mode: bump prose-sm to comfortable base size inside the overlay. */
+  .reader-mode-body .prose-sm {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  /* Reader mode: scale Plan headings proportional to the body text bump. */
+  .reader-mode-body .prose-plan :is(h2) {
+    font-size: 1.125rem;
+  }
+  .reader-mode-body .prose-plan :is(h3, h4, h5, h6) {
+    font-size: 1rem;
+  }
+
+  /* Inline code pill — remove Typography backtick pseudo-elements and style as
+     a subtle pill. Excludes code inside pre (syntax-highlighted blocks). */
+  .prose :not(pre) > code {
+    background-color: theme(--color-zinc-100);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.8125em;
+  }
+  .dark .prose :not(pre) > code {
+    background-color: theme(--color-zinc-800);
+  }
+  .prose :not(pre) > code::before,
+  .prose :not(pre) > code::after {
+    content: none !important;
+  }
+
+  /* Blockquote — remove Typography decorative curly quotes. */
+  .prose blockquote p::before,
+  .prose blockquote p::after {
+    content: none !important;
+  }
+
+  /* Code block border — subtle frame around pre blocks. */
+  .prose pre {
+    border: 1px solid theme(--color-zinc-700);
+    border-radius: 0.5rem;
+  }
+
+  /* Table structure — visible header and row borders. */
+  .prose thead th {
+    border-bottom: 2px solid theme(--color-zinc-300);
+  }
+  .dark .prose thead th {
+    border-bottom-color: theme(--color-zinc-600);
+  }
+  .prose tbody tr {
+    border-bottom: 1px solid theme(--color-zinc-200);
+  }
+  .dark .prose tbody tr {
+    border-bottom-color: theme(--color-zinc-700);
+  }
+
+  /* Links — match app's primary color system. */
+  .prose a {
+    color: theme(--color-primary-600);
+    transition-property: color;
+    transition-duration: 150ms;
+  }
+  .prose a:hover {
+    color: theme(--color-primary-800);
+  }
+  .dark .prose a {
+    color: theme(--color-primary-400);
+  }
+  .dark .prose a:hover {
+    color: theme(--color-primary-300);
+  }
+
+  /* Task list checkboxes — style disabled checkboxes rendered by GFM. */
+  .prose ul:has(> li > input[type="checkbox"]) {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  .prose li > input[type="checkbox"] {
+    margin-right: 0.5rem;
+    accent-color: theme(--color-primary-600);
+  }
+}

@@ -1,0 +1,38 @@
+<%
+# Modal header/chrome with title and close button
+#
+# Parameters:
+#   title: String - modal title
+#   header_actions: String (optional) - pre-rendered HTML for header actions
+#   Block (optional) - additional header actions
+%>
+
+<% has_actions = block_given? || local_assigns[:header_actions].present? %>
+
+<div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 px-4 py-3 @sm:px-6">
+  <h3 class="text-lg font-medium leading-6 text-zinc-900 dark:text-zinc-100"><%= title %></h3>
+
+  <% if has_actions %>
+    <div class="flex items-center space-x-3">
+      <%= yield if block_given? %>
+      <%= header_actions if local_assigns[:header_actions].present? %>
+      <button
+        type="button"
+        class="rounded-md bg-white dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800"
+        data-action="modal#close"
+      >
+        <span class="sr-only">Close</span>
+        <%= icon(:x_mark, classes: "h-6 w-6") %>
+      </button>
+    </div>
+  <% else %>
+    <button
+      type="button"
+      class="rounded-md bg-white dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800"
+      data-action="modal#close"
+    >
+      <span class="sr-only">Close</span>
+      <%= icon(:x_mark, classes: "h-6 w-6") %>
+    </button>
+  <% end %>
+</div>

@@ -1,0 +1,230 @@
+<%= page_header "Cards" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Basic Card", "The simplest card. Use card_classes for consistent border, shadow, and background.") %>
+
+    <div class="p-5">
+      <div class="<%= card_classes %>">
+        <div class="p-5">
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            Simple Card
+          </h3>
+
+          <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            This is a basic card using <code>card_classes</code> for consistent
+            styling.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Card with Header", "Add card_header inside a card for a titled section with a bottom border.") %>
+
+    <div class="p-5">
+      <div class="<%= card_classes %>">
+        <%= card_header("Card Title", "Optional subtitle describing the card content") %>
+
+        <div class="px-4 py-5 @sm:px-6">
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">
+            Card body content goes here.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Detail Card", "Use detail_card for key-value layouts like profiles or settings.") %>
+
+    <div class="p-5">
+      <%= detail_card("User Profile", subtitle: "Account information") do |c|
+        c.section("Name") { "Jane Smith" }
+        c.section("Email") { "jane@example.com" }
+        c.section("Role") { status_badge(true, labels: { true => "Admin", false => "Member" }) }
+        c.section("Bio") { "Product manager focused on developer tools and workflow automation." }
+      end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Detail Card with Header Action", "Pass header_action: to place a button in the card header. Use for inline edit actions.") %>
+
+    <div class="p-5">
+      <%= detail_card("Project Settings", header_action: button("Edit", type: :secondary, size: :sm, shadow: false, icon_name: :pencil)) do |c|
+        c.section("Project Name") { "Factory" }
+        c.section("Status") { status_badge(true) }
+        c.section("Created") { "February 10, 2026" }
+      end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %> @sm:col-span-2">
+    <%= card_header("Card Grid", "Cards in a responsive grid. Use @sm:grid-cols-2 @lg:grid-cols-3 for progressive layouts.") %>
+
+    <div class="p-5">
+      <div class="grid grid-cols-1 gap-6 @sm:grid-cols-2 @lg:grid-cols-3">
+        <% 3.times do |i| %>
+          <div class="<%= card_classes %>">
+            <div class="p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <%= icon(:folder, classes: "h-5 w-5 text-primary-500") %>
+
+                <h4 class="font-medium text-zinc-900 dark:text-zinc-100">
+                  Project <%= i + 1 %>
+                </h4>
+              </div>
+
+              <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                A sample project card showing how cards look in a grid layout.
+              </p>
+
+              <div class="mt-3"><%= status_badge(i.even?) %></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Flat Card", "Use card_classes(shadow: false) for cards nested inside other cards. Same border and background, no shadow.") %>
+
+    <div class="p-5">
+      <div class="<%= card_classes(shadow: false) %>">
+        <div class="p-5">
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            Nested Card (Flat)
+          </h3>
+
+          <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            This card lives inside a parent card. It uses <code>card_classes(shadow: false)</code>
+            to avoid stacking shadows.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Panel", "Use panel_classes for border-only containment inside cards. Ideal for tables and forms.") %>
+
+    <div class="p-5">
+      <div class="<%= panel_classes %>">
+        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Name</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+            <tr>
+              <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">Import pipeline</td>
+              <td class="px-4 py-3 text-sm"><%= status_badge(true) %></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">Research pipeline</td>
+              <td class="px-4 py-3 text-sm"><%= status_badge(false) %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Inset", "Use inset_classes for metadata blocks inside cards. Grey background with a left accent stripe.") %>
+
+    <div class="p-5">
+      <div class="<%= inset_classes("p-4 @sm:p-6") %>">
+        <dl class="grid grid-cols-1 gap-4 @sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Status</dt>
+            <dd class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Ready for review</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Last updated</dt>
+            <dd class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">2 hours ago</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Author</dt>
+            <dd class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Alice Johnson</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Risk tier</dt>
+            <dd class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Medium</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Flat Detail Card", "Use detail_card(..., shadow: false) for detail cards nested inside other cards.") %>
+
+    <div class="p-5">
+      <%= detail_card("Nested Profile", subtitle: "Inside a parent card", shadow: false) do |c|
+        c.section("Name") { "Jane Smith" }
+        c.section("Email") { "jane@example.com" }
+        c.section("Role") { status_badge(true, labels: { true => "Admin", false => "Member" }) }
+      end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %> @sm:col-span-2">
+    <%= card_header("Nested Containers", "A card containing both a panel and an inset, demonstrating flat inner containers.") %>
+
+    <div class="p-5 space-y-5">
+      <div class="grid grid-cols-1 gap-5 @sm:grid-cols-2">
+        <div>
+          <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-3">Panel (table)</h4>
+          <div class="<%= panel_classes %>">
+            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Item</th>
+                  <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Count</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                <tr>
+                  <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">Tasks</td>
+                  <td class="px-4 py-3 text-sm text-right text-zinc-500 dark:text-zinc-400">12</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">Tickets</td>
+                  <td class="px-4 py-3 text-sm text-right text-zinc-500 dark:text-zinc-400">8</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-3">Inset (metadata)</h4>
+          <div class="<%= inset_classes("p-4") %>">
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Created</dt>
+                <dd class="text-sm text-zinc-500 dark:text-zinc-400">February 10, 2026</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Updated</dt>
+                <dd class="text-sm text-zinc-500 dark:text-zinc-400">February 24, 2026</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Owner</dt>
+                <dd class="text-sm text-zinc-500 dark:text-zinc-400">Alice Johnson</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

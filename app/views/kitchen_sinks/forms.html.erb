@@ -1,0 +1,97 @@
+<%= page_header "Forms" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Clean Form", "All field types in a clean state. Use f.section to group related fields.") %>
+
+    <div class="p-6">
+      <%= form_with(model: @clean, url: save_demo_kitchen_sink_path) do |f| %>
+        <% f.section "Text Inputs" do %>
+          <%= f.text_field :name, hint: "The display name for this item" %>
+          <%= f.email_field :email %>
+          <%= f.password_field :password, hint: "Minimum 8 characters" %>
+          <%= f.number_field :count %>
+        <% end %>
+
+        <% f.section "Selection" do %>
+          <%= f.text_area :description, rows: 3, hint: "Describe this item in detail" %>
+          <%= f.select :role, @roles, { label: "Role" } %>
+          <%= f.collection_select :category_id, @categories, :id, :name, { label: "Category" } %>
+          <%= f.segmented_control :role, [["Admin", "admin"], ["Editor", "editor"], ["Viewer", "viewer"]],
+            label: "Access Level", hint: "Controls what this user can do" %>
+        <% end %>
+
+        <% f.section "Combobox & Date" do %>
+          <%= f.combobox :assignee, @assignees, placeholder: "Search people…",
+            hint: "Searchable dropdown with keyboard navigation" %>
+          <%= f.combobox :role, @assignees, label: "Reviewer (blank)", include_blank: "Anyone",
+            placeholder: "Search people…", hint: "With an include_blank option" %>
+          <%= f.combobox :name, [], label: "Reviewer (remote)", placeholder: "Search people…",
+            url: assignees_kitchen_sink_path, hint: "Fetches results from the server via GET ?q=" %>
+          <%= f.date_field :start_date, label: "Start Date", hint: "Air Datepicker with today/clear buttons" %>
+        <% end %>
+
+        <% f.section "Toggles" do %>
+          <%= f.check_box :active, "Active" %>
+          <%= f.toggle :active, "Enable Notifications", caption: "Receive email notifications for updates" %>
+        <% end %>
+
+        <% f.actions do %>
+          <%= f.submit "Save" %>
+          <%= f.cancel_link cancel_demo_kitchen_sink_path %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Form with Errors", "Fields with errors show red rings and inline messages. The error summary renders automatically.") %>
+
+    <div class="p-6">
+      <%= form_with(model: @errored, url: save_demo_kitchen_sink_path) do |f| %>
+        <% f.section "Text Inputs" do %>
+          <%= f.text_field :name %>
+          <%= f.email_field :email %>
+          <%= f.password_field :password %>
+          <%= f.number_field :count %>
+        <% end %>
+
+        <% f.section "Selection" do %>
+          <%= f.text_area :description, rows: 3 %>
+          <%= f.select :role, @roles, { label: "Role", include_blank: "Select a role..." } %>
+        <% end %>
+
+        <% f.section "Combobox & Date" do %>
+          <%= f.combobox :assignee, @assignees, placeholder: "Search people…" %>
+          <%= f.date_field :start_date, label: "Start Date" %>
+        <% end %>
+
+        <% f.actions do %>
+          <%= f.submit "Save" %>
+          <%= f.cancel_link cancel_demo_kitchen_sink_path %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Action Variants", "All four action helpers in one footer: submit, back_link, link_action, and cancel_link. Also shows search_field.") %>
+
+    <div class="p-6">
+      <%= form_with(model: @clean, url: save_demo_kitchen_sink_path) do |f| %>
+        <% f.section "Search" do %>
+          <%= f.search_field :name, label: "Search", hint: "search_field renders a text input with type=\"search\" and browser clear button" %>
+        <% end %>
+
+        <% f.actions do %>
+          <%= f.submit "Save" %>
+          <%= f.back_link cancel_demo_kitchen_sink_path %>
+          <%= f.link_action "Export", "#" %>
+          <%= f.cancel_link cancel_demo_kitchen_sink_path %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,95 @@
+<%= page_header "Modals" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Inline Modal", "Wrap a trigger button and modal_dialog in modal_wrapper. Opens/closes via Stimulus.") %>
+    <div class="p-5">
+      <%= modal_wrapper do %>
+        <%= button "Open Modal", type: :primary, modal: true %>
+
+        <%= modal_dialog(id: "demo-modal", title: "Example Modal") do %>
+          <div class="p-4 @sm:p-6">
+            <p class="text-sm text-zinc-700 dark:text-zinc-300">
+              This is a modal dialog rendered inline with <code>modal_dialog</code>.
+              It supports a title, close button, and arbitrary content.
+            </p>
+            <div class="mt-4">
+              <%= button "Got It", type: :primary, data: { action: "click->modal#close" } %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Modal with Form", "Place form fields inside the modal body. Use modal_actions for the footer button row.") %>
+    <div class="p-5">
+      <%= modal_wrapper do %>
+        <%= button "Open Form Modal", type: :secondary, modal: true %>
+
+        <%= modal_dialog(id: "form-modal", title: "Edit Item") do %>
+          <%= form_with(model: @demo, url: "#", spacing: false, size: false, padding: false) do |f| %>
+            <div class="p-4 @sm:p-6 space-y-4">
+              <%= f.text_field :name %>
+              <%= f.text_area :description, rows: 3 %>
+            </div>
+            <% f.modal_actions do %>
+              <%= f.submit "Save" %>
+              <%= f.cancel_link :close %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Modal Open Button", "Use modal_open_button with a block for custom trigger content like icons or styled text.") %>
+    <div class="p-5">
+      <%= modal_wrapper do %>
+        <%= modal_open_button do %>
+          <span class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
+            <%= icon(:information_circle, classes: "inline h-4 w-4 mr-1") %>
+            Click for details
+          </span>
+        <% end %>
+
+        <%= modal_dialog(id: "info-modal", title: "Details") do %>
+          <div class="p-4 @sm:p-6">
+            <p class="text-sm text-zinc-700 dark:text-zinc-300">
+              This modal was opened via <code>modal_open_button</code> with a custom block for the trigger content.
+            </p>
+            <div class="mt-4">
+              <%= button "Close", type: :secondary, data: { action: "click->modal#close" } %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Modal Sizes", "Pass size: :md (default), :wide, or :full.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <% [:md, :wide, :full].each do |size| %>
+          <%= modal_wrapper(tag_name: :span) do %>
+            <%= button "#{size.to_s.titleize} Modal", type: :secondary, size: :sm, modal: true %>
+
+            <%= modal_dialog(id: "size-#{size}-modal", title: "#{size.to_s.titleize} Size Modal", size: size) do %>
+              <div class="p-4 @sm:p-6">
+                <p class="text-sm text-zinc-700 dark:text-zinc-300">This modal uses <code>size: :<%= size %></code>.</p>
+                <div class="mt-4">
+                  <%= button "Close", type: :secondary, size: :sm, data: { action: "click->modal#close" } %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

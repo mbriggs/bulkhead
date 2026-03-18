@@ -1,0 +1,72 @@
+<%= page_header "Lists" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%
+  list_items = [
+    OpenStruct.new(name: "Authentication System", description: "Google SSO integration", status: "completed"),
+    OpenStruct.new(name: "Problem Parser", description: "Extract structured fields from markdown", status: "in_progress"),
+    OpenStruct.new(name: "Ticket Generation", description: "Auto-generate tickets from Problems", status: "planned"),
+    OpenStruct.new(name: "Scout Agent", description: "Codebase analysis for technical scoping", status: "planned"),
+  ]
+
+  img_items = [
+    OpenStruct.new(name: "Design System", owner: "Alice Chen"),
+    OpenStruct.new(name: "API Gateway", owner: "Bob Wilson"),
+    OpenStruct.new(name: "Dashboard", owner: "Jane Smith"),
+  ]
+%>
+
+<%= page do %>
+  <div class="<%= card_classes %> overflow-hidden">
+    <%= card_header("Item List", "Use item_list for navigable collections with title, metadata, and badges. Each row is a link.") %>
+    <%= item_list(list_items, path: ->(item) { link_demo_kitchen_sink_path(label: item.name) }) do |i, item| %>
+      <% i.title item.name %>
+      <% i.meta text: item.description %>
+      <%
+        badge_type = case item.status
+          when "completed" then :success
+          when "in_progress" then :warning
+          else :default
+        end
+      %>
+      <% i.badge item.status.humanize, type: badge_type %>
+    <% end %>
+  </div>
+
+  <div class="<%= card_classes %> overflow-hidden">
+    <%= card_header("Item List with Images", "Add i.image with a URL or fallback_icon for visual list items.") %>
+    <%= item_list(img_items, path: ->(item) { link_demo_kitchen_sink_path(label: item.name) }) do |i, item| %>
+      <% i.image fallback_icon: :rectangle_group %>
+      <% i.title item.name %>
+      <% i.meta icon: :user, text: item.owner %>
+    <% end %>
+  </div>
+
+  <div class="<%= card_classes %> overflow-hidden">
+    <%= card_header("Item List with Modals", "Use i.modal instead of a path to open a dialog on click. Pass path: false to skip link generation.") %>
+    <%= item_list(list_items, path: false) do |i, item| %>
+      <% i.title item.name %>
+      <% i.meta text: item.description %>
+      <% i.badge item.status.humanize, type: item.status == "completed" ? :success : :default %>
+      <% i.modal(id: "demo-modal-#{item.name.parameterize}", title: item.name) do %>
+        <div class="px-4 @sm:px-6 py-5">
+          <dl class="space-y-3">
+            <div>
+              <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Name</dt>
+              <dd class="mt-0.5 text-sm text-zinc-900 dark:text-zinc-100"><%= item.name %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Description</dt>
+              <dd class="mt-0.5 text-sm text-zinc-900 dark:text-zinc-100"><%= item.description %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Status</dt>
+              <dd class="mt-0.5 text-sm text-zinc-900 dark:text-zinc-100"><%= item.status.humanize %></dd>
+            </div>
+          </dl>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

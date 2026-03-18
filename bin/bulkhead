@@ -1,0 +1,269 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+# Subtree management for the Bulkhead design system engine.
+# Wraps git-subtree commands to make pull/push/install frictionless.
+#
+# Usage:
+#   bin/bulkhead install                     # first-time subtree add
+#   bin/bulkhead pull                        # pull upstream changes
+#   bin/bulkhead push [--branch NAME] [--pr] # push changes upstream
+#   bin/bulkhead diff [--upstream]           # show bulkhead changes
+#   bin/bulkhead status                      # remote + local + upstream state
+
+# When invoked via symlink (bin/bulkhead → ../bulkhead/bin/bulkhead),
+# $0 is the symlink path. Resolve from the symlink's directory to find the host project root.
+APP_ROOT = File.expand_path("..", File.dirname(File.expand_path($0)))
+
+BULKHEAD_REPO   = "git@github.com:mbriggs/bulkhead.git"
+BULKHEAD_PREFIX = "vendor/bulkhead"
+BULKHEAD_REMOTE = "bulkhead"
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+def remote_exists?
+  system("git remote get-url #{BULKHEAD_REMOTE} > /dev/null 2>&1")
+end
+
+def current_branch
+  `git rev-parse --abbrev-ref HEAD`.strip
+end
+
+def ensure_remote!
+  unless remote_exists?
+    abort "Bulkhead remote not configured. Run: bin/bulkhead install"
+  end
+end
+
+FileUtils.chdir APP_ROOT do
+  command = ARGV[0]
+
+  case command
+  when "install"
+    # Guard: subtree add requires the prefix to not exist in the index
+    tracked = !`git ls-tree HEAD #{BULKHEAD_PREFIX}/`.strip.empty?
+    if tracked
+      abort <<~MSG
+        vendor/bulkhead/ is already tracked in git. Remove it first:
+          git rm -r vendor/bulkhead/
+          git commit -m "Remove bulkhead directory before subtree add"
+        Then re-run: bin/bulkhead install
+      MSG
+    end
+
+    # If vendor/bulkhead/ exists as untracked directory, remove it so subtree add works
+    if Dir.exist?(BULKHEAD_PREFIX)
+      puts "== Removing existing vendor/bulkhead/ directory =="
+      FileUtils.rm_rf(BULKHEAD_PREFIX)
+    end
+
+    puts "== Adding bulkhead remote =="
+    if remote_exists?
+      puts "  Remote already exists, skipping"
+    else
+      system!("git", "remote", "add", BULKHEAD_REMOTE, BULKHEAD_REPO)
+    end
+
+    puts "\n== Fetching bulkhead =="
+    system!("git", "fetch", BULKHEAD_REMOTE)
+
+    puts "\n== Adding subtree =="
+    system!("git", "subtree", "add", "--prefix", BULKHEAD_PREFIX, BULKHEAD_REMOTE, "master", "--squash")
+
+    # Gemfile — add bulkhead gem if not present
+    gemfile = File.read("Gemfile")
+    unless gemfile.include?('gem "bulkhead"')
+      puts "\n== Adding bulkhead to Gemfile =="
+      gemfile.sub!(/^(gem "rails".*)$/m, "\\1\ngem \"bulkhead\", path: \"vendor/bulkhead\"")
+      File.write("Gemfile", gemfile)
+    else
+      puts "\n== Gemfile already has bulkhead, skipping =="
+    end
+
+    # application.css — add bulkhead engine import
+    css_path = "app/assets/tailwind/application.css"
+    css = File.read(css_path)
+    bulkhead_import = '@import "../builds/tailwind/bulkhead";'
+    unless css.include?(bulkhead_import)
+      puts "\n== Patching application.css =="
+      css.sub!(%r{^(@import "tailwindcss";)$}m, "\\1\n#{bulkhead_import}")
+      File.write(css_path, css)
+    else
+      puts "\n== application.css already patched, skipping =="
+    end
+
+    puts "\n== Installing bundle =="
+    system("bundle check") || system!("bundle install")
+
+    # Create bin symlink if it doesn't exist
+    symlink = "bin/bulkhead"
+    unless File.symlink?(symlink)
+      puts "\n== Creating bin/bulkhead symlink =="
+      File.symlink("../vendor/bulkhead/bin/bulkhead", symlink)
+    end
+
+    puts <<~DONE
+
+      ✓ Bulkhead installed as git subtree.
+        Remote:  #{BULKHEAD_REMOTE} → #{BULKHEAD_REPO}
+        Prefix:  #{BULKHEAD_PREFIX}/
+        Squash:  always (one merge commit per pull)
+
+        Next steps:
+          1. Add kitchen sink routes to config/routes.rb (dev-only):
+
+               if Rails.env.local?
+                 resource :kitchen_sink, only: :show do
+                   member { get :buttons, :alerts, :badges, ... }
+                 end
+               end
+
+          2. Define admin_nav_sections in a host app helper
+             (see ApplicationHelper for an example)
+
+          bin/bulkhead pull   — pull upstream changes
+          bin/bulkhead push   — push local changes upstream
+          bin/bulkhead status — check sync state
+    DONE
+
+  when "pull"
+    ensure_remote!
+
+    puts "== Fetching bulkhead =="
+    system!("git", "fetch", BULKHEAD_REMOTE)
+
+    puts "\n== Pulling subtree =="
+    unless system("git", "subtree", "pull", "--prefix", BULKHEAD_PREFIX, BULKHEAD_REMOTE, "master", "--squash")
+      abort <<~MSG
+
+        Merge conflict during subtree pull.
+        Resolve conflicts in bulkhead/, then:
+          git add bulkhead/
+          git commit
+      MSG
+    end
+
+    puts "\n== Installing bundle =="
+    system("bundle check") || system!("bundle install")
+
+    puts "\n✓ Bulkhead updated."
+
+  when "push"
+    ensure_remote!
+
+    branch = nil
+    create_pr = false
+
+    args = ARGV[1..] || []
+    i = 0
+    while i < args.length
+      case args[i]
+      when "--branch"
+        branch = args[i + 1]
+        abort "Missing branch name after --branch" unless branch
+        i += 2
+      when "--pr"
+        create_pr = true
+        i += 1
+      else
+        abort "Unknown option: #{args[i]}"
+      end
+    end
+
+    branch ||= current_branch
+    if branch == "master" && !ARGV.include?("--branch")
+      abort "Refusing to push to master without explicit --branch master"
+    end
+    split_branch = "bulkhead-split"
+
+    puts "== Splitting subtree =="
+    system!("git", "subtree", "split", "--prefix", BULKHEAD_PREFIX, "--rejoin", "-b", split_branch)
+
+    puts "\n== Pushing to bulkhead/#{branch} =="
+    system!("git", "push", BULKHEAD_REMOTE, "#{split_branch}:refs/heads/#{branch}")
+
+    puts "\n== Cleaning up split branch =="
+    system!("git", "branch", "-D", split_branch)
+
+    if create_pr
+      puts "\n== Creating pull request =="
+      # Extract owner/repo from the SSH or HTTPS URL
+      repo = BULKHEAD_REPO
+        .sub(/\.git$/, "")
+        .sub(%r{^git@github\.com:}, "")
+        .sub(%r{^https://github\.com/}, "")
+
+      system!("gh", "pr", "create", "--repo", repo, "--head", branch, "--base", "master")
+    end
+
+    puts "\n✓ Pushed bulkhead changes to #{branch}."
+
+  when "diff"
+    if ARGV.include?("--upstream")
+      ensure_remote!
+      puts "== Fetching bulkhead =="
+      system!("git", "fetch", BULKHEAD_REMOTE)
+
+      puts "\n== Upstream changes we don't have =="
+      system!("git", "diff", "HEAD:#{BULKHEAD_PREFIX}", "#{BULKHEAD_REMOTE}/master")
+    else
+      system!("git", "diff", "--", "#{BULKHEAD_PREFIX}/")
+    end
+
+  when "status"
+    puts "== Bulkhead status =="
+
+    if remote_exists?
+      url = `git remote get-url #{BULKHEAD_REMOTE}`.strip
+      puts "  Remote: #{BULKHEAD_REMOTE} → #{url}"
+    else
+      puts "  Remote: not configured (run bin/bulkhead install)"
+      exit
+    end
+
+    # Local modifications
+    diff_stat = `git diff --stat -- #{BULKHEAD_PREFIX}/`.strip
+    if diff_stat.empty?
+      staged = `git diff --cached --stat -- #{BULKHEAD_PREFIX}/`.strip
+      if staged.empty?
+        puts "  Local:  clean"
+      else
+        puts "  Local:  staged changes"
+        puts staged.lines.map { |l| "           #{l}" }.join
+      end
+    else
+      puts "  Local:  modified"
+      puts diff_stat.lines.map { |l| "           #{l}" }.join
+    end
+
+    # Upstream comparison — compare tree content, not commit history
+    # (commit history is meaningless after --squash merges)
+    system("git fetch #{BULKHEAD_REMOTE} --quiet 2>/dev/null")
+    local_tree = `git rev-parse HEAD:#{BULKHEAD_PREFIX} 2>/dev/null`.strip
+    upstream_tree = `git rev-parse #{BULKHEAD_REMOTE}/master^{tree} 2>/dev/null`.strip
+    if local_tree == upstream_tree
+      puts "  Upstream: up to date"
+    elsif local_tree.empty? || upstream_tree.empty?
+      puts "  Upstream: unable to compare (fetch may have failed)"
+    else
+      puts "  Upstream: has changes"
+      stat = `git diff #{local_tree} #{upstream_tree} --stat 2>/dev/null`.strip
+      stat.lines.each { |l| puts "             #{l}" } unless stat.empty?
+    end
+
+  else
+    puts <<~USAGE
+      Usage: bin/bulkhead <command>
+
+      Commands:
+        install                     First-time subtree setup
+        pull                        Pull upstream changes
+        push [--branch NAME] [--pr] Push changes to bulkhead repo
+        diff [--upstream]           Show bulkhead changes
+        status                      Show remote and sync state
+    USAGE
+    exit(command.nil? ? 0 : 1)
+  end
+end

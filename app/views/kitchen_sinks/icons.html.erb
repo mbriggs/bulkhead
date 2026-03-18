@@ -1,0 +1,84 @@
+<%= page_header "Icons" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+  <%= h.action "Heroicons", "https://heroicons.com", target: "_blank", icon_name: :arrow_top_right_on_square %>
+<% end %>
+
+<%= page(columns: "") do %>
+  <%
+    icons = %i[
+      plus pencil trash eye arrow_down_tray
+      check_circle x_circle exclamation_triangle information_circle
+      chevron_left chevron_right chevron_up chevron_down
+      bars_3 x_mark magnifying_glass
+      folder document_text chat_bubble_left_right
+      user user_group cog_6_tooth
+      inbox bell bell_alert
+      arrow_right_start_on_rectangle
+      cube bolt sparkles swatch
+      sun moon
+      list_bullet table_cells rectangle_group
+      cursor_arrow_rays pencil_square
+      tag arrows_right_left
+      folder_plus shopping_bag
+      calendar clock
+      link globe_alt
+      arrow_right arrow_left
+      ellipsis_horizontal ellipsis_vertical
+    ]
+  %>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Common Icons", "Heroicons used across the app. Reference these names in icon() and icon_name: calls.") %>
+    <div class="p-5">
+      <div class="grid grid-cols-2 @sm:grid-cols-4 @md:grid-cols-6 @lg:grid-cols-8 gap-4">
+        <% icons.each do |icon_name| %>
+          <div class="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-colors">
+            <%= icon(icon_name, classes: "h-6 w-6 text-zinc-700 dark:text-zinc-300") %>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400 text-center break-all"><%= icon_name %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Icon Sizes", "Control size with Tailwind classes. Match the size to surrounding text.") %>
+    <div class="p-5">
+      <div class="flex items-end gap-6">
+        <div class="text-center">
+          <%= icon(:check_circle, classes: "h-4 w-4 text-zinc-700 dark:text-zinc-300") %>
+          <p class="mt-1 text-xs text-zinc-500">4x4</p>
+        </div>
+        <div class="text-center">
+          <%= icon(:check_circle, classes: "h-5 w-5 text-zinc-700 dark:text-zinc-300") %>
+          <p class="mt-1 text-xs text-zinc-500">5x5</p>
+        </div>
+        <div class="text-center">
+          <%= icon(:check_circle, classes: "h-6 w-6 text-zinc-700 dark:text-zinc-300") %>
+          <p class="mt-1 text-xs text-zinc-500">6x6</p>
+        </div>
+        <div class="text-center">
+          <%= icon(:check_circle, classes: "h-8 w-8 text-zinc-700 dark:text-zinc-300") %>
+          <p class="mt-1 text-xs text-zinc-500">8x8</p>
+        </div>
+        <div class="text-center">
+          <%= icon(:check_circle, classes: "h-12 w-12 text-zinc-700 dark:text-zinc-300") %>
+          <p class="mt-1 text-xs text-zinc-500">12x12</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Icon Links", "Use icon_link_to for action icons in rows or toolbars. Add tooltip_text: for hover labels.") %>
+    <div class="p-5">
+      <div class="flex items-center gap-4">
+        <%= icon_link_to(:pencil, link_demo_kitchen_sink_path(label: "Edit"), tooltip_text: "Edit") %>
+        <%= icon_link_to(:trash, link_demo_kitchen_sink_path(label: "Delete"), tooltip_text: "Delete") %>
+        <%= icon_link_to(:eye, link_demo_kitchen_sink_path(label: "View"), tooltip_text: "View") %>
+        <%= icon_link_to(:arrow_down_tray, link_demo_kitchen_sink_path(label: "Download"), tooltip_text: "Download") %>
+        <%= icon_link_to(:link, link_demo_kitchen_sink_path(label: "Copy Link"), tooltip_text: "Copy Link") %>
+      </div>
+    </div>
+  </div>
+<% end %>

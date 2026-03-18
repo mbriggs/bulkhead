@@ -1,0 +1,29 @@
+<%
+# Modal dialog structure
+#
+# Parameters:
+#   id: String - unique identifier for the modal
+#   title: String - modal title
+#   content: String - rendered modal body content
+#   partial_path: String (optional) - path to partial for error handling
+#   partial_locals: Hash (optional) - locals to pass to partial
+%>
+
+<dialog
+  id="<%= id %>"
+  class="m-0 p-0 max-w-none max-h-none w-full h-full bg-transparent backdrop:bg-black/50 overflow-visible"
+  data-modal-target="dialog"
+  data-action="mousedown->modal#backdropClick click->modal#backdropClick"
+  <%= "data-modal-partial='#{partial_path}'" if local_assigns[:partial_path] %>
+>
+  <div class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4 text-center">
+      <div class="@container relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-800 text-left shadow-xl ring-1 ring-black/5 dark:ring-white/10 transition-all w-full <%= local_assigns[:size_class] || 'max-w-lg' %>" data-modal-target="content">
+        <%= render "shared/modals/chrome", title: title, header_actions: local_assigns[:header_actions] %>
+        <div id="<%= modal_content_id(id) %>">
+          <%= content %>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>

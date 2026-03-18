@@ -1,0 +1,150 @@
+<%= page_header "Reader Mode" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%
+  long_document = <<~MD
+    # System Architecture Overview
+
+    This document outlines the high-level architecture for the new event processing
+    pipeline. It covers data flow, service boundaries, and deployment topology.
+
+    ## Data Flow
+
+    Events enter the system through a unified ingestion API. Each event is validated
+    against a schema registry, enriched with metadata from the user service, and
+    routed to the appropriate processing queue based on event type.
+
+    The pipeline processes events in three stages:
+
+    1. **Validation** — Schema validation, deduplication, and rate limiting
+    2. **Enrichment** — User context, geo-IP, and feature flag resolution
+    3. **Routing** — Fan-out to downstream consumers based on event type and tenant
+
+    ### Validation Stage
+
+    All incoming events are validated against versioned JSON schemas stored in the
+    schema registry. Invalid events are routed to a dead-letter queue with detailed
+    error metadata for debugging. The validator supports schema evolution — new fields
+    can be added without breaking existing producers.
+
+    Deduplication uses a sliding window of event IDs (default: 1 hour) backed by a
+    distributed cache. This handles the common case of producer retries without
+    requiring exactly-once semantics at the transport layer.
+
+    ### Enrichment Stage
+
+    The enrichment stage attaches contextual data to each event:
+
+    - **User context**: Display name, team membership, permission level
+    - **Geo-IP**: Country, region, timezone (using MaxMind GeoIP2)
+    - **Feature flags**: Active experiments and feature gates for the user
+
+    Enrichment is performed asynchronously using a scatter-gather pattern. Each
+    enricher runs independently with a 100ms timeout — if any enricher fails, the
+    event proceeds with partial enrichment rather than blocking the pipeline.
+
+    ### Routing Stage
+
+    Routing rules are defined declaratively in a YAML configuration file. Each rule
+    specifies a predicate (event type, tenant, enrichment fields) and a list of
+    destination topics. Events can be routed to multiple destinations simultaneously.
+
+    ## Service Boundaries
+
+    The system is decomposed into five services:
+
+    | Service | Responsibility | SLO |
+    |---------|---------------|-----|
+    | Ingestion API | Accept and validate events | 99.99% availability, p99 < 50ms |
+    | Schema Registry | Store and serve event schemas | 99.9% availability |
+    | Enrichment Workers | Attach contextual data | p99 < 100ms per enricher |
+    | Router | Fan-out events to consumers | 99.95% delivery within 5s |
+    | Dead Letter Processor | Handle failed events | Best effort, manual review |
+
+    ### Ingestion API
+
+    The ingestion API is a stateless HTTP service deployed behind a load balancer.
+    It accepts batched event payloads (up to 100 events per request), validates each
+    event independently, and publishes valid events to the processing queue. Invalid
+    events receive synchronous error responses with schema violation details.
+
+    ### Schema Registry
+
+    The schema registry provides a REST API for managing event schemas. Producers
+    register new schema versions; the ingestion API fetches schemas at startup and
+    caches them with a 60-second TTL. Schema compatibility checks prevent breaking
+    changes (removed required fields, type changes) from being registered.
+
+    ## Deployment Topology
+
+    All services run on Kubernetes with horizontal pod autoscaling based on CPU and
+    queue depth metrics. The ingestion API scales on request rate; enrichment workers
+    scale on queue backlog. A circuit breaker pattern protects downstream services
+    from cascading failures.
+
+    ## Migration Plan
+
+    The migration from the legacy monolith to this architecture will proceed in three
+    phases over 8 weeks:
+
+    1. **Phase 1** (weeks 1-2): Deploy ingestion API alongside legacy endpoint, shadow
+       traffic for validation
+    2. **Phase 2** (weeks 3-5): Migrate producers one team at a time, starting with
+       lowest-volume event types
+    3. **Phase 3** (weeks 6-8): Decommission legacy endpoint, enable advanced routing
+       rules, onboard remaining consumers
+  MD
+
+  short_document = <<~MD
+    # Quick Note
+
+    This is a short document to demonstrate that reader mode works with brief content
+    too. The overlay scales gracefully regardless of document length.
+
+    - Point one
+    - Point two
+    - Point three
+  MD
+%>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Long Document", "A multi-section technical document — click the expand icon to open reader mode.") %>
+
+    <div class="px-4 py-5 @sm:p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <%= icon(:document_text, classes: "h-5 w-5 text-zinc-400 dark:text-zinc-500") %>
+        <span class="text-base font-semibold text-zinc-900 dark:text-zinc-100">System Architecture</span>
+        <span class="text-sm text-zinc-500 dark:text-zinc-400">Draft</span>
+        <%= reader_mode do %>
+          <%= reader_mode_button(tooltip: "Reader mode") %>
+          <%= reader_mode_dialog(title: "System Architecture") do %>
+            <%= render_markdown(long_document, plan: true) %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%= render_markdown(long_document, plan: true) %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Short Document", "Reader mode with minimal content.") %>
+
+    <div class="px-4 py-5 @sm:p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <%= icon(:document_text, classes: "h-5 w-5 text-zinc-400 dark:text-zinc-500") %>
+        <span class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Quick Note</span>
+        <%= reader_mode do %>
+          <%= reader_mode_button(tooltip: "Reader mode") %>
+          <%= reader_mode_dialog(title: "Quick Note") do %>
+            <%= render_markdown(short_document) %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%= render_markdown(short_document) %>
+    </div>
+  </div>
+<% end %>

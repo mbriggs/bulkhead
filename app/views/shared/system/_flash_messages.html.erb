@@ -1,0 +1,35 @@
+<% if flash[:notice] %>
+  <% if flash[:notice].kind_of? Array %>
+    <%= notice_alert(*flash[:notice]) %>
+  <% else %>
+    <%= notice_alert(flash[:notice]) %>
+  <% end %>
+  <%= page_separator(visible: false) %>
+<% end %>
+
+<% if flash[:success] %>
+  <% if flash[:success].kind_of? Array %>
+    <%= success_alert(*flash[:success]) %>
+  <% else %>
+    <%= success_alert(flash[:success]) %>
+  <% end %>
+  <%= page_separator(visible: false) %>
+<% end %>
+
+<% if flash[:alert] %>
+  <% if flash[:alert].kind_of? Array %>
+    <%= error_alert(*flash[:alert]) %>
+  <% else %>
+    <%= error_alert(flash[:alert]) %>
+  <% end %>
+  <%= page_separator(visible: false) %>
+<% end %>
+
+<% if flash[:error] %>
+  <% if flash[:error].kind_of? Array %>
+    <%= error_alert(*flash[:error]) %>
+  <% else %>
+    <%= error_alert(flash[:error]) %>
+  <% end %>
+  <%= page_separator(visible: false) %>
+<% end %>

@@ -1,0 +1,217 @@
+<%= page_header "Typography" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%
+  sample_prose = <<~MD
+    # Document Title
+
+    This is a paragraph with **bold text**, *italic text*, and `inline code` that
+    renders as a pill. Here's a [link to something](#) styled in the primary color.
+
+    ## Section Heading
+
+    A numbered list of items:
+
+    1. First item with `config.cache_store` inline code
+    2. Second item with a [documentation link](#)
+    3. Third item wrapping to demonstrate paragraph rhythm
+
+    ### Subsection
+
+    > This is a blockquote. It should render without decorative curly quote
+    > characters — clean left-border styling only.
+
+    Unordered list:
+
+    - Item alpha
+    - Item beta with `ENV["DATABASE_URL"]` reference
+    - Item gamma
+  MD
+
+  code_blocks = <<~MD
+    ## Code Blocks
+
+    Ruby with syntax highlighting:
+
+    ```ruby
+    class Pipeline
+      include Logging
+
+      # Runs all stages sequentially, halting on failure.
+      def execute(context)
+        stages.each do |stage|
+          result = stage.call(context)
+          return result if result.failure?
+        end
+        Success.new(context)
+      end
+    end
+    ```
+
+    JavaScript:
+
+    ```javascript
+    export default class extends Controller {
+      static targets = ["dialog"]
+
+      open(event) {
+        event.preventDefault()
+        this.dialogTarget.showModal()
+      }
+    }
+    ```
+
+    SQL:
+
+    ```sql
+    SELECT projects.name, COUNT(agent_runs.id) AS run_count
+    FROM projects
+    LEFT JOIN agent_runs ON agent_runs.project_id = projects.id
+    WHERE projects.created_at > '2025-01-01'
+    GROUP BY projects.name
+    ORDER BY run_count DESC
+    LIMIT 10;
+    ```
+  MD
+
+  tables_sample = <<~MD
+    ## Table Structure
+
+    | Service | Responsibility | SLO |
+    |---------|---------------|-----|
+    | Ingestion API | Accept and validate events | 99.99% availability |
+    | Schema Registry | Store and serve event schemas | 99.9% availability |
+    | Enrichment Workers | Attach contextual data | p99 < 100ms |
+    | Router | Fan-out to consumers | 99.95% delivery |
+  MD
+
+  task_list_sample = <<~MD
+    ## Task Lists
+
+    Migration checklist:
+
+    - [x] Create database migration
+    - [x] Update model validations
+    - [ ] Add controller endpoint
+    - [ ] Write integration tests
+    - [x] Update API documentation
+  MD
+
+  rfc_document = <<~MD
+    # Implementation Plan: Event Pipeline
+
+    This document covers the architecture for the new event processing system.
+    It addresses data flow, service boundaries, and deployment topology.
+
+    ## Data Flow
+
+    Events enter through a unified ingestion API. Each event is validated against
+    a schema registry, enriched with metadata, and routed to the appropriate
+    processing queue based on event type.
+
+    The pipeline processes events in three stages:
+
+    1. **Validation** — Schema validation, deduplication, and rate limiting
+    2. **Enrichment** — User context, geo-IP, and feature flag resolution
+    3. **Routing** — Fan-out to downstream consumers
+
+    ### Validation Stage
+
+    All incoming events are validated against versioned JSON schemas. Invalid
+    events are routed to a dead-letter queue with error metadata for debugging.
+
+    ```ruby
+    class EventValidator
+      def validate(event)
+        schema = SchemaRegistry.fetch(event.type, event.version)
+        schema.validate!(event.payload)
+      rescue SchemaRegistry::NotFound => e
+        DeadLetterQueue.push(event, reason: e.message)
+      end
+    end
+    ```
+
+    ## Service Boundaries
+
+    | Service | Responsibility | SLO |
+    |---------|---------------|-----|
+    | Ingestion API | Accept and validate events | 99.99% availability |
+    | Schema Registry | Store and serve schemas | 99.9% availability |
+    | Router | Fan-out events | 99.95% within 5s |
+
+    ## Migration Plan
+
+    - [x] Deploy ingestion API alongside legacy endpoint
+    - [x] Shadow traffic for validation
+    - [ ] Migrate producers one team at a time
+    - [ ] Decommission legacy endpoint
+  MD
+%>
+
+<%= page do %>
+  <%# -- Prose Modes Comparison -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Prose Modes", "Four rendering modes compared with the same sample content.") %>
+    <div class="px-4 py-5 @sm:p-6 space-y-8">
+      <div>
+        <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">Default</h3>
+        <%= render_markdown(sample_prose) %>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">Compact</h3>
+        <%= render_markdown(sample_prose, compact: true) %>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">Plan</h3>
+        <%= render_markdown(sample_prose, plan: true) %>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">Sidebar</h3>
+        <%= render_markdown(sample_prose, sidebar: true) %>
+      </div>
+    </div>
+  </div>
+
+  <%# -- Code Blocks with Syntax Highlighting -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Code Blocks", "Syntax highlighting via syntect (server-side) with copy-to-clipboard buttons.") %>
+    <div class="px-4 py-5 @sm:p-6">
+      <%= render_markdown(code_blocks) %>
+    </div>
+  </div>
+
+  <%# -- Tables -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Tables", "Header and row borders for structured data.") %>
+    <div class="px-4 py-5 @sm:p-6">
+      <%= render_markdown(tables_sample) %>
+    </div>
+  </div>
+
+  <%# -- Task Lists -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Task Lists", "GFM checkbox syntax rendered as native checkboxes.") %>
+    <div class="px-4 py-5 @sm:p-6">
+      <%= render_markdown(task_list_sample) %>
+    </div>
+  </div>
+
+  <%# -- Reader Mode with Plan -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Reader Mode", "Full-page overlay with scaled headings — click expand to test.") %>
+    <div class="px-4 py-5 @sm:p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <%= icon(:document_text, classes: "h-5 w-5 text-zinc-400 dark:text-zinc-500") %>
+        <span class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Event Pipeline Plan</span>
+        <%= reader_mode do %>
+          <%= reader_mode_button(tooltip: "Reader mode") %>
+          <%= reader_mode_dialog(title: "Event Pipeline Plan") do %>
+            <%= render_markdown(rfc_document, plan: true) %>
+          <% end %>
+        <% end %>
+      </div>
+      <%= render_markdown(rfc_document, plan: true) %>
+    </div>
+  </div>
+<% end %>

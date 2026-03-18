@@ -1,0 +1,70 @@
+<%= page_header "Badges" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Status Badges (Pill Style)", "Default boolean badge. Use for active/inactive states in tables and detail cards.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <%= status_badge(true) %>
+        <%= status_badge(false) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Status Badges (Text Style)", "Pass style: :text for a lighter treatment without the pill background.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <%= status_badge(true, style: :text) %>
+        <%= status_badge(false, style: :text) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Custom Labels", 'Pass labels: { true: "...", false: "..." } to override the default Active/Inactive text.') %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <%= status_badge(true, labels: { true => "Enabled", false => "Disabled" }) %>
+        <%= status_badge(false, labels: { true => "Enabled", false => "Disabled" }) %>
+        <%= status_badge(true, labels: { true => "Published", false => "Draft" }) %>
+        <%= status_badge(false, labels: { true => "Published", false => "Draft" }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Custom Labels (Text Style)", "Combine style: :text with custom labels for minimal inline status indicators.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <%= status_badge(true, style: :text, labels: { true => "Online", false => "Offline" }) %>
+        <%= status_badge(false, style: :text, labels: { true => "Online", false => "Offline" }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Generic Badge", "badge(text, colors:) is the base primitive. status_badge and other semantic helpers delegate to it.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <%= badge("Primary", colors: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400") %>
+        <%= badge("Purple", colors: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400") %>
+        <%= badge("Zinc", colors: "bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300") %>
+        <%= badge("Danger", colors: "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400") %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Severity Badges", 'Use severity_colors(level) for risk/severity scales. "moderate" normalizes to "medium".') %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <% %w[low medium high critical].each do |level| %>
+          <%= badge(level.capitalize, colors: severity_colors(level)) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,116 @@
+<div class="mt-5 flex flex-col space-y-3 @sm:flex-row @sm:items-center @sm:space-y-0 @sm:space-x-3 @lg:ml-4 @lg:mt-0">
+  <%# Custom Entries %>
+  <% (local_assigns[:custom_entries] || []).each do |html| %>
+    <div class="hidden @sm:block"><%= html %></div>
+  <% end %>
+
+  <%# Regular Actions %>
+  <% actions.each_with_index do |(name, url, opts), index| %>
+    <% if opts[:modal] %>
+      <% # Co-located modal with trigger %>
+      <% modal_id = "page-header-modal-#{index}" %>
+      <div data-controller="modal" class="hidden @sm:block">
+        <%= button(name,
+          type: opts[:type] || :secondary,
+          size: :lg,
+          data: {
+            action: "modal#open"
+          },
+          **opts.except(:type, :modal, :locals)) %>
+        <%= render partial: opts[:modal], locals: { modal_id: modal_id, modal_title: name }.merge(opts.fetch(:locals, {})) %>
+      </div>
+    <% else %>
+      <span class="hidden @sm:block">
+        <%= button(name, type: opts[:type] || :secondary, size: :lg, url:, **opts.except(:type)) %>
+      </span>
+    <% end %>
+  <% end %>
+
+  <%# Primary Actions %>
+  <% primary_actions.each_with_index do |(name, url, opts), index| %>
+    <% if opts[:modal] %>
+      <% # Co-located modal with trigger %>
+      <% modal_id = "page-header-modal-primary-#{index}" %>
+      <div data-controller="modal">
+        <%= button(name,
+          size: :lg,
+          classes: "w-full @sm:w-auto",
+          data: {
+            action: "modal#open"
+          },
+          **opts.except(:modal, :locals)) %>
+        <%= render partial: opts[:modal], locals: { modal_id: modal_id, modal_title: name }.merge(opts.fetch(:locals, {})) %>
+      </div>
+    <% else %>
+      <%= button(name, size: :lg, url:, classes: "w-full @sm:w-auto", **opts) %>
+    <% end %>
+  <% end %>
+
+  <%# Dropdown Actions %>
+  <% (dropdown_actions || []).each do |name, items, opts| %>
+    <div class="relative w-full @sm:w-auto @sm:inline-block text-left" data-controller="menu">
+      <%= button name,
+                icon_name: :chevron_down,
+                icon_right: true,
+                type: opts[:type] || :secondary,
+                size: :lg,
+                classes: "w-full @sm:w-auto justify-center @sm:justify-start",
+                data: { action: 'click->menu#toggle' },
+                **opts.except(:type) %>
+      <div class="absolute left-0 right-0 @sm:left-auto @sm:right-0 z-10 mt-2 w-full @sm:w-56 origin-top-left @sm:origin-top-right rounded-md bg-white dark:bg-zinc-800 py-1 shadow-lg ring-1 ring-zinc-900/5 dark:ring-zinc-700 focus:outline-none hidden"
+           data-controller="visibility-toggle"
+           data-menu-target="toggleable"
+           data-visibility-toggle-hiding-complete-class="hidden"
+           data-visibility-toggle-state-value="hidden"
+           role="menu">
+        <% if items && items.any? %>
+          <% items.each_with_index do |item, item_index| %>
+            <% if item[:divider] %>
+              <div class="border-t border-zinc-100 dark:border-zinc-700"></div>
+            <% elsif item[:modal] %>
+              <% modal_id = "dropdown-modal-#{item_index}" %>
+              <div data-controller="modal">
+                <button type="button"
+                        class="block w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                        data-action="click->modal#open">
+                  <%= item[:name] %>
+                </button>
+                <%= render partial: item[:modal], locals: { modal_id: modal_id, modal_title: item[:name] }.merge(item.fetch(:locals, {})) %>
+              </div>
+            <% else %>
+              <%= link_to item[:name],
+                          item[:url],
+                          class: "block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700",
+                          **item.fetch(:options, {}) %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <div class="px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">No actions available</div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Mobile Menu %>
+  <% if actions.any? %>
+    <div class="relative w-full @sm:hidden" data-controller="menu">
+      <%= button "More", type: :secondary, size: :lg, icon_name: :chevron_down, icon_right: true, classes: "w-full justify-center", id: "mobile-menu-button", data: { action: "click->menu#toggle" } %>
+
+      <div
+        class="absolute left-0 z-10 -ml-1 mt-2 w-48 origin-top-left rounded-md bg-white dark:bg-zinc-800 py-1 shadow-lg ring-1 ring-zinc-900/5 dark:ring-zinc-700 focus:outline-none hidden"
+        role="menu"
+        data-controller="visibility-toggle"
+        data-menu-target="toggleable"
+        data-visibility-toggle-hiding-complete-class="hidden"
+        data-visibility-toggle-state-value="hidden"
+        aria-orientation="vertical"
+        aria-labelledby="mobile-menu-button"
+        tabindex="-1">
+
+        <% actions.each do |name, url, opts| %>
+          <%= link_to name, url, class: "block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700", **opts.except(:modal, :locals, :type) %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

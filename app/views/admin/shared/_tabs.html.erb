@@ -1,0 +1,24 @@
+<%# Pill-style tabs with optional counts. Receives +tabs+ from AdminTabsBuilder. %>
+<div class="flex flex-wrap gap-2 mb-6">
+  <% tabs.each do |tab| %>
+    <a href="<%= tab.href %>"
+       class="<%= classnames(
+         'inline-flex items-center gap-x-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+         {
+           'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' => tab.active,
+           'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600' => !tab.active
+         }
+       ) %>">
+      <%= tab.label %>
+      <% if tab.count %>
+        <span class="<%= classnames(
+          'inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium',
+          {
+            'bg-primary-200 text-primary-800 dark:bg-primary-800 dark:text-primary-200' => tab.active,
+            'bg-zinc-200 text-zinc-700 dark:bg-zinc-600 dark:text-zinc-200' => !tab.active
+          }
+        ) %>"><%= tab.count %></span>
+      <% end %>
+    </a>
+  <% end %>
+</div>

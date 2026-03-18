@@ -1,0 +1,9 @@
+/* Bulkhead engine entry point for tailwindcss-rails.
+   tailwindcss-rails auto-generates a build file that @imports this using
+   an absolute path, so these @source directives resolve relative to here. */
+
+@import "../bulkhead.css";
+
+@source "../../views/**/*.erb";
+@source "../../helpers/**/*.rb";
+@source "../../javascript/**/*.js";

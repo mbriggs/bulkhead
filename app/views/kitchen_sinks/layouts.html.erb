@@ -1,0 +1,95 @@
+<%= page_header "Layouts" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page(columns: false) do %>
+  <%# ── Section ── %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Section", "Standalone section helper for grouping content outside forms. Supports title, description text, separator, and grid layout.") %>
+    <div class="p-5">
+      <%= section "Plain Section" do %>
+        <p class="text-sm text-zinc-700 dark:text-zinc-300">
+          Default section with just a title. No separator, no grid.
+        </p>
+      <% end %>
+
+      <%= section "With Description", text: "Optional description text appears below the title in smaller type." do %>
+        <p class="text-sm text-zinc-700 dark:text-zinc-300">
+          Section body content goes here.
+        </p>
+      <% end %>
+
+      <%= section "With Separator", separator: true do %>
+        <p class="text-sm text-zinc-700 dark:text-zinc-300">
+          Pass <code>separator: true</code> to add a top border dividing this section from the one above.
+        </p>
+      <% end %>
+
+      <%= section "Grid Layout", grid: true do %>
+        <div class="@sm:col-span-6">
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300">Column 1</div>
+        </div>
+        <div class="@sm:col-span-6">
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300">Column 2</div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Page Sidebar ── %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Page Sidebar", "12-column grid with an 8/4 content-sidebar split. Use page(columns: \"@lg:grid-cols-12\") with page_sidebar().") %>
+    <div class="p-5">
+      <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+        The layout below simulates the 8/4 split. In production, use
+        <code>page(columns: "@lg:grid-cols-12")</code> as the outer wrapper with
+        <code>page_sidebar(sticky: true)</code> for the right column.
+      </p>
+      <div class="grid grid-cols-1 @lg:grid-cols-12 gap-6">
+        <div class="@lg:col-span-8">
+          <div class="rounded-md border border-dashed border-zinc-300 dark:border-zinc-600 p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            Main content area — <code>@lg:col-span-8</code>
+          </div>
+        </div>
+        <div class="@lg:col-span-4 space-y-6">
+          <div class="rounded-md border border-dashed border-zinc-300 dark:border-zinc-600 p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            Sidebar — <code>page_sidebar()</code>
+          </div>
+          <p class="text-xs text-zinc-400 dark:text-zinc-500">
+            Options: <code>sticky: true</code> (sticks on scroll), <code>size: :small</code> (col-span-3 instead of 4).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Page Column Variants ── %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Page Column Variants", "The page() helper accepts columns: to control the grid. Integer, Tailwind class string, or false.") %>
+    <div class="p-5 space-y-6">
+      <div>
+        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2"><code>columns: 2</code> (default)</p>
+        <div class="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Card 1</div>
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Card 2</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2"><code>columns: 3</code></p>
+        <div class="grid grid-cols-1 @lg:grid-cols-3 gap-4">
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Card 1</div>
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Card 2</div>
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Card 3</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2"><code>columns: false</code> (single column)</p>
+        <div class="grid grid-cols-1 gap-4">
+          <div class="rounded-md bg-zinc-100 dark:bg-zinc-700 p-4 text-sm text-zinc-700 dark:text-zinc-300 text-center">Full-width card</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

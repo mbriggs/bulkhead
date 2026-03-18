@@ -1,0 +1,80 @@
+<%
+  # Local variables expected:
+  # - form: the form builder object
+  # - method: the attribute name
+  # - choices: array of [label, value] pairs
+  # - field_id: base field id
+  # - label: the label text (nil to omit)
+  # - hint: optional hint text
+  # - size: optional size class
+  # - selected_value: currently selected value
+  # - selected_label: display text for selected value
+  # - placeholder: optional placeholder text
+  # - include_blank: nil, or a string label for the blank option
+  # - url: optional remote endpoint for fetching options (GET url?q=term → JSON)
+
+  size_class = size == false ? "" : (size || "@sm:col-span-6")
+  input_name = form && form.object_name.present? ? "#{form.object_name}[#{method}]" : method
+
+  controller_data = { controller: "combobox" }
+  controller_data[:"combobox-url-value"] = url if url.present?
+  controller_data[:"combobox-blank-label-value"] = include_blank if url.present? && include_blank.present?
+%>
+
+<div class="<%= size_class %>" <%= tag.attributes(data: controller_data) %>>
+  <% if label %>
+    <label for="<%= field_id %>" class="block text-sm/6 font-medium text-zinc-900 dark:text-zinc-100"><%= label %></label>
+  <% end %>
+
+  <div class="relative <%= label ? "mt-2" : "" %>">
+    <input type="hidden"
+           name="<%= input_name %>"
+           value="<%= selected_value %>"
+           data-combobox-target="hidden">
+
+    <input type="text"
+           id="<%= field_id %>"
+           value="<%= selected_label %>"
+           placeholder="<%= placeholder %>"
+           role="combobox"
+           autocomplete="off"
+           aria-expanded="false"
+           aria-haspopup="listbox"
+           aria-controls="<%= field_id %>_listbox"
+           class="block w-full py-1.5 rounded-md border-0 text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 @sm:text-sm/6 dark:bg-zinc-800 dark:border-zinc-600 dark:text-zinc-100 dark:ring-zinc-600 dark:placeholder:text-zinc-500 dark:focus:ring-primary-500"
+           data-combobox-target="input"
+           data-action="focus->combobox#open input->combobox#onInput keydown->combobox#keydown blur->combobox#onBlur">
+
+    <ul id="<%= field_id %>_listbox"
+        role="listbox"
+        class="hidden absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-md bg-white dark:bg-zinc-800 py-1 text-sm shadow-lg ring-1 ring-black/5 dark:ring-zinc-600 focus:outline-none"
+        data-combobox-target="listbox">
+
+      <% if include_blank %>
+        <li role="option"
+            class="cursor-pointer select-none px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-primary-600 hover:text-white dark:hover:bg-primary-500"
+            data-combobox-target="option"
+            data-action="click->combobox#select"
+            data-value=""><%= include_blank %></li>
+      <% end %>
+
+      <% choices.each do |choice_label, choice_value| %>
+        <li role="option"
+            class="cursor-pointer select-none px-3 py-2 text-zinc-900 dark:text-zinc-100 hover:bg-primary-600 hover:text-white dark:hover:bg-primary-500"
+            data-combobox-target="option"
+            data-action="click->combobox#select"
+            data-value="<%= choice_value %>"><%= choice_label %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <% if hint.present? %>
+    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400"><%= hint %></p>
+  <% end %>
+
+  <% if form&.object&.errors&.[](method)&.any? %>
+    <p class="mt-2 text-sm text-danger-600 dark:text-danger-400">
+      <%= safe_join(form.object.errors[method], tag.br) %>
+    </p>
+  <% end %>
+</div>

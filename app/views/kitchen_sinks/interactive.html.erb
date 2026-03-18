@@ -1,0 +1,300 @@
+<%= page_header "Interactive" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Truncated Text", "Clamps long text to a set number of lines with an inline \"more…\" / \"less…\" toggle.") %>
+    <div class="p-5 space-y-6">
+      <div class="max-w-md">
+        <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">3 lines (default)</h4>
+        <%= truncated_text("Factory is an automated SDLC system with humans in the loop. It helps product and engineering teams move from idea to Problem to technical scoping to tickets to implementation with AI assistance at each stage. The pipeline includes importing, evaluation, research, plan generation, and ticket creation — all with review checkpoints so humans stay in control of quality and direction.") %>
+      </div>
+      <div class="max-w-md">
+        <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">2 lines</h4>
+        <%= truncated_text("This example uses a two-line clamp. When the text is long enough to overflow, a toggle appears at the end of the last visible line with a gradient fade.", lines: 2) %>
+      </div>
+      <div class="max-w-md">
+        <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">Short text (no toggle)</h4>
+        <%= truncated_text("This text fits in three lines, so no toggle appears.") %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Clipboard", "Copy text to the clipboard. Two modes: self-contained (wraps trigger + source) and detached (button carries text directly).") %>
+    <div class="p-5 space-y-6">
+      <div>
+        <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">Self-contained</h4>
+        <div data-controller="clipboard" class="flex items-start gap-3">
+          <pre data-clipboard-target="source" class="flex-1 text-sm font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 rounded-md p-3 ring-1 ring-inset ring-zinc-200 dark:ring-zinc-700">bin/rails server -p 3000</pre>
+          <button type="button"
+            class="<%= button_classes(type: :secondary, size: :sm, shadow: false) %>"
+            data-action="clipboard#copy"
+            data-clipboard-target="button">Copy</button>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">Detached (button carries text)</h4>
+        <button type="button"
+          class="<%= button_classes(type: :secondary, size: :sm, shadow: false) %>"
+          data-controller="clipboard"
+          data-clipboard-text-value="Hello from the clipboard controller!"
+          data-action="clipboard#copy">Copy greeting</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Disclosure", "Toggle content visibility. Use for expandable details or advanced options.") %>
+    <div class="p-5">
+      <div data-controller="disclosure">
+        <%= button "Toggle Details", type: :secondary, icon_name: :chevron_down, data: { action: "disclosure#toggle" } %>
+        <div data-disclosure-target="content" class="hidden mt-4">
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">
+            This content is toggled by the <code>disclosure</code> Stimulus controller.
+            Click the button again to hide it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Elapsed Time", "Updates a timestamp in real time. Use for running timers or \"time ago\" displays.") %>
+    <div class="p-5">
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-zinc-700 dark:text-zinc-300">Time since page load:</span>
+        <span class="text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100"
+              data-controller="elapsed-time"
+              data-elapsed-time-started-at-value="<%= Time.current.iso8601 %>">
+          0s
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Type Confirm", "Require the user to type a confirmation string before enabling a destructive action.") %>
+    <div class="p-5">
+      <div class="max-w-md" data-controller="type-confirm" data-type-confirm-expected-value="DELETE">
+        <p class="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
+          Type <strong>DELETE</strong> to enable the button:
+        </p>
+        <input type="text"
+               class="block w-full rounded-md border-0 py-1.5 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 @sm:text-sm/6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-600"
+               placeholder="Type DELETE to confirm"
+               data-type-confirm-target="input"
+               data-action="input->type-confirm#validate">
+        <div class="mt-3">
+          <%= button "Confirm Deletion", type: :danger, disabled: true, data: { type_confirm_target: "submit" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Filter Toggle", "Submits on change via URL params. Use for boolean filters like \"show archived\".") %>
+    <div class="p-5 space-y-4">
+      <%= filter_toggle "Show archived items", param: "show_archived", caption: "Include archived items in the list", checked: params[:show_archived].present? %>
+      <%= filter_toggle "Active only", param: "active_only", checked: params[:active_only].present? %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Standalone Toggle", "Use toggle_field outside form_with blocks. Good for settings pages.") %>
+    <div class="p-5 space-y-4">
+      <%= toggle_field "settings", "dark_mode", "Dark Mode", caption: "Toggle between light and dark themes" %>
+      <%= toggle_field "settings", "notifications", "Email Notifications", caption: "Receive email alerts for updates", value: true %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Tooltips", "Wrap any element in a tooltip block. Use position: for placement.") %>
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-6">
+        <%= tooltip("Top tooltip", position: :top) do %>
+          <span class="text-sm text-zinc-700 dark:text-zinc-300 underline decoration-dotted cursor-help">Hover (top)</span>
+        <% end %>
+
+        <%= tooltip("Bottom tooltip", position: :bottom) do %>
+          <span class="text-sm text-zinc-700 dark:text-zinc-300 underline decoration-dotted cursor-help">Hover (bottom)</span>
+        <% end %>
+
+        <%= tooltip("Left tooltip", position: :left) do %>
+          <span class="text-sm text-zinc-700 dark:text-zinc-300 underline decoration-dotted cursor-help">Hover (left)</span>
+        <% end %>
+
+        <%= tooltip("Right tooltip", position: :right) do %>
+          <span class="text-sm text-zinc-700 dark:text-zinc-300 underline decoration-dotted cursor-help">Hover (right)</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Loading Skeleton", "Animated placeholder for loading states. Pass rows: and title: to match expected layout.") %>
+    <div class="p-5">
+      <%= loading_skeleton(rows: 3, title: true) %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Visibility Toggle", "Animated show/hide with configurable CSS transitions. Companion controllers (menu, sidebar) call the exported show()/hide() functions. Use a content target to keep the trigger visible.") %>
+    <div class="p-5">
+      <div data-controller="visibility-toggle"
+           data-visibility-toggle-state-value="visible"
+           data-visibility-toggle-visible-class="opacity-100 translate-y-0"
+           data-visibility-toggle-hidden-class="opacity-0 -translate-y-2"
+           data-visibility-toggle-showing-class="transition-all ease-out duration-300"
+           data-visibility-toggle-hiding-class="transition-all ease-in duration-200"
+           data-visibility-toggle-hiding-complete-class="hidden">
+        <%= button "Toggle Panel", type: :secondary, data: { action: "click->visibility-toggle#toggle" } %>
+        <div data-visibility-toggle-target="content"
+             class="transform mt-4 rounded-md bg-primary-50 dark:bg-primary-900/20 p-4 opacity-100 translate-y-0">
+          <p class="text-sm text-primary-700 dark:text-primary-300">
+            This panel uses <code>visibility-toggle</code> with a <code>content</code> target.
+            The button stays visible because transitions apply to the target, not the root.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Row Link", "Makes table rows clickable as links. Cmd/ctrl+click opens in a new tab. Clicks on links and buttons inside the row pass through.") %>
+    <div class="p-5">
+      <%= table do |t| %>
+        <% t.column "Name" %>
+        <% t.column "Role" %>
+        <% t.column "Action" %>
+        <%= tag.tr(data: { controller: "row-link", row_link_href_value: kitchen_sink_path, action: "click->row-link#click keydown->row-link#keydown" }) do %>
+          <%= t.cell("Jane Smith") %>
+          <%= t.cell("Admin") %>
+          <%= t.cell { link_to "Edit", "#", class: "text-primary-600 dark:text-primary-400 hover:underline text-sm" } %>
+        <% end %>
+        <%= tag.tr(data: { controller: "row-link", row_link_href_value: buttons_kitchen_sink_path, action: "click->row-link#click keydown->row-link#keydown" }) do %>
+          <%= t.cell("Bob Wilson") %>
+          <%= t.cell("Editor") %>
+          <%= t.cell { link_to "Edit", "#", class: "text-primary-600 dark:text-primary-400 hover:underline text-sm" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Auto Submit", "Submits a form after a configurable delay on input. Uses GET so the submitted value appears in URL params.") %>
+    <div class="p-5">
+      <%= form_with(url: interactive_kitchen_sink_path, method: :get, spacing: false, size: false, padding: false) do |f| %>
+        <div class="max-w-sm" data-controller="auto-submit">
+          <label class="block text-sm/6 font-medium text-zinc-900 dark:text-zinc-100">Search</label>
+          <input type="text" name="q" value="<%= params[:q] %>"
+                 placeholder="Type to search…"
+                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 @sm:text-sm/6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-600"
+                 data-action="input->auto-submit#input">
+        </div>
+      <% end %>
+      <% if params[:q].present? %>
+        <p class="mt-3 text-sm text-zinc-700 dark:text-zinc-300">
+          Submitted value: <code><%= params[:q] %></code>
+        </p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Select All", "Toggle all checkboxes with a single button. Counter updates in real time. Supports grouped scoping via data attributes.") %>
+    <div class="p-5">
+      <div data-controller="select-all">
+        <div class="flex items-center gap-3 mb-4">
+          <%= button "Select All", type: :secondary, size: :sm, data: {
+            select_all_target: "selectAllButton",
+            action: "click->select-all#toggleGroup"
+          } %>
+          <span class="text-sm text-zinc-500 dark:text-zinc-400">
+            <span data-select-all-target="counter">0</span> selected
+          </span>
+        </div>
+        <div class="space-y-2">
+          <% ["Design review", "API integration", "Unit tests", "Documentation"].each do |item| %>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" value="<%= item.parameterize %>"
+                     class="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600 text-primary-600 focus:ring-primary-600 dark:bg-zinc-800"
+                     data-select-all-target="checkbox"
+                     data-action="change->select-all#checkboxChanged">
+              <span class="text-sm text-zinc-700 dark:text-zinc-300"><%= item %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Bulk Select", "Header checkbox with indeterminate state, row checkboxes, count, and a submit button that enables when items are selected.") %>
+    <div class="p-5">
+      <div data-controller="bulk-select">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-sm text-zinc-500 dark:text-zinc-400">
+            <span data-bulk-select-target="count">0</span> selected
+          </span>
+          <%= button "Process Selected", type: :primary, size: :sm, disabled: true, data: {
+            bulk_select_target: "submitButton"
+          } %>
+        </div>
+        <%= table do |t| %>
+          <% t.column do %>
+            <input type="checkbox"
+                   class="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600 text-primary-600 focus:ring-primary-600 dark:bg-zinc-800"
+                   data-bulk-select-target="selectAll"
+                   data-action="change->bulk-select#toggleAll">
+          <% end %>
+          <% t.column "Task" %>
+          <% t.column "Status" %>
+          <% [
+            ["Migrate database", true],
+            ["Update dependencies", false],
+            ["Run test suite", true],
+          ].each do |task, active| %>
+            <%= tag.tr do %>
+              <%= t.cell do %>
+                <input type="checkbox" value="<%= task.parameterize %>"
+                       class="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600 text-primary-600 focus:ring-primary-600 dark:bg-zinc-800"
+                       data-bulk-select-target="checkbox"
+                       data-action="change->bulk-select#toggle">
+              <% end %>
+              <%= t.cell(task) %>
+              <%= t.cell { status_badge(active) } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Progress Button", "Submit button with spinner, progress text, and working/success labels. Percent progress requires Turbo Stream updates from the server.") %>
+    <div class="p-5">
+      <div data-controller="progress-button"
+           data-progress-button-working-text-value="Saving…"
+           data-progress-button-success-text-value="Saved!">
+        <%= form_with(url: save_demo_kitchen_sink_path, spacing: false, size: false, padding: false, data: {
+          action: "turbo:submit-start->progress-button#handleSubmitStart"
+        }) do |f| %>
+          <div class="flex items-center gap-3">
+            <button type="submit"
+                    data-progress-button-target="submitButton"
+                    class="<%= button_classes(type: :primary, size: :md) %> inline-flex items-center gap-2">
+              <span data-progress-button-target="spinner" class="hidden">
+                <%= icon(:arrow_path, classes: "h-4 w-4 animate-spin") %>
+              </span>
+              <span data-progress-button-target="buttonText">Save Record</span>
+            </button>
+            <span data-progress-button-target="progressText" class="hidden text-sm text-zinc-500 dark:text-zinc-400"></span>
+            <span data-progress-button-target="error" class="hidden text-sm text-danger-600 dark:text-danger-400"></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

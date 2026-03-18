@@ -1,0 +1,33 @@
+<%# Responsive grid of borderless dot-style stat counters. Receives +stats+ from AdminStatGridBuilder. %>
+<div class="grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-4 gap-4 mt-8 mb-6 py-2">
+  <% stats.each do |stat| %>
+    <%
+      dot_colors = {
+        zinc:   "text-zinc-400 dark:text-zinc-500",
+        blue:   "text-info-500 dark:text-info-400",
+        green:  "text-success-500 dark:text-success-400",
+        red:    "text-danger-500 dark:text-danger-400",
+        yellow: "text-warning-500 dark:text-warning-400",
+        purple: "text-purple-500 dark:text-purple-400",
+      }
+      dot_class = dot_colors.fetch(stat.color, dot_colors[:zinc])
+    %>
+    <% wrapper_tag = stat.href ? :a : :div %>
+    <%= content_tag(wrapper_tag, class: classnames("block py-2 px-1 rounded-md", { "hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" => stat.href }), href: stat.href) do %>
+      <div class="flex items-baseline gap-2">
+        <span class="<%= dot_class %> text-sm leading-none">&bull;</span>
+        <div class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100"><%= stat.value %></div>
+      </div>
+      <div class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400 ml-5">
+        <% if stat.hint %>
+          <%= tooltip(stat.hint, position: :bottom) do %>
+            <span class="underline decoration-dotted cursor-help"><%= stat.label %></span>
+          <% end %>
+        <% else %>
+          <%= stat.label %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+<%= page_separator(size: :sm) %>

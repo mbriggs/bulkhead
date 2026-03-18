@@ -1,0 +1,40 @@
+<%= page_header "Pagination" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<% pagy_demo = ->(count:, page:, limit: 20) {
+     req = OpenStruct.new(base_url: request.base_url, path: request.path, params: {})
+     Pagy::Offset.new(count:, page:, limit:, request: req)
+   } %>
+
+<%= page(columns: false) do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Standard Pagination", 'Full pagination with info bar and page numbers. Use pagination_info for the "Showing X-Y of Z" line.') %>
+    <% pagy = pagy_demo.(count: 237, page: 3) %>
+    <div class="p-5 space-y-4">
+      <div><%= pagination_info(pagy, "items") %></div>
+      <%= paginate(pagy) %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %> overflow-hidden">
+    <%= card_header("First Page", "Previous is disabled on page 1. First page number is highlighted as current.") %>
+    <% pagy_first = pagy_demo.(count: 237, page: 1) %>
+    <%= paginate(pagy_first) %>
+  </div>
+
+  <div class="<%= card_classes %> overflow-hidden">
+    <%= card_header("Last Page", "Next is disabled on the final page. Shows how truncation works with ellipsis.") %>
+    <% pagy_last = pagy_demo.(count: 237, page: 12) %>
+    <%= paginate(pagy_last) %>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Single Page (No Navigation)", "When all items fit on one page, paginate returns nothing. Only the info line renders.") %>
+    <% pagy_single = pagy_demo.(count: 5, page: 1) %>
+    <div class="p-5 space-y-4">
+      <div><%= pagination_info(pagy_single, "items") %></div>
+      <%= paginate(pagy_single) %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,30 @@
+<%# Key-value definition list. Receives +items+ and +columns+ from AdminDefinitionListBuilder. %>
+<% grid_class = case columns
+  when 2 then "grid-cols-1 @sm:grid-cols-2"
+  when 3 then "grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3"
+  when 4 then "grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4"
+  else "grid-cols-1 @sm:grid-cols-2"
+  end
+%>
+<dl class="<%= classnames('grid gap-x-6 gap-y-4', grid_class) %>">
+  <% items.each do |item| %>
+    <%
+      span_class = case item.span
+      when 2 then "@sm:col-span-2"
+      when 3 then "@sm:col-span-2 @lg:col-span-3"
+      when 4 then "@sm:col-span-2 @lg:col-span-4"
+      else nil
+      end
+    %>
+    <div class="<%= classnames('overflow-hidden', span_class) %>">
+      <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400"><%= item.label %></dt>
+      <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
+        <% if item.value.respond_to?(:call) %>
+          <%= capture(&item.value) %>
+        <% else %>
+          <%= item.value %>
+        <% end %>
+      </dd>
+    </div>
+  <% end %>
+</dl>

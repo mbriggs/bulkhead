@@ -1,0 +1,40 @@
+<% show_separator = local_assigns.fetch(:separator, true) %>
+<% if local_assigns[:sticky] && sticky %>
+    <div data-controller="sticky-header">
+      <div class="relative" data-sticky-header-target="header">
+        <div class="px-4 @sm:px-6 @lg:px-8 py-4" data-sticky-header-target="inner">
+          <%= render "shared/page/header_content",
+            title: title,
+            breadcrumbs: breadcrumbs,
+            data: data,
+            actions: actions,
+            primary_actions: primary_actions,
+            dropdown_actions: dropdown_actions,
+            custom_entries: custom_entries %>
+        </div>
+      </div>
+
+      <% if show_separator %><%= page_separator %><% end %>
+
+      <div>
+        <div id="flash_messages">
+          <%= render partial: "shared/system/flash_messages" %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <%= render "shared/page/header_content",
+      title: title,
+      breadcrumbs: breadcrumbs,
+      data: data,
+      actions: actions,
+      primary_actions: primary_actions,
+      dropdown_actions: dropdown_actions,
+      custom_entries: custom_entries %>
+
+    <% if show_separator %><%= page_separator %><% end %>
+
+    <div id="flash_messages">
+      <%= render partial: "shared/system/flash_messages" %>
+    </div>
+  <% end %>

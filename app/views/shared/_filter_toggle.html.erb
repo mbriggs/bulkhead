@@ -1,0 +1,46 @@
+<%
+  # Local variables expected:
+  # - label: the label text for the toggle
+  # - param: the URL parameter name to toggle
+  # - checked: whether the toggle should be checked (defaults to false)
+  # - caption: optional caption text
+  # - size: optional size class (defaults to empty)
+
+  checked ||= false
+  size ||= ""
+  field_id = "filter_toggle_#{param}"
+%>
+
+<div class="<%= size %>" data-controller="filter-toggle toggle" data-filter-toggle-param-value="<%= param %>" data-toggle-translate-class-value="translate-x-5">
+  <%= check_box_tag param,
+      "true",
+      checked,
+      class: "sr-only",
+      id: field_id,
+      data: {
+        toggle_target: "checkbox",
+        action: "change->toggle#update change->filter-toggle#toggle"
+      } %>
+
+  <div class="flex items-start">
+    <button type="button"
+            role="switch"
+            aria-checked="<%= checked %>"
+            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent <%= checked ? "bg-primary-600 dark:bg-primary-500" : "bg-zinc-200 dark:bg-zinc-700" %> transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+            data-toggle-target="switch"
+            data-action="click->toggle#toggle">
+      <span class="pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white dark:bg-zinc-300 shadow ring-0 transition duration-200 ease-in-out <%= checked ? "translate-x-5" : "translate-x-0" %>"
+            data-toggle-target="slider">
+      </span>
+    </button>
+
+    <div class="ml-3">
+      <label for="<%= field_id %>" class="text-sm font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer">
+        <%= label %>
+      </label>
+      <% if caption.present? %>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400"><%= caption %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

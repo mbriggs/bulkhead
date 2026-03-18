@@ -1,0 +1,37 @@
+<%= page_header "Kitchen Sink" %>
+
+<%= page(columns: "@sm:grid-cols-2 @lg:grid-cols-3") do %>
+  <%
+    sections = [
+      { name: "Buttons",      path: buttons_kitchen_sink_path,      icon: :cursor_arrow_rays, description: "All button types, sizes, icons, and states" },
+      { name: "Alerts",       path: alerts_kitchen_sink_path,       icon: :bell_alert,        description: "Notice, success, error, and info alerts" },
+      { name: "Badges",       path: badges_kitchen_sink_path,       icon: :tag,               description: "Status badges, Problem badges, and custom labels" },
+      { name: "Cards",        path: cards_kitchen_sink_path,        icon: :rectangle_group,   description: "Card layouts and detail cards with sections" },
+      { name: "Tables",       path: tables_kitchen_sink_path,       icon: :table_cells,       description: "Table builder with columns, cells, and sort" },
+      { name: "Forms",        path: forms_kitchen_sink_path,        icon: :pencil_square,     description: "All field types, sections, and error states" },
+      { name: "Modals",       path: modals_kitchen_sink_path,       icon: :window,            description: "Modal dialogs, wrappers, and trigger buttons" },
+      { name: "Pagination",   path: pagination_kitchen_sink_path,   icon: :arrows_right_left, description: "Paginated results with page numbers and info" },
+      { name: "Empty States", path: empty_states_kitchen_sink_path, icon: :inbox,             description: "Placeholder content for empty collections" },
+      { name: "Lists",        path: lists_kitchen_sink_path,        icon: :list_bullet,       description: "Item list builder with images and metadata" },
+      { name: "Icons",        path: icons_kitchen_sink_path,        icon: :sparkles,          description: "Common Heroicons used throughout the app" },
+      { name: "Interactive",  path: interactive_kitchen_sink_path,   icon: :bolt,              description: "Stimulus controllers: toggles, disclosure, bulk select, progress, and more" },
+      { name: "Page Headers", path: page_headers_kitchen_sink_path,  icon: :document_text,     description: "Page header builder with actions, metadata, and dropdowns" },
+      { name: "Tabs",         path: tabs_kitchen_sink_path,          icon: :squares_2x2,       description: "Pill-bar tabs with panel toggling and URL persistence" },
+      { name: "Layouts",      path: layouts_kitchen_sink_path,       icon: :view_columns,      description: "Section, sidebar, and page column layout primitives" },
+      { name: "Reader Mode", path: reader_mode_kitchen_sink_path,   icon: :arrows_pointing_out, description: "Full-page reading overlay for long documents" },
+      { name: "Typography",  path: typography_kitchen_sink_path,    icon: :document_text,       description: "Markdown rendering: prose modes, syntax highlighting, tables, and task lists" },
+    ]
+  %>
+
+  <% sections.each do |s| %>
+    <%= link_to s[:path], class: card_classes("group block hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-md transition-all duration-200") do %>
+      <div class="p-5">
+        <div class="flex items-center gap-3">
+          <%= icon(s[:icon], classes: "h-6 w-6 text-primary-500 dark:text-primary-400") %>
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-primary-600 dark:group-hover:text-primary-400"><%= s[:name] %></h3>
+        </div>
+        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400"><%= s[:description] %></p>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

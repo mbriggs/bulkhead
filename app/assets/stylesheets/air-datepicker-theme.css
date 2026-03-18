@@ -1,0 +1,67 @@
+/* Factory theme overrides for air-datepicker.
+ * Maps library CSS custom properties to Factory's Tailwind v4 design tokens
+ * so the datepicker follows palette changes automatically.
+ */
+
+/* Light mode */
+.air-datepicker {
+  --adp-transition-duration: .15s;
+  --adp-transition-ease: cubic-bezier(.2, 0, .2, 1);
+  --adp-font-family: var(--font-sans);
+  --adp-border-radius: 6px;
+  --adp-accent-color: var(--color-primary-500);
+  --adp-color: var(--color-zinc-900);
+  --adp-color-secondary: var(--color-zinc-500);
+  --adp-border-color: var(--color-zinc-300);
+  --adp-border-color-inner: var(--color-zinc-200);
+  --adp-background-color-hover: var(--color-zinc-100);
+  --adp-background-color-active: var(--color-zinc-200);
+  --adp-day-name-color: var(--color-zinc-500);
+  --adp-day-name-color-hover: var(--color-zinc-700);
+  --adp-cell-background-color-selected: var(--color-primary-500);
+  --adp-cell-background-color-selected-hover: var(--color-primary-600);
+  --adp-cell-background-color-in-range: color-mix(in srgb, var(--color-primary-500) 12%, transparent);
+  --adp-cell-background-color-in-range-hover: color-mix(in srgb, var(--color-primary-500) 20%, transparent);
+  --adp-cell-border-color-in-range: var(--color-primary-500);
+  --adp-btn-color: var(--color-primary-500);
+  --adp-btn-color-hover: var(--color-primary-600);
+  --adp-btn-background-color-hover: var(--color-zinc-100);
+  --adp-btn-background-color-active: var(--color-zinc-200);
+  --adp-nav-arrow-color: var(--color-zinc-500);
+  --adp-nav-color-secondary: var(--color-zinc-500);
+  --adp-color-current-date: var(--color-primary-500);
+  --adp-color-other-month: var(--color-zinc-400);
+  --adp-color-other-month-hover: var(--color-zinc-500);
+  --adp-color-disabled: var(--color-zinc-300);
+}
+
+/* Dark mode */
+.dark .air-datepicker {
+  --adp-background-color: var(--color-zinc-800);
+  --adp-color: var(--color-zinc-100);
+  --adp-color-secondary: var(--color-zinc-400);
+  --adp-border-color: var(--color-zinc-600);
+  --adp-border-color-inner: var(--color-zinc-700);
+  --adp-background-color-hover: var(--color-zinc-700);
+  --adp-background-color-active: var(--color-zinc-600);
+  --adp-day-name-color: var(--color-zinc-400);
+  --adp-day-name-color-hover: var(--color-zinc-300);
+  --adp-color-other-month: var(--color-zinc-600);
+  --adp-color-other-month-hover: var(--color-zinc-500);
+  --adp-color-disabled: var(--color-zinc-600);
+  --adp-color-disabled-in-range: var(--color-zinc-500);
+  --adp-color-current-date: var(--color-primary-400);
+  --adp-cell-background-color-selected: var(--color-primary-500);
+  --adp-cell-background-color-selected-hover: var(--color-primary-400);
+  --adp-cell-background-color-in-range: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
+  --adp-cell-background-color-in-range-hover: color-mix(in srgb, var(--color-primary-500) 25%, transparent);
+  --adp-cell-border-color-in-range: var(--color-primary-400);
+  --adp-background-color-selected-other-month: var(--color-primary-600);
+  --adp-background-color-selected-other-month-focused: var(--color-primary-500);
+  --adp-btn-color: var(--color-primary-400);
+  --adp-btn-color-hover: var(--color-primary-300);
+  --adp-btn-background-color-hover: var(--color-zinc-700);
+  --adp-btn-background-color-active: var(--color-zinc-600);
+  --adp-nav-arrow-color: var(--color-zinc-400);
+  --adp-nav-color-secondary: var(--color-zinc-400);
+}

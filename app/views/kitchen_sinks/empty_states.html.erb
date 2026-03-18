@@ -1,0 +1,43 @@
+<%= page_header "Empty States" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Minimal", "Just a message, no icon or title. Use for inline empty states in small containers.") %>
+    <%= empty_state("No items found") %>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("With Title", "Add icon: and title: for a prominent empty state when the collection is the main content.") %>
+    <%= empty_state("Get started by creating your first project.", icon: :folder_plus, title: "No projects yet") %>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("With Action", "Add action_text: and action_path: to give the user a clear next step.") %>
+    <%= empty_state(
+      "Problems will appear here once you create one.",
+      icon: :document_text,
+      title: "No Problems",
+      action_text: "Create Problem",
+      action_path: empty_states_kitchen_sink_path
+    ) %>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Different Icons", "Pick an icon that matches the missing content type.") %>
+    <div class="p-5">
+      <div class="grid grid-cols-1 gap-6 @sm:grid-cols-3">
+        <div class="<%= card_classes %>">
+          <%= empty_state("No notifications yet.", icon: :bell, title: "No Notifications") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("No team members found.", icon: :user_group, title: "No Members") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Nothing in your inbox.", icon: :inbox, title: "All Caught Up") %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

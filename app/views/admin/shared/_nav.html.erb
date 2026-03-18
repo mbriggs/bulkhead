@@ -1,0 +1,11 @@
+<%# Vertical sidebar nav for admin sections. Used inside the card sidebar. %>
+<% sections = admin_nav_sections %>
+
+<% sections.each_with_index do |group, gi| %>
+  <% unless gi == 0 %>
+    <hr class="my-2 mx-3 border-zinc-200 dark:border-zinc-700">
+  <% end %>
+  <% group.each do |section| %>
+    <%= admin_nav_item(section[:label], section[:path], current == section[:key], icon: section[:icon]) %>
+  <% end %>
+<% end %>

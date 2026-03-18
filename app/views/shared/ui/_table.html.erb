@@ -1,0 +1,25 @@
+<div class="<%= classes %>">
+  <div class="shadow-sm ring-1 ring-zinc-300 dark:ring-zinc-700 rounded-lg overflow-hidden">
+    <div class="<%= table_class %>" style="<%= table_style %>">
+      <div class="<%= inner_wrapper_class %>" style="<%= inner_wrapper_style %>">
+        <table class="min-w-full divide-y divide-zinc-300 dark:divide-zinc-700">
+          <thead class="<%= thead_class %>">
+            <tr>
+              <% headers.each do |h| %>
+                <th scope="col" class="<%= h[:classes] %>">
+                  <%= h[:title] %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <%= tag.tbody(**tbody_attrs) do %>
+            <%= body %>
+            <% if pager %>
+              <%= table_paginate pager, columns: headers.length %>
+            <% end %>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

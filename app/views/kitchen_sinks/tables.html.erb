@@ -1,0 +1,109 @@
+<%= page_header "Tables" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<% people = [
+    OpenStruct.new(name: "Jane Smith", email: "jane@example.com", role: "Admin", active: true, created_at: 3.days.ago),
+    OpenStruct.new(name: "Bob Wilson", email: "bob@example.com", role: "Editor", active: true, created_at: 1.week.ago),
+    OpenStruct.new(name: "Alice Chen", email: "alice@example.com", role: "Viewer", active: false, created_at: 2.weeks.ago),
+    OpenStruct.new(name: "Carlos Rivera", email: "carlos@example.com", role: "Editor", active: true, created_at: 1.month.ago),
+  ] %>
+
+<%= page(columns: false) do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Default Table", "Standard table with column headers, badges, and dates. Use for primary data views.") %>
+
+    <div class="p-5">
+      <%= table do |t| %>
+        <% t.column "Name" %>
+        <% t.column "Email" %>
+        <% t.column "Role" %>
+        <% t.column "Status" %>
+        <% t.column "Created", text: :right %>
+        <% people.each do |person| %>
+          <%= tag.tr do %>
+            <%= t.cell(person.name) %>
+            <%= t.cell(person.email) %>
+            <%= t.cell(person.role) %>
+            <%= t.cell { status_badge(person.active) } %>
+            <%= t.cell(time_ago_in_words(person.created_at) + " ago", text: :right) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Data Table (Minimal Style)", "Pass :data as the table style for compact tables without row borders.") %>
+
+    <div class="p-5">
+      <%= table(:data) do |t| %>
+        <% t.column "Name" %>
+        <% t.column "Email" %>
+        <% t.column "Role" %>
+        <% people.each do |person| %>
+          <%= tag.tr do %>
+            <%= t.cell(person.name) %>
+            <%= t.cell(person.email) %>
+            <%= t.cell(person.role) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Empty Table", "Show a centered message spanning all columns when the collection is empty.") %>
+
+    <div class="p-5">
+      <%= table do |t| %>
+        <% t.column "Name" %>
+        <% t.column "Email" %>
+        <% t.column "Status" %>
+        <%= tag.tr do %>
+          <%= t.cell("No records found.", span: 3, text: :center, cell: "px-3 py-8 text-sm text-zinc-500 dark:text-zinc-400") %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Convenience Cells", "t.time(timestamp) and t.link(text, url) save repetitive time_ago_in_words and link_to wrapping.") %>
+
+    <div class="p-5">
+      <%= table do |t| %>
+        <% t.column "Name" %>
+        <% t.column "Email" %>
+        <% t.column "Created", text: :right %>
+        <% people.each do |person| %>
+          <%= tag.tr do %>
+            <%= t.link(person.name, "#") %>
+            <%= t.cell(person.email) %>
+            <%= t.time(person.created_at, text: :right) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Sortable Columns", "sort_field(:name) generates links with ?sort=&sort_order= params and shows a chevron on the active column.") %>
+
+    <div class="p-5">
+      <%= table do |t| %>
+        <% t.column { sort_field(:name) } %>
+        <% t.column { sort_field(:email) } %>
+        <% t.column { sort_field(:role) } %>
+        <% t.column "Created", text: :right %>
+        <% people.each do |person| %>
+          <%= tag.tr do %>
+            <%= t.cell(person.name) %>
+            <%= t.cell(person.email) %>
+            <%= t.cell(person.role) %>
+            <%= t.time(person.created_at, text: :right) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

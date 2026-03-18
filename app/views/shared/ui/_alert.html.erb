@@ -1,0 +1,23 @@
+<div class="rounded-md <%= container_color %> p-4" <%= 'data-controller="disclosure"'.html_safe if disclosure %>>
+  <div class="flex">
+    <div class="shrink-0">
+      <%= icon %>
+    </div>
+    <div class="ml-3 flex-1">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium <%= header_color %>"><%= title %></h3>
+        <% if disclosure && content %>
+          <button class="text-xs <%= content_color %> cursor-pointer"
+            data-action="disclosure#toggle"
+            data-disclosure-show-text="Show detail"
+            data-disclosure-hide-text="Hide detail">Show detail</button>
+        <% end %>
+      </div>
+      <% if content %>
+        <div class="<%= "hidden" if disclosure %> mt-2 text-sm <%= content_color %>" <%= 'data-disclosure-target="content"'.html_safe if disclosure %>>
+          <%= content %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

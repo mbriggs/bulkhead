@@ -1,0 +1,40 @@
+<div class="<%= card_classes(shadow: shadow) %>">
+  <% if title %>
+    <% if header_action %>
+      <div class="px-4 py-5 @sm:px-6 border-b border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-zinc-900 dark:text-zinc-100"><%= title %></h3>
+          <% if subtitle %>
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400"><%= subtitle %></p>
+          <% end %>
+        </div>
+        <%= header_action %>
+      </div>
+    <% else %>
+      <%= card_header(title, subtitle) %>
+    <% end %>
+  <% end %>
+  <dl class="px-4 py-5 @sm:p-6">
+
+    <% sections.each_with_index do |(label, content_block), index| %>
+      <% if index > 0 %>
+        <div class="hidden @sm:block">
+          <%= page_separator(size: :sm) %>
+        </div>
+      <% end %>
+
+      <div class="@sm:block">
+        <% if label.present? %>
+          <dt class="text-sm font-medium leading-6 text-zinc-900 dark:text-zinc-100 inline @sm:block"><%= label %>:</dt>
+          <dd class="inline @sm:block @sm:mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300 ml-1 @sm:ml-0">
+            <%= capture(&content_block) if content_block %>
+          </dd>
+        <% else %>
+          <dd class="@sm:mt-2">
+            <%= capture(&content_block) if content_block %>
+          </dd>
+        <% end %>
+      </div>
+    <% end %>
+  </dl>
+</div>

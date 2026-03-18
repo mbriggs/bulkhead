@@ -1,0 +1,40 @@
+<%= page_header "Alerts" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Basic Alerts", "Each type has a distinct color and icon to convey severity.") %>
+    <div class="p-5 space-y-4">
+      <%= notice_alert("Heads up!", "This is a notice alert with additional details.") %>
+      <%= success_alert("Success!", "The operation completed successfully.") %>
+      <%= error_alert("Something went wrong", "Please check your input and try again.") %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Title Only", "Omit the body when the title alone is sufficient. Good for brief flash messages.") %>
+    <div class="p-5 space-y-4">
+      <%= notice_alert("A simple notice with no body text.") %>
+      <%= success_alert("Record saved.") %>
+      <%= error_alert("Validation failed.") %>
+      <%= notice_alert("Processing your request.") %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("HTML Content", 'Pass { html: "..." } as the body for inline markup like bold or emphasis.') %>
+    <div class="p-5 space-y-4">
+      <%= success_alert("Deployment complete", { html: "<strong>v2.4.1</strong> deployed to <em>production</em> successfully." }) %>
+      <%= error_alert("Import failed", { html: "Row <strong>42</strong> has an invalid email: <code>not-an-email</code>" }) %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Array Content (Auto List)", "Pass an array of strings to render a bulleted list. Use for validation errors.") %>
+    <div class="p-5 space-y-4">
+      <%= error_alert("Multiple errors found", ["Name can't be blank", "Email is invalid", "Password is too short (minimum 8 characters)"]) %>
+      <%= notice_alert("Before you continue", ["Review your changes carefully", "This action cannot be undone", "All team members will be notified"]) %>
+    </div>
+  </div>
+<% end %>

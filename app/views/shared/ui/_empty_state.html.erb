@@ -1,0 +1,46 @@
+<%#
+  Empty state placeholder for lists and collections.
+
+  Usage:
+    render "shared/ui/empty_state",
+           icon: :inbox,
+           title: "No items yet",
+           message: "Get started by adding your first item."
+
+    With action:
+    render "shared/ui/empty_state",
+           icon: :shopping_bag,
+           title: "Your cart is empty",
+           message: "Browse products to add items.",
+           action_text: "Browse Products",
+           action_path: products_path
+
+  Locals:
+    icon: Symbol - Heroicon name (optional, defaults to :inbox)
+    title: String - Main heading (optional)
+    message: String - Description text (required)
+    action_text: String - Button text (optional)
+    action_path: String - Button URL (optional)
+    classes: String - Additional wrapper classes (optional)
+%>
+<%
+  icon ||= :inbox
+  title ||= nil
+  action_text ||= nil
+  action_path ||= nil
+  classes ||= "py-12"
+%>
+
+<div class="text-center <%= classes %>">
+  <%= icon(icon, classes: "mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500") %>
+  <% if title %>
+    <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"><%= title %></h3>
+  <% end %>
+  <p class="<%= title ? "mt-1" : "mt-2" %> text-sm text-zinc-500 dark:text-zinc-400"><%= message %></p>
+  <% if action_text && action_path %>
+    <div class="mt-6">
+      <%= link_to action_text, action_path,
+          class: "inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400" %>
+    </div>
+  <% end %>
+</div>

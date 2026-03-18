@@ -1,0 +1,12 @@
+<%# Horizontal scrollable tabs for narrow containers (@md:hidden). %>
+<% sections = admin_nav_sections %>
+
+<div class="border-b border-zinc-200 dark:border-zinc-700">
+  <div class="-mb-px flex overflow-x-auto px-3">
+    <% sections.each_with_index do |group, gi| %>
+      <% group.each do |section| %>
+        <%= admin_nav_tab(section[:label], section[:path], current == section[:key]) %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

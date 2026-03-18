@@ -1,0 +1,62 @@
+<div class="<%= classes %>">
+  <div class="flex flex-1 justify-between @sm:hidden">
+    <% if pagy.previous %>
+      <%= button_link "Previous", paginate_prev_url(pagy), type: :secondary, shadow: false, classes: "relative inline-flex" %>
+    <% else %>
+      <span aria-disabled="true" class="relative inline-flex items-center font-semibold rounded-md text-sm px-3 py-2 bg-white text-zinc-300 dark:bg-zinc-800 dark:text-zinc-600 ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 cursor-not-allowed">Previous</span>
+    <% end %>
+
+    <% if pagy.next %>
+      <%= button_link "Next", paginate_next_url(pagy), type: :secondary, size: :lg, shadow: false, classes: "relative inline-flex" %>
+    <% else %>
+      <span aria-disabled="true" class="relative inline-flex items-center font-semibold rounded-md text-sm px-3 py-2 bg-white text-zinc-300 dark:bg-zinc-800 dark:text-zinc-600 ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 cursor-not-allowed">Next</span>
+    <% end %>
+  </div>
+
+  <div class="hidden @sm:flex @sm:flex-1 @sm:items-center @sm:justify-between">
+    <div>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">
+        <%= pagy.info_tag.html_safe %>
+      </p>
+    </div>
+
+    <div>
+      <nav class="isolate inline-flex -space-x-px rounded-md" aria-label="Pagination">
+        <% if pagy.previous %>
+          <%= link_to icon(:chevron_left, classes: "h-5 w-5"), paginate_prev_url(pagy), class: "relative inline-flex items-center rounded-l-md px-2 py-2 text-zinc-400 ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus:z-20 focus:outline-offset-0 dark:text-zinc-500 dark:ring-zinc-700 dark:hover:bg-zinc-800" %>
+        <% else %>
+          <span aria-disabled="true" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-zinc-300 ring-1 ring-inset ring-zinc-300 cursor-not-allowed dark:text-zinc-600 dark:ring-zinc-700"><%= icon(:chevron_left, classes: "h-5 w-5") %></span>
+        <% end %>
+
+        <%# series is private since Pagy 9 — no public API replacement exists %>
+        <% pagy.send(:series).each do |item| %>
+          <% case item %>
+          <% when Integer %>
+            <a
+              href="<%= pagy.page_url(item) %>"
+              class="relative hidden items-center px-4 py-2 text-sm font-semibold text-zinc-900 ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus:z-20 focus:outline-offset-0 @md:inline-flex dark:text-zinc-100 dark:ring-zinc-700 dark:hover:bg-zinc-800">
+              <%= item %>
+            </a>
+          <% when String %>
+            <span aria-current="page" class="relative z-10 inline-flex items-center bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-600 ring-1 ring-inset ring-primary-300 focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:bg-primary-900/75 dark:text-primary-400 dark:ring-primary-500/20">
+              <%= item %>
+            </span>
+          <% when :gap %>
+            <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-zinc-700 ring-1 ring-inset ring-zinc-300 focus:outline-offset-0 dark:text-zinc-300 dark:ring-zinc-700">
+              ...
+            </span>
+          <% else %>
+            <% raise "#{item.inspect} not supported" %>
+          <% end %>
+        <% end %>
+
+
+        <% if pagy.next %>
+          <%= link_to(icon(:chevron_right, classes: "h-5 w-5"), paginate_next_url(pagy), class: "relative inline-flex items-center rounded-r-md px-2 py-2 text-zinc-400 ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus:z-20 focus:outline-offset-0 dark:text-zinc-500 dark:ring-zinc-700 dark:hover:bg-zinc-800") %>
+        <% else %>
+          <span aria-disabled="true" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-zinc-300 ring-1 ring-inset ring-zinc-300 cursor-not-allowed dark:text-zinc-600 dark:ring-zinc-700"><%= icon(:chevron_right, classes: "h-5 w-5") %></span>
+        <% end %>
+      </nav>
+    </div>
+  </div>
+</div>

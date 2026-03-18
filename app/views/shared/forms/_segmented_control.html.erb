@@ -1,0 +1,64 @@
+<%
+  # Local variables expected:
+  # - form: the form builder object
+  # - method: the attribute name
+  # - choices: array of [label, value] pairs
+  # - field_id: base field id
+  # - label: the label text (nil to omit)
+  # - hint: optional hint text
+  # - size: optional size class
+  # - selected: currently selected value
+
+  size_class = size || "@sm:col-span-6"
+
+  active_classes = "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow"
+  inactive_classes = "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
+%>
+
+<div class="<%= size_class %>">
+  <% if label %>
+    <label class="block text-sm/6 font-medium text-zinc-900 dark:text-zinc-100"><%= label %></label>
+  <% end %>
+
+  <div class="<%= label ? "mt-2" : "" %>"
+       data-controller="segmented-control"
+       data-segmented-control-active-class="<%= active_classes %>"
+       data-segmented-control-inactive-class="<%= inactive_classes %>">
+
+    <% choices.each do |choice_label, choice_value| %>
+      <input type="radio"
+             name="<%= form ? "#{form.object_name}[#{method}]" : method %>"
+             id="<%= field_id %>_<%= choice_value %>"
+             value="<%= choice_value %>"
+             class="sr-only"
+             <%= "checked" if choice_value.to_s == selected.to_s %>
+             data-segmented-control-target="radio">
+    <% end %>
+
+    <div class="inline-flex rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1 gap-1" role="radiogroup">
+      <% choices.each do |choice_label, choice_value| %>
+        <% is_active = choice_value.to_s == selected.to_s %>
+        <button type="button"
+                role="radio"
+                aria-checked="<%= is_active %>"
+                aria-label="<%= choice_label %>"
+                data-segmented-control-target="option"
+                data-action="click->segmented-control#select"
+                data-value="<%= choice_value %>"
+                class="rounded-md px-3 py-1.5 text-sm font-semibold cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-500 focus:ring-offset-1 dark:focus:ring-offset-zinc-900 <%= is_active ? active_classes : inactive_classes %>">
+          <%= choice_label %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <% if hint.present? %>
+    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400"><%= hint %></p>
+  <% end %>
+
+  <% if form&.object&.errors&.[](method)&.any? %>
+    <p class="mt-2 text-sm text-danger-600 dark:text-danger-400">
+      <%= safe_join(form.object.errors[method], tag.br) %>
+    </p>
+  <% end %>
+</div>

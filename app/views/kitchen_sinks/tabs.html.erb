@@ -1,0 +1,133 @@
+<%= page_header "Tabs" do |h| %>
+  <%= h.breadcrumb "Kitchen Sink", kitchen_sink_path %>
+<% end %>
+
+<%= page do %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Basic Tabs", "Simple pill-bar tabs that toggle panel visibility. First tab is active by default.") %>
+    <div class="p-5">
+      <div data-controller="tabs"
+           data-tabs-active-class="text-zinc-900 dark:text-zinc-100 border-primary-500"
+           data-tabs-inactive-class="text-zinc-500 dark:text-zinc-400 border-transparent hover:text-zinc-700 dark:hover:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600">
+
+        <div class="flex gap-6 border-b border-zinc-200 dark:border-zinc-700 mb-4" role="tablist">
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="overview" data-action="tabs#select">
+            Overview
+          </button>
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="details" data-action="tabs#select">
+            Details
+          </button>
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="settings" data-action="tabs#select">
+            Settings
+          </button>
+        </div>
+
+        <div data-tabs-target="panel" data-tab="overview">
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">This is the <strong>Overview</strong> panel. It shows first by default.</p>
+        </div>
+        <div data-tabs-target="panel" data-tab="details" hidden>
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">This is the <strong>Details</strong> panel. Click the tab above to reveal it.</p>
+        </div>
+        <div data-tabs-target="panel" data-tab="settings" hidden>
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">This is the <strong>Settings</strong> panel. Tabs can hold any content.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Persistent Tabs", "Set data-tabs-persist-value=\"true\" to save the active tab in the URL query string. Try switching tabs and refreshing.") %>
+    <div class="p-5">
+      <div data-controller="tabs"
+           data-tabs-persist-value="true"
+           data-tabs-active-class="text-zinc-900 dark:text-zinc-100 border-primary-500"
+           data-tabs-inactive-class="text-zinc-500 dark:text-zinc-400 border-transparent hover:text-zinc-700 dark:hover:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600">
+
+        <div class="flex gap-6 border-b border-zinc-200 dark:border-zinc-700 mb-4" role="tablist">
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="code" data-action="tabs#select">
+            Code
+          </button>
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="preview" data-action="tabs#select">
+            Preview
+          </button>
+        </div>
+
+        <div data-tabs-target="panel" data-tab="code">
+          <pre class="text-sm font-mono bg-zinc-100 dark:bg-zinc-700 rounded-md p-4 text-zinc-800 dark:text-zinc-200">data-controller="tabs"
+data-tabs-persist-value="true"</pre>
+        </div>
+        <div data-tabs-target="panel" data-tab="preview" hidden>
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">The <code class="text-xs bg-zinc-100 dark:bg-zinc-700 px-1 py-0.5 rounded">?tab=preview</code> param is added to the URL. Reload the page to see it persist.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Two Tabs", "Common pattern used for Import Problem (Notion / Paste).") %>
+    <div class="p-5">
+      <div data-controller="tabs"
+           data-tabs-active-class="text-zinc-900 dark:text-zinc-100 border-primary-500"
+           data-tabs-inactive-class="text-zinc-500 dark:text-zinc-400 border-transparent hover:text-zinc-700 dark:hover:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600">
+
+        <div class="flex gap-6 border-b border-zinc-200 dark:border-zinc-700 mb-4" role="tablist">
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="import" data-action="tabs#select">
+            Import from Notion
+          </button>
+          <button type="button" role="tab"
+                  class="pb-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+                  data-tabs-target="tab" data-tab="paste" data-action="tabs#select">
+            Paste
+          </button>
+        </div>
+
+        <div data-tabs-target="panel" data-tab="import">
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">Import panel content goes here.</p>
+        </div>
+        <div data-tabs-target="panel" data-tab="paste" hidden>
+          <p class="text-sm text-zinc-700 dark:text-zinc-300">Paste panel content goes here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Stage Bar", "Server-rendered horizontal stage bar for linear multi-step processes. Each stage has a status icon, label, and optional hint. Used for project workflows (Problem → Research → Tickets).") %>
+    <div class="p-5 space-y-6">
+
+      <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">All pending</p>
+      <%= stage_bar([
+        { key: :problem, label: "Problem", status: :pending },
+        { key: :research, label: "Research", status: :pending },
+        { key: :tickets, label: "Tickets", status: :pending }
+      ], current: :problem) %>
+
+      <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mt-4">Mid-process</p>
+      <%= stage_bar([
+        { key: :problem, label: "Problem", hint: "Ready", path: "#", status: :completed },
+        { key: :research, label: "Research", hint: "Running…", path: "#", status: :active },
+        { key: :tickets, label: "Tickets", status: :pending }
+      ], current: :research) %>
+
+      <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mt-4">All complete</p>
+      <%= stage_bar([
+        { key: :problem, label: "Problem", hint: "Ready", path: "#", status: :completed },
+        { key: :research, label: "Research", hint: "Approved", path: "#", status: :completed },
+        { key: :tickets, label: "Tickets", hint: "Generated", path: "#", status: :completed }
+      ], current: :tickets) %>
+
+    </div>
+  </div>
+<% end %>

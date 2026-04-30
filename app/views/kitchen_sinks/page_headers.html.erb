@@ -7,14 +7,14 @@
   <div class="<%= card_classes %>">
     <%= card_header("Minimal", "Title only — no breadcrumbs, actions, or metadata. Used for top-level index pages.") %>
 
-    <div class="p-5"><%= page_header "Problems", separator: false %></div>
+    <div class="demo-card-body"><%= page_header "Problems", separator: false %></div>
   </div>
 
   <%# ── With Breadcrumbs ── %>
   <div class="<%= card_classes %>">
     <%= card_header("With Breadcrumbs", "Breadcrumbs orient the user within a hierarchy. Pass h.breadcrumb with a label and URL.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Onboarding Flow", separator: false do |h| %>
         <% h.breadcrumb "Problems", "#" %>
       <% end %>
@@ -25,7 +25,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Primary Action", "The main CTA for the page. Always visible, including on mobile. Renders as a primary button.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Problems", separator: false do |h| %>
         <% h.primary_action "New Problem", "#" %>
       <% end %>
@@ -36,7 +36,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Secondary Actions", "Supporting actions render as secondary buttons. Hidden on mobile — they collapse into a \"More\" menu.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Onboarding Flow", separator: false do |h| %>
         <% h.breadcrumb "Problems", "#" %>
         <% h.action "Export", "#" %>
@@ -50,7 +50,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("With Metadata", "Use h.datem to add icon+text metadata below the title. Good for timestamps, status, and ownership.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Onboarding Flow", separator: false do |h| %>
         <% h.breadcrumb "Problems", "#" %>
         <% h.datem :calendar, "Created 3 days ago" %>
@@ -64,7 +64,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Dropdown Actions", "Group related actions under a dropdown button. Supports links, dividers, and modal triggers.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Onboarding Flow", separator: false do |h| %>
         <% h.breadcrumb "Problems", "#" %>
         <% h.primary_action "Start Review", "#", method: :post %>
@@ -83,7 +83,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Everything Together", "Breadcrumbs, metadata, secondary actions, primary action, and a dropdown — all at once.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= page_header "Onboarding Flow", separator: false do |h| %>
         <% h.breadcrumb "Problems", "#" %>
         <% h.datem :calendar, "Created 3 days ago" %>

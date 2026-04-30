@@ -1,4 +1,5 @@
 require "bulkhead/version"
+require "bulkhead/tones"
 require "bulkhead/engine"
 
 module Bulkhead

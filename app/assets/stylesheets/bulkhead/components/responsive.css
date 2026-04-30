@@ -1,0 +1,263 @@
+/* Auto-extracted from components.css. Edit alongside its siblings; the @layer wrapper merges across files. */
+@layer components {
+  @container (width >= 24rem) {
+    .card-header {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+    .card.padded {
+      padding: var(--space-6);
+    }
+    .form {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+    .form-cancel-wrap,
+    .form-cancel-button {
+      width: auto;
+    }
+    .button.form-cancel-button {
+      color: var(--color-zinc-700);
+      background-color: transparent;
+      box-shadow: none;
+    }
+    .button.form-cancel-button:hover {
+      background-color: transparent;
+    }
+    .section-body.grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .admin-stat-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .modal-chrome {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+    .detail-list {
+      padding: var(--space-6);
+    }
+    .detail-list-separator {
+      display: block;
+    }
+    .detail-list-term,
+    .detail-list-details {
+      display: block;
+    }
+    .detail-list-details {
+      margin-top: var(--space-2);
+      margin-left: 0;
+    }
+  }
+  @container (width >= 32rem) {
+    .page-grid.cols-2,
+    .page-grid.cols-3,
+    .page-grid.cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .demo-grid.two,
+    .demo-grid.three {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .pagy.series-nav > a:not([aria-label="Previous"]):not([aria-label="Next"]) {
+      display: inline-flex;
+    }
+    .admin-definition-list.cols-2,
+    .admin-definition-list.cols-3,
+    .admin-definition-list.cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .admin-definition-list-item.span-2,
+    .admin-definition-list-item.span-3,
+    .admin-definition-list-item.span-4 {
+      grid-column: span 2 / span 2;
+    }
+    .page-header-content {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+    .page {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+    .breadcrumbs {
+      gap: var(--space-4);
+    }
+    .page-header-title {
+      overflow: hidden;
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .page-header-meta {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--space-6);
+      margin-top: 0;
+    }
+    .page-header-actions {
+      flex-direction: row;
+      align-items: center;
+      column-gap: var(--space-3);
+      row-gap: 0;
+    }
+    .page-header-desktop-only {
+      display: block;
+    }
+    .page-header-button,
+    .page-header-dropdown-button {
+      width: auto;
+    }
+    .page-header-dropdown-button {
+      justify-content: flex-start;
+    }
+    .page-header-dropdown {
+      width: auto;
+      display: inline-block;
+    }
+    .page-menu {
+      left: auto;
+      right: 0;
+      width: 14rem;
+      transform-origin: top right;
+    }
+    .page-header-mobile-menu {
+      display: none;
+    }
+  }
+  @container shell (width >= 64rem) {
+    .shell-sidebar {
+      position: static;
+      z-index: auto;
+      transform: none;
+      visibility: visible;
+      transition: none;
+    }
+    .shell-mobile-header,
+    .shell-scrim {
+      display: none;
+    }
+  }
+  @container (width >= 64rem) {
+    .form {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+    .admin-page-sidebar {
+      display: flex;
+      width: 14rem;
+      flex-shrink: 0;
+      flex-direction: column;
+      border-right: 1px solid var(--color-zinc-200);
+      padding-top: var(--space-4);
+      padding-bottom: var(--space-4);
+    }
+    .admin-page-mobile-nav {
+      display: none;
+    }
+    .admin-page-body {
+      padding: var(--space-6);
+    }
+    .admin-stat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .admin-definition-list.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .admin-definition-list.cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .admin-definition-list-item.span-3 {
+      grid-column: span 3 / span 3;
+    }
+    .admin-definition-list-item.span-4 {
+      grid-column: span 4 / span 4;
+    }
+    .page-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+    .page-grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .page-grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .page-grid.cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .page-grid.cols-8 {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .page-grid.cols-12 {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .demo-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .demo-layout-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .span-4 {
+      grid-column: span 4 / span 4;
+    }
+    .span-6 {
+      grid-column: span 6 / span 6;
+    }
+    .span-8 {
+      grid-column: span 8 / span 8;
+    }
+    .page-sidebar.small {
+      grid-column: span 3 / span 3;
+    }
+    .page-sidebar.default {
+      grid-column: span 4 / span 4;
+    }
+    .page-sidebar.sticky {
+      position: sticky;
+      top: var(--space-6);
+      align-self: start;
+    }
+    .page {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+    .page-header-sticky.fixed {
+      top: 0;
+      left: 18rem;
+    }
+    .separator.sm {
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    .separator.md {
+      margin-top: var(--space-10);
+      margin-bottom: var(--space-10);
+    }
+    .separator.lg {
+      margin-top: 3.5rem;
+      margin-bottom: 3.5rem;
+    }
+    .separator.hidden.separator.sm {
+      margin-bottom: var(--space-5);
+    }
+    .separator.hidden.separator.md {
+      margin-bottom: var(--space-8);
+    }
+    .separator.hidden.separator.lg {
+      margin-bottom: 2.75rem;
+    }
+    .page-header-actions {
+      margin-top: 0;
+      margin-left: var(--space-4);
+    }
+    .page-header-title {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+  }
+}

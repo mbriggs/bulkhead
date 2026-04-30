@@ -3,20 +3,28 @@
 
   Usage:
     render "shared/ui/empty_state",
+           illustration: :no_results,
+           title: "Nothing found",
+           message: "Try a different search."
+
+    Or with a heroicon (legacy / fallback):
+    render "shared/ui/empty_state",
            icon: :inbox,
            title: "No items yet",
            message: "Get started by adding your first item."
 
     With action:
     render "shared/ui/empty_state",
-           icon: :shopping_bag,
+           illustration: :empty_inbox,
            title: "Your cart is empty",
            message: "Browse products to add items.",
            action_text: "Browse Products",
            action_path: products_path
 
   Locals:
-    icon: Symbol - Heroicon name (optional, defaults to :inbox)
+    illustration: Symbol - Named line illustration (preferred); see
+      EMPTY_STATE_ILLUSTRATIONS in UiHelper for the allowed set.
+    icon: Symbol - Heroicon name (fallback when illustration: not given).
     title: String - Main heading (optional)
     message: String - Description text (required)
     action_text: String - Button text (optional)
@@ -24,23 +32,28 @@
     classes: String - Additional wrapper classes (optional)
 %>
 <%
+  illustration ||= nil
   icon ||= :inbox
   title ||= nil
   action_text ||= nil
   action_path ||= nil
-  classes ||= "py-12"
+  classes ||= "default-spacing"
 %>
 
-<div class="text-center <%= classes %>">
-  <%= icon(icon, classes: "mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500") %>
-  <% if title %>
-    <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"><%= title %></h3>
+<div class="empty-state <%= classes %>">
+  <% if illustration %>
+    <%= render "shared/ui/empty_state_illustration", name: illustration %>
+  <% else %>
+    <%= icon(icon, classes: "empty-state-icon") %>
   <% end %>
-  <p class="<%= title ? "mt-1" : "mt-2" %> text-sm text-zinc-500 dark:text-zinc-400"><%= message %></p>
+  <% if title %>
+    <h3 class="empty-state-title"><%= title %></h3>
+  <% end %>
+  <p class="<%= classnames('empty-state-message', { 'no-title' => !title }) %>"><%= message %></p>
   <% if action_text && action_path %>
-    <div class="mt-6">
+    <div class="empty-state-action">
       <%= link_to action_text, action_path,
-          class: "inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400" %>
+          class: "button primary md shadow" %>
     </div>
   <% end %>
 </div>

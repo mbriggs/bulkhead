@@ -9,20 +9,20 @@ class IconHelperTest < ActionView::TestCase
   test "icon converts underscores to hyphens" do
     html = icon(:check_circle)
     # The heroicons gem receives "check-circle" (hyphenated)
-    assert_match /svg/, html
+    assert_match(/svg/, html)
   end
 
   test "icon_link_to without tooltip renders plain link" do
     html = icon_link_to(:pencil, "/edit")
-    assert_match /<a/, html
-    assert_match /href="\/edit"/, html
-    refute_match /group/, html
+    assert_match(/<a/, html)
+    assert_match(/href="\/edit"/, html)
+    refute_match(/tooltip/, html)
   end
 
   test "icon_link_to with tooltip renders link with tooltip wrapper" do
     html = icon_link_to(:pencil, "/edit", tooltip_text: "Edit")
-    assert_match /<a/, html
-    assert_match /group/, html
-    assert_match /Edit/, html
+    assert_match(/<a/, html)
+    assert_match(/tooltip/, html)
+    assert_match(/Edit/, html)
   end
 end

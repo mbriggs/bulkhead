@@ -1,6 +1,5 @@
 /* Factory theme overrides for air-datepicker.
- * Maps library CSS custom properties to Factory's Tailwind v4 design tokens
- * so the datepicker follows palette changes automatically.
+ * Maps library CSS custom properties to Factory's Bulkhead design tokens.
  */
 
 /* Light mode */

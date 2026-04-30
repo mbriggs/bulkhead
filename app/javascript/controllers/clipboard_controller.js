@@ -35,7 +35,7 @@ export default class extends Controller {
     const original = btn.innerHTML
     const isIconOnly = btn.querySelector("svg") && !btn.textContent.trim()
     btn.innerHTML = isIconOnly
-      ? '<span class="text-[10px] font-medium inline-flex items-center h-4">Copied!</span>'
+      ? '<span class="clipboard-confirmation">Copied!</span>'
       : "Copied!"
     setTimeout(() => { btn.innerHTML = original }, 1500)
   }

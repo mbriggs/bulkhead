@@ -21,17 +21,17 @@ import { show, hide } from "controllers/visibility_toggle_controller";
  *
  *   <div data-menu-target="toggleable"
  *        data-controller="visibility-toggle"
- *        data-visibility-toggle-visible-class="translate-x-0"
- *        data-visibility-toggle-hidden-class="-translate-x-full"
- *        class="fixed inset-y-0 left-0 transform">
+ *        data-visibility-toggle-visible-class="visibility-visible"
+ *        data-visibility-toggle-hidden-class="visibility-offscreen"
+ *        class="menu-panel">
  *     <!-- Menu content -->
  *   </div>
  *
  *   <div data-menu-target="toggleable"
  *        data-controller="visibility-toggle"
- *        data-visibility-toggle-visible-class="opacity-50"
- *        data-visibility-toggle-hidden-class="opacity-0 pointer-events-none"
- *        class="fixed inset-0 bg-black transition-opacity">
+ *        data-visibility-toggle-visible-class="visibility-dimmed"
+ *        data-visibility-toggle-hidden-class="visibility-transparent no-pointer-events"
+ *        class="menu-backdrop">
  *     <!-- Overlay -->
  *   </div>
  * </div>
@@ -50,19 +50,19 @@ export default class extends Controller {
     document.removeEventListener("click", this.boundHandleOutsideClick);
   }
 
-  toggle(event) {
+  toggle() {
     if (this.stateValue === "open") {
-      this.close(event);
+      this.close();
     } else {
-      this.open(event);
+      this.open();
     }
   }
 
-  open(event) {
+  open() {
     this.stateValue = "open";
   }
 
-  close(event) {
+  close() {
     this.stateValue = "closed";
   }
 

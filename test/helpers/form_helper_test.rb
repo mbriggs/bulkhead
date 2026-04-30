@@ -56,8 +56,8 @@ class FormHelperTest < ActionView::TestCase
     model = SampleModel.new(name: "Valid")
     builder = make_builder(model:)
     classes = builder.element_classes(:name).flatten
-    assert_includes classes, "ring-zinc-300"
-    refute_includes classes, "ring-danger-300"
+    assert_includes classes, "input"
+    refute_includes classes, "invalid"
   end
 
   test "element_classes includes danger ring classes when field has errors" do
@@ -65,15 +65,44 @@ class FormHelperTest < ActionView::TestCase
     model.validate
     builder = make_builder(model:)
     classes = builder.element_classes(:name).flatten
-    assert_includes classes, "ring-danger-300"
-    refute_includes classes, "ring-zinc-300"
+    assert_includes classes, "invalid"
   end
 
   test "element_classes handles non-model object without errors method" do
     builder = make_builder(model: false)
     classes = builder.element_classes(:name).flatten
-    assert_includes classes, "ring-zinc-300"
-    refute_includes classes, "ring-danger-300"
+    assert_includes classes, "input"
+    refute_includes classes, "invalid"
+  end
+
+  # --- FormBuilder#select ---
+
+  test "select renders as a styled native control by default" do
+    builder = make_builder
+
+    html = builder.select(:name, [ [ "Alpha", "a" ] ])
+
+    assert_match %r{<select[^>]*class="[^"]*\binput\b}, html
+    refute_match %r{data-controller="select"}, html
+  end
+
+  test "select attaches controller for submit_on_select" do
+    builder = make_builder
+
+    html = builder.select(:name, [ [ "Alpha", "a" ] ], submit_on_select: true)
+
+    assert_match %r{data-controller="select"}, html
+    assert_match %r{data-select-submit-on-select-value="true"}, html
+  end
+
+  test "select keeps input styling when search behavior is requested" do
+    builder = make_builder
+
+    html = builder.select(:name, [ [ "Alpha", "a" ] ], search: true)
+
+    assert_match %r{<select[^>]*class="[^"]*\binput\b}, html
+    assert_match %r{data-controller="select"}, html
+    assert_match %r{data-select-search-value="true"}, html
   end
 
   # --- FormBuilder#segmented_control ---
@@ -135,7 +164,7 @@ class FormHelperTest < ActionView::TestCase
     builder = make_builder(model:)
     html = builder.segmented_control(:name, [ [ "A", "a" ] ])
 
-    assert_match %r{text-danger-600}, html
+    assert_match %r{field-error}, html
   end
 
   test "segmented_control uses default label from method name" do
@@ -166,8 +195,8 @@ class FormHelperTest < ActionView::TestCase
       f.text_field :name
     end
 
-    assert_match /error_summary/, html
-    assert_match /prohibited/, html
+    assert_match(/error_summary/, html)
+    assert_match(/prohibited/, html)
   end
 
   test "form_with omits error summary when model is clean" do
@@ -177,7 +206,7 @@ class FormHelperTest < ActionView::TestCase
       f.text_field :name
     end
 
-    refute_match /error_summary/, html
+    refute_match(/error_summary/, html)
   end
 
   test "form_with preserves url and method when model has errors" do
@@ -189,7 +218,7 @@ class FormHelperTest < ActionView::TestCase
     end
 
     assert_match %r{action="/custom-path"}, html
-    assert_match /patch/i, html
+    assert_match(/patch/i, html)
   end
 
   test "form_with omits error summary without a block" do
@@ -197,7 +226,7 @@ class FormHelperTest < ActionView::TestCase
     model.validate
 
     html = form_with(model:, url: "/test")
-    refute_match /error_summary/, html
+    refute_match(/error_summary/, html)
   end
 
   private

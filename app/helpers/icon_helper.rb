@@ -7,7 +7,7 @@ module IconHelper
   #
   #   icon(:check_circle)                        # outline check-circle
   #   icon(:check_circle, variant: :solid)        # solid check-circle
-  #   icon(:check_circle, classes: "h-5 w-5")     # with Tailwind classes
+  #   icon(:check_circle, classes: "status-icon") # with a local CSS class
   #
   def icon(name, classes: nil, variant: :outline, **attrs)
     icon_name = name.to_s.tr("_", "-")
@@ -22,7 +22,7 @@ module IconHelper
 
   # Render the Jane heart logo as an inline SVG.
   #
-  #   jane_heart_icon(classes: "h-5 w-5")
+  #   jane_heart_icon(classes: "status-icon")
   #
   def jane_heart_icon(classes: nil, **attrs)
     tag.svg(

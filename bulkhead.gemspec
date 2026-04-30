@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name        = "bulkhead"
   spec.version     = Bulkhead::VERSION
   spec.authors     = [ "iheartjane" ]
-  spec.summary     = "Factory's reusable view layer — helpers, Stimulus controllers, Tailwind tokens, and shared partials."
+  spec.summary     = "Factory's reusable view layer — helpers, Stimulus controllers, static CSS, and shared partials."
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{app,config,lib,vendor}/**/*", "Rakefile"]
@@ -15,11 +15,17 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", ">= 8.0"
   spec.add_dependency "heroicons"
   spec.add_dependency "pagy"
-  spec.add_dependency "commonmarker"
   spec.add_dependency "importmap-rails"
   spec.add_dependency "turbo-rails"
   spec.add_dependency "stimulus-rails"
 
+  # Optional: required only by host apps that call `render_markdown`.
+  # Lazy-loaded inside UiHelper#sanitize_markdown.
+  # spec.add_dependency "commonmarker"
+
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "commonmarker"
+  spec.add_development_dependency "puma"
+  spec.add_development_dependency "ostruct"
 end

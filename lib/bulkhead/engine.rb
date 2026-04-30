@@ -1,6 +1,4 @@
-# Bulkhead engine — registers helpers, assets, and importmap pins.
-# Tailwind class scanning is handled by tailwindcss-rails engine support
-# via app/assets/tailwind/bulkhead/engine.css.
+# Bulkhead engine — registers helpers, static assets, and importmap pins.
 module Bulkhead
   class Engine < ::Rails::Engine
     engine_name "bulkhead"
@@ -18,8 +16,8 @@ module Bulkhead
 
     # --- Propshaft asset paths ---
     # Register all asset directories so Propshaft can find and serve them.
-    # Stylesheets and vendor CSS for air-datepicker, plus JavaScript directories
-    # for Stimulus controllers and vendor libs (dragula, air-datepicker JS).
+    # Bulkhead's static CSS, vendor CSS for air-datepicker, plus JavaScript
+    # directories for Stimulus controllers and vendor libs.
     initializer "bulkhead.assets" do |app|
       if app.config.respond_to?(:assets)
         app.config.assets.paths << Engine.root.join("app/assets/stylesheets")

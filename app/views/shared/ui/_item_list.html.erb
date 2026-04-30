@@ -1,40 +1,38 @@
 <div class="<%= classes %>">
   <% items.each_with_index do |item, idx| %>
-    <% border = idx < items.size - 1 ? "border-b border-zinc-200 dark:border-zinc-700" : "" %>
-    <% row_classes = "group flex items-center w-full px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors text-left" %>
+    <% border = idx < items.size - 1 ? "item-list-border" : "" %>
+    <% row_classes = "item-list-row" %>
 
     <%# Shared item body: image + title/metas + badges + chevron %>
     <% item_body = capture do %>
       <% if item[:image] %>
-        <div class="flex-shrink-0 mr-3">
+        <div class="item-list-media">
           <% if item[:image][:url] %>
-            <div class="w-10 h-10 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-700">
-              <%= image_tag item[:image][:url],
-                  class: "w-full h-full object-cover",
-                  alt: item[:image][:alt] %>
-            </div>
+            <%= image_tag item[:image][:url],
+                class: "item-list-image",
+                alt: item[:image][:alt] %>
           <% else %>
-            <div class="w-10 h-10 bg-zinc-100 dark:bg-zinc-700 rounded-md flex items-center justify-center">
+            <div class="item-list-media fallback">
               <% icon_name = item[:image][:fallback_icon] || :photograph %>
-              <%= icon_by_name(icon_name, classes: "w-5 h-5 text-zinc-400 dark:text-zinc-500") %>
+              <%= icon_by_name(icon_name, classes: "item-list-fallback-icon") %>
             </div>
           <% end %>
         </div>
       <% end %>
 
-      <div class="flex-1 min-w-0">
+      <div class="item-list-body">
         <% if item[:title] %>
-          <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate <%= item[:title][:classes] %>">
+          <p class="item-list-title <%= item[:title][:classes] %>">
             <%= item[:title][:text] %>
           </p>
         <% end %>
 
         <% if item[:metas].present? %>
-          <div class="flex items-center gap-2 mt-0.5">
+          <div class="item-list-meta">
             <% item[:metas].each do |meta| %>
-              <span class="flex items-center text-xs text-zinc-500 dark:text-zinc-400 <%= meta[:classes] %>">
+              <span class="item-list-meta-item <%= meta[:classes] %>">
                 <% if meta[:icon] %>
-                  <%= icon_by_name(meta[:icon], classes: "w-3.5 h-3.5 mr-1 text-zinc-400 dark:text-zinc-500") %>
+                  <%= icon_by_name(meta[:icon], classes: "item-list-meta-icon") %>
                 <% end %>
                 <%= meta[:text] %>
               </span>
@@ -44,11 +42,11 @@
       </div>
 
       <% if item[:badges].present? %>
-        <div class="flex items-center gap-2 ml-3">
+        <div class="item-list-badges">
           <% item[:badges].each do |badge| %>
-            <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= badge_color_classes(badge[:type]) %>">
+            <span class="badge <%= badge_color_classes(badge[:type]) %>">
               <% if badge[:icon] %>
-                <%= icon_by_name(badge[:icon], classes: "w-3 h-3 mr-1") %>
+                <%= icon_by_name(badge[:icon], classes: "item-list-badge-icon") %>
               <% end %>
               <%= badge[:text] %>
             </span>
@@ -56,8 +54,8 @@
         </div>
       <% end %>
 
-      <div class="flex-shrink-0 ml-3">
-        <%= icon(:chevron_right, classes: "w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500 transition-colors") %>
+      <div class="item-list-chevron">
+        <%= icon(:chevron_right, classes: "item-list-chevron-icon") %>
       </div>
     <% end %>
 

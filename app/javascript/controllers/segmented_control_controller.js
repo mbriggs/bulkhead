@@ -4,13 +4,20 @@ import { Controller } from "@hotwired/stimulus"
 // backed by hidden radio inputs.
 export default class extends Controller {
   static targets = ["radio", "option"]
-  static classes = ["active", "inactive"]
 
   connect() {
     this.update()
+
+    this.resizeObserver = new ResizeObserver(() => this.#updateIndicator())
+    this.resizeObserver.observe(this.element)
+  }
+
+  disconnect() {
+    if (this.resizeObserver) this.resizeObserver.disconnect()
   }
 
   select(event) {
+    if (event.currentTarget.getAttribute("aria-checked") === "true") return
     const value = event.currentTarget.dataset.value
     const radio = this.radioTargets.find(r => r.value === value)
     if (radio && !radio.checked) {
@@ -26,14 +33,18 @@ export default class extends Controller {
     this.optionTargets.forEach(button => {
       const isActive = button.dataset.value === selected
       button.setAttribute("aria-checked", isActive.toString())
+    })
 
-      if (isActive) {
-        this.inactiveClasses.forEach(c => button.classList.remove(c))
-        this.activeClasses.forEach(c => button.classList.add(c))
-      } else {
-        this.activeClasses.forEach(c => button.classList.remove(c))
-        this.inactiveClasses.forEach(c => button.classList.add(c))
-      }
+    this.#updateIndicator()
+  }
+
+  #updateIndicator() {
+    requestAnimationFrame(() => {
+      const track = this.element.querySelector(".segmented") || this.element
+      const active = this.optionTargets.find(o => o.getAttribute("aria-checked") === "true")
+      if (!active) return
+      track.style.setProperty("--segmented-indicator-left", `${active.offsetLeft}px`)
+      track.style.setProperty("--segmented-indicator-width", `${active.offsetWidth}px`)
     })
   }
 }

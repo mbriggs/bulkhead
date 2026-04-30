@@ -14,7 +14,7 @@ class TableHelperTest < ActionView::TestCase
   test "sort_field generates link defaulting to descending" do
     @controller.request.env["QUERY_STRING"] = ""
     html = sort_field(:name, namespace: nil)
-    assert_match /<a/, html
+    assert_match(/<a/, html)
     assert_includes html, "sort=name"
     assert_includes html, "sort_order=d"
   end
@@ -23,7 +23,7 @@ class TableHelperTest < ActionView::TestCase
     @controller.request.env["QUERY_STRING"] = "sort=name&sort_order=d"
     html = sort_field(:name, namespace: nil)
     assert_includes html, "sort_order=a"
-    assert_match /svg/, html
+    assert_match(/svg/, html)
   end
 
   test "sort_field nests params under namespace" do

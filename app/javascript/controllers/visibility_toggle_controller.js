@@ -14,8 +14,8 @@ import { Controller } from "@hotwired/stimulus";
  * - state ("visible"|"hidden", default "hidden"): Current visibility state.
  *
  * Attributes:
- * - data-visibility-toggle-visible-class: Classes when visible (default "opacity-100")
- * - data-visibility-toggle-hidden-class: Classes when hidden (default "opacity-0")
+ * - data-visibility-toggle-visible-class: Classes when visible (default "visibility-visible")
+ * - data-visibility-toggle-hidden-class: Classes when hidden (default "visibility-transparent")
  * - data-visibility-toggle-showing-class: Transition classes for showing
  * - data-visibility-toggle-hiding-class: Transition classes for hiding
  * - data-visibility-toggle-hiding-complete-class: Applied after hide transition ends (e.g. "hidden")
@@ -29,18 +29,18 @@ import { Controller } from "@hotwired/stimulus";
  * Usage (root element):
  * <div data-controller="visibility-toggle"
  *      data-visibility-toggle-state-value="hidden"
- *      class="transform">
+ *      class="visibility-panel">
  *   Content that toggles
  * </div>
  *
  * Usage (content target with inline trigger):
  * <div data-controller="visibility-toggle"
  *      data-visibility-toggle-state-value="visible"
- *      data-visibility-toggle-visible-class="opacity-100 translate-y-0"
- *      data-visibility-toggle-hidden-class="opacity-0 -translate-y-2"
+ *      data-visibility-toggle-visible-class="visibility-visible"
+ *      data-visibility-toggle-hidden-class="visibility-lifted"
  *      data-visibility-toggle-hiding-complete-class="hidden">
  *   <button data-action="click->visibility-toggle#toggle">Toggle</button>
- *   <div data-visibility-toggle-target="content" class="transform">
+ *   <div data-visibility-toggle-target="content" class="visibility-panel">
  *     Panel content
  *   </div>
  * </div>
@@ -67,15 +67,15 @@ export default class extends Controller {
   }
 
   connect() {
-    this.visibleClasses = this.readClass("visibleClass", "opacity-100");
-    this.hiddenClasses = this.readClass("hiddenClass", "opacity-0");
+    this.visibleClasses = this.readClass("visibleClass", "visibility-visible");
+    this.hiddenClasses = this.readClass("hiddenClass", "visibility-transparent");
     this.showingClasses = this.readClass(
       "showingClass",
-      "transition-opacity ease-linear duration-200",
+      "visibility-transition",
     );
     this.hidingClasses = this.readClass(
       "hidingClass",
-      "transition-opacity ease-linear duration-75",
+      "visibility-transition fast",
     );
     this.hidingCompleteClasses = this.readClass("hidingCompleteClass", null);
 

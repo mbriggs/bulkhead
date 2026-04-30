@@ -3,7 +3,7 @@
 
 <% sections.each_with_index do |group, gi| %>
   <% unless gi == 0 %>
-    <hr class="my-2 mx-3 border-zinc-200 dark:border-zinc-700">
+    <hr class="admin-nav-separator">
   <% end %>
   <% group.each do |section| %>
     <%= admin_nav_item(section[:label], section[:path], current == section[:key], icon: section[:icon]) %>

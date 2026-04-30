@@ -30,9 +30,9 @@ module StepperHelper
     steps = source.steps
     failed = source.status == :failed
 
-    tag.div(class: card_classes("p-6 @sm:p-8")) do
+    tag.div(class: card_classes("stepper")) do
       stepper_header_from_source(source) +
-        tag.div(class: "mt-6") do
+        tag.div(class: "stepper-steps") do
           safe_join(steps.each_with_index.map { |step, i|
             stepper_step(step, last: i == steps.size - 1)
           })
@@ -60,7 +60,7 @@ module StepperHelper
 
   # Renders one step row with indicator, label, and optional summary.
   def stepper_step(step, last:)
-    tag.div(class: "flex gap-3") do
+    tag.div(class: "stepper-step") do
       stepper_indicator_column(step.status, last:) +
         stepper_content_column(step)
     end
@@ -68,15 +68,14 @@ module StepperHelper
 
   # Left column: circle indicator + connecting line.
   def stepper_indicator_column(status, last:)
-    tag.div(class: "flex flex-col items-center") do
+    tag.div(class: "stepper-rail") do
       indicator = stepper_circle(status)
       line = unless last
         line_color = case status
-        when :completed then "bg-success-500"
-        when :failed    then "bg-danger-300"
-        else "bg-zinc-200 dark:bg-zinc-700"
+        when :completed then "completed"
+        when :failed    then "failed"
         end
-        tag.div(class: "w-0.5 grow #{line_color}")
+        tag.div(class: classnames("stepper-line", line_color))
       end
       indicator + (line || "".html_safe)
     end
@@ -86,20 +85,20 @@ module StepperHelper
   def stepper_circle(status)
     case status
     when :completed
-      tag.div(class: "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-success-500") do
-        icon(:check, classes: "h-3.5 w-3.5 text-white", variant: :solid)
+      tag.div(class: "status-circle md completed") do
+        icon(:check, classes: "status-circle-icon md", variant: :solid)
       end
     when :active
-      tag.div(class: "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-info-500") do
-        tag.div(class: "h-2 w-2 rounded-full bg-info-500 animate-pulse")
+      tag.div(class: "status-circle md active") do
+        tag.div(class: "status-circle-dot md")
       end
     when :failed
-      tag.div(class: "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-danger-500") do
-        icon(:x_mark, classes: "h-3.5 w-3.5 text-white", variant: :solid)
+      tag.div(class: "status-circle md failed") do
+        icon(:x_mark, classes: "status-circle-icon md", variant: :solid)
       end
     else # :pending
-      tag.div(class: "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-zinc-300 dark:border-zinc-600") do
-        tag.div(class: "h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-600")
+      tag.div(class: "status-circle md pending") do
+        tag.div(class: "status-circle-dot md")
       end
     end
   end
@@ -111,15 +110,15 @@ module StepperHelper
 
   # Right column: step label, optional children, and summary text.
   def stepper_content_column(step)
-    tag.div(class: "min-w-0 pb-6") do
+    tag.div(class: "stepper-content") do
       label_color = case step.status
-      when :completed then "text-zinc-900 dark:text-zinc-100"
-      when :active    then "text-info-600 dark:text-info-400 font-medium"
-      when :failed    then "text-danger-600 dark:text-danger-400 font-medium"
-      else "text-zinc-400 dark:text-zinc-500"
+      when :completed then "completed"
+      when :active    then "active"
+      when :failed    then "failed"
+      else "pending"
       end
 
-      content = tag.p(class: "text-sm #{label_color}") do
+      content = tag.p(class: classnames("stepper-label", label_color)) do
         step.label.html_safe + stepper_elapsed_suffix(step) # html_safe: labels are from constant maps only
       end
       content += stepper_step_detail(step)
@@ -132,7 +131,7 @@ module StepperHelper
 
   # Renders sub-steps as a compact list within a parent step's content.
   def stepper_children(children)
-    tag.div(class: "mt-8 space-y-1.5") do
+    tag.div(class: "stepper-children") do
       safe_join(children.map { |child| stepper_child(child) })
     end
   end
@@ -140,44 +139,44 @@ module StepperHelper
   # Renders summary + detail link inside a truncation wrapper.
   def stepper_step_detail(step, text_size: "text-sm")
     has_content = step.summary.present? || step.summary_html.present?
+    compact = text_size == "text-xs"
+    text_class = compact ? "xs" : "sm"
+    detail_class = classnames("stepper-detail", { "compact" => compact })
 
     if has_content
       wrapper_data = { controller: "truncate", truncate_lines_value: 3 }
-      wrapper_opts = { data: wrapper_data, class: "relative mt-1 max-w-prose" }
+      wrapper_opts = { data: wrapper_data, class: "truncate" }
       if step.permanent_id
         wrapper_opts[:id] = step.permanent_id
         wrapper_data[:turbo_permanent] = ""
       end
 
       tag.div(**wrapper_opts) do
-        tag.div(data: { truncate_target: "content" }, class: "line-clamp-3") do
+        tag.div(data: { truncate_target: "content" }, class: "line-clamp", style: "--bulkhead-line-clamp: 3") do
           parts = "".html_safe
           if step.summary_html
             parts += tag.div(step.summary_html,
-              class: "prose prose-sm dark:prose-invert max-w-none prose-sidebar " \
-                     "text-zinc-500 dark:text-zinc-400")
+              class: "truncate-rich-text rich-text sidebar")
           elsif step.summary
             parts += tag.p(step.summary,
-              class: "#{text_size} text-zinc-500 dark:text-zinc-400 whitespace-pre-wrap break-words")
+              class: classnames("truncate-text", text_class))
           end
           if step.detail_path && !step.hide_detail_link
-            parts += tag.p(class: "mt-1") do
+            parts += tag.p(class: "truncate-detail") do
               link_to stepper_detail_label(step), step.detail_path,
-                class: "text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                class: detail_class
             end
           end
           parts
         end +
           tag.button("more\u2026",
             data: { truncate_target: "toggle", action: "truncate#toggle" },
-            class: "hidden absolute bottom-0 right-0 #{text_size} text-primary-600 dark:text-primary-400 " \
-                   "hover:underline cursor-pointer bg-gradient-to-l from-white from-60% via-white " \
-                   "dark:from-zinc-800 dark:via-zinc-800 to-transparent pl-8 pr-0.5")
+            class: classnames("hidden truncate-toggle overlay", text_class))
       end
     elsif step.detail_path && !step.hide_detail_link
-      tag.p(class: "mt-0.5") do
+      tag.p(class: "truncate-detail") do
         link_to stepper_detail_label(step), step.detail_path,
-          class: "text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+          class: detail_class
       end
     else
       "".html_safe
@@ -187,16 +186,16 @@ module StepperHelper
   # One sub-step row: small circle + label + optional detail link.
   def stepper_child(child)
     label_color = case child.status
-    when :completed then "text-zinc-700 dark:text-zinc-300"
-    when :active    then "text-info-600 dark:text-info-400 font-medium"
-    when :failed    then "text-danger-600 dark:text-danger-400 font-medium"
-    else "text-zinc-400 dark:text-zinc-500"
+    when :completed then "completed"
+    when :active    then "active"
+    when :failed    then "failed"
+    else "pending"
     end
 
-    tag.div(class: "flex items-start gap-2") do
+    tag.div(class: "stepper-child") do
       stepper_circle_small(child.status) +
-        tag.div(class: "min-w-0") do
-          tag.p(class: "text-xs #{label_color}") { child.label.html_safe + stepper_elapsed_suffix(child) } + # html_safe: labels are from constant maps only
+        tag.div(class: "stepper-child-content") do
+          tag.p(class: classnames("stepper-child-label", label_color)) { child.label.html_safe + stepper_elapsed_suffix(child) } + # html_safe: labels are from constant maps only
             stepper_step_detail(child, text_size: "text-xs")
         end
     end
@@ -208,11 +207,11 @@ module StepperHelper
 
     if step.status == :completed && step.finished_at
       duration = elapsed_time_text(step.started_at, step.finished_at)
-      tag.span(" \u00B7 #{duration}", class: "font-normal text-zinc-400 dark:text-zinc-500")
+      tag.span(" \u00B7 #{duration}", class: "stepper-time")
     elsif step.status == :active
-      tag.span(" \u00B7 ", class: "font-normal text-zinc-400 dark:text-zinc-500") +
+      tag.span(" \u00B7 ", class: "stepper-time") +
         tag.span(elapsed_time_text(step.started_at),
-          class: "font-normal text-zinc-400 dark:text-zinc-500",
+          class: "stepper-time",
           data: { controller: "elapsed-time",
                   elapsed_time_started_at_value: step.started_at.iso8601 })
     else
@@ -224,18 +223,19 @@ module StepperHelper
 
   # Renders the header from a source object's protocol methods.
   def stepper_header_from_source(source)
-    tag.div(class: "flex items-center gap-3") do
-      icon_classes = "h-5 w-5 #{source.header_icon_color} shrink-0"
-      icon_classes += " animate-spin" if source.header_icon_animated?
+    tag.div(class: "stepper-header") do
+      icon_classes = classnames("stepper-header-icon", source.header_icon_color, {
+        "spinning" => source.header_icon_animated?
+      })
 
       left = icon(source.header_icon, classes: icon_classes)
       left += if source.status == :failed || source.status == :paused
-        tag.h3(source.header_title, class: "text-lg font-medium text-zinc-900 dark:text-zinc-100")
+        tag.h3(source.header_title, class: "stepper-title")
       else
-        tag.h3(class: "text-lg font-medium text-zinc-900 dark:text-zinc-100") do
+        tag.h3(class: "stepper-title") do
           "#{source.header_title} ".html_safe +
             tag.span(source.elapsed_since ? elapsed_time_text(source.elapsed_since) : "",
-              class: "text-sm font-normal text-zinc-500 dark:text-zinc-400",
+              class: "stepper-title-time",
               data: source.elapsed_since ? {
                 controller: "elapsed-time",
                 elapsed_time_started_at_value: source.elapsed_since.iso8601
@@ -244,7 +244,7 @@ module StepperHelper
       end
 
       right = if source.respond_to?(:active_detail_path) && source.active_detail_path
-        tag.div(class: "ml-auto") do
+        tag.div(class: "stepper-header-action") do
           stepper_detail_link(source.active_detail_path, source.try(:active_detail_label))
         end
       else
@@ -260,8 +260,8 @@ module StepperHelper
     return "".html_safe unless path
 
     link_to path,
-      class: "inline-flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:underline" do
-      icon(:arrow_top_right_on_square, classes: "h-3.5 w-3.5") +
+      class: "stepper-detail" do
+      icon(:arrow_top_right_on_square, classes: "stepper-detail-icon") +
         tag.span(label || "View details")
     end
   end
@@ -273,25 +273,25 @@ module StepperHelper
 
   # Error section driven by the source protocol.
   def stepper_error_section_for(source)
-    tag.div(class: "mt-4 rounded-md bg-danger-50 dark:bg-danger-900/20 p-4", data: { controller: "disclosure" }) do
+    tag.div(class: "stepper-error", data: { controller: "disclosure" }) do
       toggle = tag.button(
-        class: "flex items-center gap-1.5 text-sm font-medium text-danger-700 dark:text-danger-400",
+        class: "stepper-error-toggle",
         data: { action: "disclosure#toggle" },
         "aria-expanded": "false"
       ) do
-        icon(:chevron_right, classes: "h-4 w-4 transition-transform") +
+        icon(:chevron_right, classes: "stepper-error-icon") +
           tag.span("Error details")
       end
 
       details = tag.div(
-        class: "hidden mt-2 text-sm text-danger-600 dark:text-danger-400 whitespace-pre-wrap break-words",
+        class: "hidden stepper-error-details",
         data: { disclosure_target: "content" }
       ) do
         tag.p(source.error_message)
       end
 
       actions = if source.retry_path
-        tag.div(class: "mt-3") do
+        tag.div(class: "stepper-error-actions") do
           button_to source.retry_label, source.retry_path,
             method: :post,
             class: button_classes(type: :primary, size: :sm)

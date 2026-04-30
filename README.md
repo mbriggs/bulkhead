@@ -1,7 +1,7 @@
 # Bulkhead
 
 A reusable Rails engine providing the view layer — helpers, Stimulus
-controllers, Tailwind design tokens, and shared partials.
+controllers, static CSS, and shared partials.
 
 Distributed as a **git subtree**, not a published gem. You clone it into your
 app, work on it locally, and push changes back upstream.
@@ -15,15 +15,14 @@ app, work on it locally, and push changes back upstream.
 - **37 shared partials** — forms, modals, page chrome, UI components, admin
   shared, flash messages
 - **Kitchen sink** — dev-only component showcase at `/kitchen_sink`
-- **Tailwind design tokens** — semantic color system (primary, danger, success,
-  warning, info) + prose variants
+- **Static CSS design system** — semantic color system (primary, danger,
+  success, warning, info) + rich-text variants
 - **Vendor assets** — dragula (drag-and-drop), air-datepicker
 
 ## Requirements
 
 - Rails 8.0+
 - Propshaft + Importmaps (no Webpack/esbuild)
-- Tailwind CSS 4+ via `tailwindcss-rails` (>= 4.3.0 for engine support)
 - Hotwire (Turbo + Stimulus)
 
 ## Installation
@@ -39,24 +38,74 @@ git subtree add --prefix vendor/bulkhead bulkhead master --squash
 # 2. Create the bin symlink
 ln -s ../vendor/bulkhead/bin/bulkhead bin/bulkhead
 
-# 3. Run the install script (patches Gemfile and application.css, bundles)
+# 3. Run the install script (patches Gemfile and layout, bundles)
 bin/bulkhead install
 ```
 
 The install script:
 - Adds `gem "bulkhead", path: "vendor/bulkhead"` to your Gemfile
-- Adds `@import "../builds/tailwind/bulkhead"` to your `application.css`
+- Adds `<%= stylesheet_link_tag "bulkhead", "data-turbo-track": "reload" %>`
+  to your application layout
 - Creates `bin/bulkhead` symlink if missing
 - Runs `bundle install`
 
-### How Tailwind integration works
+### How CSS integration works
 
-Bulkhead uses `tailwindcss-rails` experimental engine support. The engine
-provides `app/assets/tailwind/bulkhead/engine.css` which contains `@source`
-directives pointing to its own views, helpers, and JS files. On build,
-`tailwindcss-rails` auto-generates a build file at
-`app/assets/builds/tailwind/bulkhead.css` with an absolute-path `@import` to
-the engine's CSS. No symlinks needed.
+Bulkhead ships `app/assets/stylesheets/bulkhead.css` as a regular Propshaft
+asset. The engine registers its stylesheet path, so host apps include the CSS
+directly from their layout:
+
+```erb
+<%= stylesheet_link_tag "bulkhead", "data-turbo-track": "reload" %>
+```
+
+No CSS build step or symlink is required.
+
+`bulkhead.css` is a thin entry that `@import`s the layered files. Cascade
+order is established up front; each file declares its own
+`@layer X { ... }` block so the pieces can be edited independently:
+
+- `bulkhead/tokens.css` — design tokens
+- `bulkhead/base.css` — reset / element defaults
+- `bulkhead/components/utilities.css` — small leaf primitives (tooltip, spacer, skeleton, avatar, code-block)
+- `bulkhead/components/buttons.css` — button family
+- `bulkhead/components/surfaces.css` — card, panel, inset, alert
+- `bulkhead/components/forms.css` — form, field, input, segmented, toggle, combobox
+- `bulkhead/components/data.css` — table, pagination, item-list, badge, tabs
+- `bulkhead/components/navigation.css` — shell-nav, admin-nav and admin sub-components
+- `bulkhead/components/layout.css` — progress, modal, page chrome, breadcrumbs, reader-mode
+- `bulkhead/components/feedback.css` — status-circle, stepper, stage-bar, truncate
+- `bulkhead/components/demos.css` — kitchen-sink-only demo classes
+- `bulkhead/components/responsive.css` — `@container` query overrides
+- `bulkhead/components/dark.css` — `prefers-color-scheme: dark` overrides
+- `bulkhead/rich-text.css` — prose, links, drag-and-drop overrides
+
+Propshaft rewrites each `@import url(...)` to a digested asset URL, so
+editing any one piece in isolation is safe.
+
+Bulkhead still accepts `classes:` overrides in its helpers. Those classes are
+passed through as-is; custom caller classes must be covered by the host app's
+own CSS or by selectors already shipped in the component family files.
+
+### Tone vocabulary
+
+Helpers like `alert(color: …)`, `admin_progress_bar(color: …)`, and
+`badge_color_classes(type)` route through `Bulkhead::Tones`, which exposes
+two entry points:
+
+- `Tones.normalize!(input)` — strict; returns the canonical CSS-class string
+  or raises. Use when a tone is required and there's no fallback (alerts).
+- `Tones.coerce(input, allow:, default:)` — validates against a per-component
+  allowlist; returns `default` for nil or out-of-range inputs. Use when the
+  component supports accent classes (`badge.purple`, `badge.high`) or has a
+  sensible fallback (progress bars).
+
+Both entry points are case-insensitive and accept strings or symbols. Add a
+new alias in `lib/bulkhead/tones.rb` and every helper picks it up.
+
+`test/css/tone_coverage_test.rb` asserts every tone the helpers can emit has
+a matching CSS rule somewhere under `bulkhead/components/` — a smoke test
+against drift between the Ruby registry and the stylesheet.
 
 ### Post-install
 
@@ -114,9 +163,6 @@ The engine registers itself through two initializers:
 - **Importmap merging** — Stimulus controllers auto-discovered alongside host controllers
 - **Propshaft asset paths** — JS, CSS, and vendor assets served by the host's asset pipeline
 
-Tailwind CSS class scanning is handled entirely by `tailwindcss-rails` via the
-engine's `app/assets/tailwind/bulkhead/engine.css` entry point.
-
 ## Running engine tests
 
 ```bash
@@ -124,3 +170,14 @@ cd vendor/bulkhead && rake test
 ```
 
 The engine has its own test suite with a minimal dummy Rails app (no database required).
+
+## Running the kitchen sink in isolation
+
+The dummy app under `test/dummy/` doubles as a runnable Rails app for browsing
+the component showcase without a host:
+
+```bash
+bundle install
+bin/rails server
+# then open http://localhost:3000 (redirects to /kitchen_sink)
+```

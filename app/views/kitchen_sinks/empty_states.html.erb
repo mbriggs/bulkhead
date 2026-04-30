@@ -26,8 +26,8 @@
 
   <div class="<%= card_classes %>">
     <%= card_header("Different Icons", "Pick an icon that matches the missing content type.") %>
-    <div class="p-5">
-      <div class="grid grid-cols-1 gap-6 @sm:grid-cols-3">
+    <div class="demo-card-body">
+      <div class="demo-grid three">
         <div class="<%= card_classes %>">
           <%= empty_state("No notifications yet.", icon: :bell, title: "No Notifications") %>
         </div>
@@ -36,6 +36,35 @@
         </div>
         <div class="<%= card_classes %>">
           <%= empty_state("Nothing in your inbox.", icon: :inbox, title: "All Caught Up") %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Illustrations", "Pass illustration: to use a custom line illustration in place of the heroicon. Two-color (zinc base + primary accent) with dark-mode variants.") %>
+    <div class="demo-card-body">
+      <div class="demo-grid three">
+        <div class="<%= card_classes %>">
+          <%= empty_state("Try a different query.", illustration: :no_results, title: "No matches") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("New mail will appear here.", illustration: :empty_inbox, title: "Inbox empty") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Charts populate after the first run.", illustration: :no_data, title: "No data yet") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Something went wrong loading this view.", illustration: :error, title: "Error") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Everything's processed and on its way.", illustration: :success, title: "All done") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Ask an admin to grant access.", illustration: :permission, title: "Restricted") %>
+        </div>
+        <div class="<%= card_classes %>">
+          <%= empty_state("Crunching the numbers — this can take a moment.", illustration: :loading, title: "Loading") %>
         </div>
       </div>
     </div>

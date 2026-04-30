@@ -79,6 +79,15 @@ module PageHelper
     tag.div(content, class: "page-header-datum")
   end
 
+  # Renders counted pill navigation for filters and small view switches.
+  def pill_nav(items, label:, classes: nil)
+    tag.nav(class: classnames("pill-nav", classes), aria: { label: }) do
+      safe_join(items.map do |item|
+        pill_nav_item(**item)
+      end)
+    end
+  end
+
   # Standalone section helper for use outside forms.
   # Renders the same partial as the form builder's section method.
   #
@@ -224,4 +233,17 @@ module PageHelper
       sticky:, separator:
     }
   end
+
+  private
+    def pill_nav_item(label:, href:, count: nil, active: false, tone: nil, **options)
+      link_options = options
+      link_options[:class] = classnames("pill-nav-item", tone, { "active" => active }, options[:class])
+      link_options[:"aria-current"] = "page" if active
+
+      link_to href, **link_options do
+        parts = [ tag.span(label, class: "pill-nav-label") ]
+        parts << tag.span(count, class: "pill-nav-count") unless count.nil?
+        safe_join(parts)
+      end
+    end
 end

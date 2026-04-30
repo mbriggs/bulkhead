@@ -22,6 +22,6 @@ module HtmlHelper
       end
     end
 
-    classes.compact.uniq.join(" ")
+    classes.reject(&:empty?).uniq.join(" ")
   end
 end

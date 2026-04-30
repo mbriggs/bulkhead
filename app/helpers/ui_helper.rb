@@ -1,5 +1,8 @@
 module UiHelper
   TOOLTIP_POSITIONS = %i[top bottom left right].freeze
+  PROGRESS_TONES = %i[default primary success warning danger info].freeze
+  PROGRESS_SIZES = %i[xs sm md].freeze
+  STATUS_DOT_TONES = %i[default primary success warning danger info].freeze
 
   def sortable_handle(icon_name: :bars_3, classes: "sortable-handle")
     icon(icon_name, classes:, data: { sortable_target: "handle" })
@@ -45,6 +48,43 @@ module UiHelper
       tag.span(class: css, &block)
     else
       tag.span(text, class: css)
+    end
+  end
+
+  # Horizontal progress indicator with ARIA attributes. `value` and `total`
+  # are numeric; tone controls the fill color.
+  def progress_bar(value, total: 100, tone: :info, size: :md, classes: nil)
+    tone = Bulkhead::Tones.coerce(tone, allow: PROGRESS_TONES, default: :info)
+    size = size.to_sym
+    raise ArgumentError, "Unknown progress size: #{size}" unless PROGRESS_SIZES.include?(size)
+
+    total = total.to_i
+    current = value.to_i
+    pct = total.zero? ? 0 : ((current.to_f / total) * 100).clamp(0, 100)
+
+    tag.span(
+      class: classnames("progress", size, classes),
+      role: "progressbar",
+      aria: { valuenow: current, valuemin: 0, valuemax: total }
+    ) do
+      tag.span("", class: classnames("progress-bar", tone), style: "--progress-value: #{pct.round}%")
+    end
+  end
+
+  # Compact status dot used in dense rows and live-state indicators.
+  def status_dot(tone: :default, pulse: false, classes: nil)
+    tone = Bulkhead::Tones.coerce(tone, allow: STATUS_DOT_TONES, default: :default)
+    tag.span("", class: classnames("status-dot", tone, { "pulse" => pulse }, classes), aria: { hidden: true })
+  end
+
+  # Definition-list metric grid for small telemetry counters.
+  def metric_grid(items, classes: nil)
+    tag.dl(class: classnames("metric-grid", classes)) do
+      safe_join(items.map do |label, value, tone|
+        tag.div(class: classnames("metric", tone)) do
+          tag.dt(label) + tag.dd(value)
+        end
+      end)
     end
   end
 

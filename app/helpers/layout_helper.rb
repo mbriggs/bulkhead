@@ -22,13 +22,29 @@ module LayoutHelper
     content_tag(:div, class: "shell", data: { controller: "shell" }, &block)
   end
 
-  def shell_sidebar(brand:, brand_href: "/", brand_icon: :rectangle_stack, &block)
+  # Inline script that applies the saved theme class before CSS paints.
+  def theme_bootstrap_script(storage_key: "theme", class_name: "is-dark")
+    script = <<~JS
+      (function () {
+        var saved = localStorage.getItem("#{j(storage_key)}");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.classList.add("#{j(class_name)}");
+        }
+      })();
+    JS
+
+    tag.script(script.html_safe, nonce: content_security_policy_nonce)
+  end
+
+  def shell_sidebar(brand:, brand_href: "/", brand_icon: :rectangle_stack, actions: nil, &block)
     content_tag(:aside, class: "shell-sidebar", data: { shell_target: "sidebar" }) do
       header = content_tag(:div, class: "shell-sidebar-header") do
-        link_to(brand_href, class: "shell-sidebar-header-link") do
+        brand_link = link_to(brand_href, class: "shell-sidebar-header-link") do
           icon(brand_icon, classes: "shell-nav-icon") +
             content_tag(:span, brand, class: "shell-sidebar-brand")
         end
+        brand_link + (actions || "".html_safe)
       end
       nav = content_tag(:nav, class: "shell-sidebar-nav", &block)
       header + nav

@@ -1,23 +1,72 @@
 /* Auto-extracted from components.css. Edit alongside its siblings; the @layer wrapper merges across files. */
 @layer components {
   .progress {
+    display: block;
     width: 100%;
     height: 0.5rem;
     overflow: hidden;
     border-radius: 9999px;
     background-color: var(--color-zinc-200);
   }
-  .progress-bar {
+  .progress.xs {
+    height: 0.25rem;
+  }
+  .progress.sm {
+    height: 0.375rem;
+  }
+  .progress.md {
     height: 0.5rem;
+  }
+  .progress.inline {
+    display: inline-block;
+    width: 6rem;
+  }
+  .progress-bar {
+    display: block;
+    width: var(--progress-value, 0%);
+    height: 100%;
     border-radius: 9999px;
     background-color: var(--color-info-500);
+    transition: width 200ms var(--ease-out);
   }
   .progress-bar.info { background-color: var(--color-info-500); }
   .progress-bar.primary { background-color: var(--color-primary-500); }
   .progress-bar.success { background-color: var(--color-success-500); }
   .progress-bar.warning { background-color: var(--color-warning-500); }
   .progress-bar.danger { background-color: var(--color-danger-500); }
-  .progress-bar.default { background-color: var(--color-zinc-500); }
+  .progress-bar.default { background-color: var(--border-strong); }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  .metric {
+    border: 1px solid var(--border-1);
+    border-top: 2px solid var(--metric-accent, var(--border-strong));
+    border-radius: 0.5rem;
+    padding: var(--space-2_5) var(--space-3);
+    background: var(--surface-sunken);
+  }
+  .metric.default { --metric-accent: var(--border-strong); }
+  .metric.primary { --metric-accent: var(--color-primary-500); }
+  .metric.success { --metric-accent: var(--color-success-500); }
+  .metric.warning { --metric-accent: var(--color-warning-500); }
+  .metric.danger { --metric-accent: var(--color-danger-500); }
+  .metric.info { --metric-accent: var(--color-info-500); }
+  .metric > dt {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .metric > dd {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
 
   .modal {
     width: 100%;

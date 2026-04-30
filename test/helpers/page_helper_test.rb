@@ -16,6 +16,17 @@ class PageHelperTest < ActionView::TestCase
     assert_match(/borderless/, html)
   end
 
+  test "pill_nav renders counted active filter links" do
+    html = pill_nav([
+      { label: "All", href: "/jobs", count: 3, active: true },
+      { label: "Failed", href: "/jobs?status=failed", count: 1 }
+    ], label: "Job filters")
+
+    assert_match(/<nav class="pill-nav" aria-label="Job filters">/, html)
+    assert_match(/class="pill-nav-item active" aria-current="page"/, html)
+    assert_match(/class="pill-nav-count">3<\/span>/, html)
+  end
+
   test "custom appends html to custom_entries in to_state" do
     builder = PageHelper::PageHeaderBuilder.new
     builder.custom("<span>hello</span>".html_safe)

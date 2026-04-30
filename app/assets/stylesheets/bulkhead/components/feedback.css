@@ -50,6 +50,40 @@
     width: 0.5rem;
     height: 0.5rem;
   }
+  .status-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--border-strong);
+  }
+  .status-dot.default { background: var(--border-strong); }
+  .status-dot.primary { background: var(--color-primary-600); }
+  .status-dot.success { background: var(--color-success-500); }
+  .status-dot.warning { background: var(--color-warning-500); }
+  .status-dot.danger { background: var(--color-danger-500); }
+  .status-dot.info { background: var(--color-info-500); }
+  .status-dot.pulse::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.4;
+    animation: status-dot-pulse 1.5s ease-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot.pulse::after {
+      animation: none;
+    }
+  }
+  @keyframes status-dot-pulse {
+    to {
+      opacity: 0;
+      transform: scale(2);
+    }
+  }
   .status-circle.active .status-circle-dot {
     background-color: var(--color-info-500);
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;

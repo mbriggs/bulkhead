@@ -3,18 +3,18 @@
 # Helpers
 
 Helpers are the primary UI abstraction — not partials or view components. They
-output complete HTML with Tailwind classes and auto-attach Stimulus controllers.
+output complete HTML with Bulkhead CSS classes and auto-attach Stimulus controllers.
 
 ## Visual layers
 
 The UI has three depth layers:
 
-- **Layer -1 — Sidebar.** Dark (`bg-zinc-900`), fixed, always-present chrome.
+- **Layer -1 — Sidebar.** Dark, fixed, always-present chrome.
   Depth is expressed through color alone — shadow can't darken a near-black
   surface. The sidebar's darkness is its shadow.
-- **Layer 0 — Page.** The gray background (`bg-zinc-50`). The neutral ground
+- **Layer 0 — Page.** The gray background. The neutral ground
   everything else sits on.
-- **Layer 1 — Cards and header.** White surfaces with `shadow-sm`. Shadow does
+- **Layer 1 — Cards and header.** White surfaces with restrained shadows. Shadow does
   the depth work here because the luminance gap from layer 0 is small.
 
 Everything ON layer 1 is flat — no nested shadows. This is the shadow nesting

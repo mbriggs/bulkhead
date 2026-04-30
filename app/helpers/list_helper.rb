@@ -80,6 +80,34 @@ module ListHelper
   # `purple` and `high` that exist only on `.badge`.
   BADGE_TONES = %i[default primary danger success warning info purple high].freeze
 
+  # Wraps a dense, border-separated list of compact rows.
+  #
+  #   <%= compact_list do %>
+  #     <%= compact_row title: "Queued job", href: job_path(job), meta: "2m ago" %>
+  #   <% end %>
+  def compact_list(classes: nil, &block)
+    tag.ul(class: classnames("compact-list", classes), &block)
+  end
+
+  # Renders a compact scan row with optional leading, trailing, and metadata
+  # slots. Pass a block when the row body needs custom markup.
+  def compact_row(title: nil, href: nil, leading: nil, trailing: nil, meta: nil, classes: nil, **options, &block)
+    body = if block_given?
+      capture(&block)
+    else
+      compact_row_content(title:, leading:, trailing:, meta:)
+    end
+
+    row_classes = classnames("compact-row", classes)
+    if href
+      link_to href, **options, class: row_classes do
+        body
+      end
+    else
+      tag.div(body, **options, class: row_classes)
+    end
+  end
+
   # Color classes for a badge type. Used by the item_list partial.
   # Accepts canonical tones (:primary, :danger, …), accent classes
   # (:purple, :high), or color/status aliases. Unknown inputs fall back
@@ -118,6 +146,15 @@ module ListHelper
   end
 
   private
+
+  def compact_row_content(title:, leading:, trailing:, meta:)
+    safe_join([
+      leading,
+      tag.span(title, class: "compact-row-title"),
+      trailing,
+      (tag.span(meta, class: "compact-row-meta") if meta.present?)
+    ].compact)
+  end
 
   def resolve_item_path(path, object)
     case path

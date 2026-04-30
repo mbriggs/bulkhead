@@ -52,7 +52,7 @@ module FormHelper
     custom_classes << default_class(size, "form")
     custom_classes << padding if padding
 
-    append_class!(kwargs, custom_classes.join(" "))
+    append_class!(kwargs, custom_classes.compact.join(" "))
 
     # Add Turbo permanence if requested
     if permanence
@@ -314,6 +314,12 @@ module FormHelper
         append_class!(kwargs, element_classes(method), {
           "color" => helper == :color_field
         })
+
+        # Rails' text-field family auto-defaults the HTML `size` attribute
+        # to `maxlength` when both are given, producing visibly oversized
+        # inputs. Our `:size` is a grid hint for form_group, never the HTML
+        # attribute, so suppress the auto-default explicitly.
+        kwargs[:size] = nil if kwargs.key?(:maxlength)
 
         input = super(method, *args, **kwargs, &blk)
 

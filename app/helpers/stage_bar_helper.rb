@@ -18,9 +18,9 @@
 module StageBarHelper
   # Renders the full stage bar as a secondary header band.
   def stage_bar(stages, current:)
-    tag.nav(class: "border-b border-zinc-200 dark:border-zinc-700 bg-transparent mt-10 mb-8") do
-      tag.div(class: "mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8") do
-        tag.div(class: "flex items-center justify-center pt-4 pb-10 w-3/4 mx-auto") do
+    tag.nav(class: "stage-bar") do
+      tag.div(class: "stage-bar-container") do
+        tag.div(class: "stage-bar-track") do
           parts = stages.each_with_index.map do |stage, i|
             item = stage_bar_item(stage, current:)
             if i < stages.length - 1
@@ -35,25 +35,25 @@ module StageBarHelper
     end
   end
 
-  # Small circle indicator (h-4 w-4) for compact sub-step rows.
+  # Small circle indicator for compact sub-step rows.
   # Shared across stepper and stage bar contexts.
   def stage_bar_small_circle(status)
     case status
     when :completed
-      tag.div(class: "flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-success-500") do
-        icon(:check, classes: "h-2.5 w-2.5 text-white", variant: :solid)
+      tag.div(class: "status-circle sm completed") do
+        icon(:check, classes: "status-circle-icon sm", variant: :solid)
       end
     when :active
-      tag.div(class: "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-info-500") do
-        tag.div(class: "h-1.5 w-1.5 rounded-full bg-info-500 animate-pulse")
+      tag.div(class: "status-circle sm active") do
+        tag.div(class: "status-circle-dot sm")
       end
     when :failed
-      tag.div(class: "flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-danger-500") do
-        icon(:x_mark, classes: "h-2.5 w-2.5 text-white", variant: :solid)
+      tag.div(class: "status-circle sm failed") do
+        icon(:x_mark, classes: "status-circle-icon sm", variant: :solid)
       end
     else
-      tag.div(class: "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-zinc-300 dark:border-zinc-600") do
-        tag.div(class: "h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600")
+      tag.div(class: "status-circle sm pending") do
+        tag.div(class: "status-circle-dot sm")
       end
     end
   end
@@ -69,32 +69,32 @@ module StageBarHelper
 
     if stage[:path] && !is_current
       tag.a(content, href: stage[:path],
-        class: "flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity")
+        class: "stage-bar-item stage-bar-link")
     else
-      tag.span(content, class: "flex items-center gap-2 shrink-0")
+      tag.span(content, class: "stage-bar-item")
     end
   end
 
   # Horizontal line between stages. Solid for completed/failed, dashed for incomplete.
   def stage_bar_connector(from_status)
-    style = (from_status == :completed || from_status == :failed) ? "border-solid" : "border-dashed"
-    tag.span(class: "flex-1 mx-6 h-px border-t border-zinc-300 dark:border-zinc-600 #{style}")
+    solid = from_status == :completed || from_status == :failed
+    tag.span(class: classnames("stage-bar-connector", { "solid" => solid }))
   end
 
   # Status icon: check_circle (completed), x_circle (failed), filled dot (active), open dot (pending).
   def stage_bar_icon(status)
     case status
     when :completed
-      icon(:check_circle, variant: :solid, classes: "h-6 w-6 text-success-500 dark:text-success-400")
+      icon(:check_circle, variant: :solid, classes: "stage-bar-icon completed")
     when :failed
-      icon(:x_circle, variant: :solid, classes: "h-6 w-6 text-danger-500 dark:text-danger-400")
+      icon(:x_circle, variant: :solid, classes: "stage-bar-icon failed")
     when :active
-      tag.span(class: "flex h-6 w-6 items-center justify-center") do
-        tag.span(class: "h-3.5 w-3.5 rounded-full bg-primary-500 dark:bg-primary-400")
+      tag.span(class: "stage-bar-dot-wrap") do
+        tag.span(class: "stage-bar-dot active")
       end
     else
-      tag.span(class: "flex h-6 w-6 items-center justify-center") do
-        tag.span(class: "h-3.5 w-3.5 rounded-full border-2 border-zinc-300 dark:border-zinc-600")
+      tag.span(class: "stage-bar-dot-wrap") do
+        tag.span(class: "stage-bar-dot pending")
       end
     end
   end
@@ -102,13 +102,11 @@ module StageBarHelper
   # Stage label text with color based on status.
   def stage_bar_label(label, status, current:)
     color = case status
-    when :completed then "font-semibold text-zinc-700 dark:text-zinc-300"
-    when :active then "font-semibold text-zinc-900 dark:text-zinc-100"
-    when :failed then "font-semibold text-danger-600 dark:text-danger-400"
-    else "font-semibold text-zinc-400 dark:text-zinc-500"
+    when :completed then "completed"
+    when :active then "active"
+    when :failed then "failed"
     end
-    color += " underline underline-offset-[6px] decoration-2 decoration-primary-500 dark:decoration-primary-400" if current
-    tag.span(label, class: "text-base #{color}")
+    tag.span(label, class: classnames("stage-bar-label", color, { "current" => current }))
   end
 
   # Optional hint text after the label.
@@ -116,10 +114,10 @@ module StageBarHelper
     return "".html_safe if hint.blank?
 
     color = case status
-    when :completed, :active then "text-zinc-500 dark:text-zinc-400"
-    when :failed then "text-danger-500 dark:text-danger-400"
-    else "text-zinc-400 dark:text-zinc-500"
+    when :completed then "completed"
+    when :active then "active"
+    when :failed then "failed"
     end
-    tag.span(hint, class: "text-sm -ml-1 #{color}")
+    tag.span(hint, class: classnames("stage-bar-hint", color))
   end
 end

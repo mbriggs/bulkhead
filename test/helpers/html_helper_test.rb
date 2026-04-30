@@ -28,14 +28,14 @@ class HtmlHelperTest < ActionView::TestCase
   # --- default_class ---
 
   test "default_class returns default when value is nil" do
-    assert_equal "max-w-prose", default_class(nil, "max-w-prose")
+    assert_equal "form", default_class(nil, "form")
   end
 
   test "default_class returns custom value when provided" do
-    assert_equal "max-w-lg", default_class("max-w-lg", "max-w-prose")
+    assert_equal "wide", default_class("wide", "form")
   end
 
   test "default_class returns nil when value is false" do
-    assert_nil default_class(false, "max-w-prose")
+    assert_nil default_class(false, "form")
   end
 end

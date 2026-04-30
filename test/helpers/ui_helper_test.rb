@@ -8,50 +8,97 @@ class UiHelperTest < ActionView::TestCase
 
   test "status_badge active uses success colors" do
     html = status_badge(true)
-    assert_match /Active/, html
-    assert_match /bg-success-100/, html
+    assert_match(/Active/, html)
+    assert_match(/class="[^"]*\bbadge\b[^"]*\bsuccess\b/, html)
   end
 
   test "status_badge inactive uses zinc colors" do
     html = status_badge(false)
-    assert_match /Inactive/, html
-    assert_match /bg-zinc-100/, html
+    assert_match(/Inactive/, html)
+    assert_match(/class="[^"]*\bbadge\b[^"]*\bdefault\b/, html)
   end
 
   test "status_badge text style uses text-only classes" do
     html = status_badge(true, style: :text)
-    assert_match /text-success-600/, html
-    refute_match /rounded-full/, html
+    assert_match(/class="[^"]*\bstatus-text\b[^"]*\bactive\b/, html)
+    refute_match(/\bbadge\b/, html)
   end
 
   test "status_badge custom labels with boolean keys" do
     html = status_badge(true, labels: { true => "On", false => "Off" })
-    assert_match /On/, html
+    assert_match(/On/, html)
   end
 
   # -- badge --
 
   test "badge accepts a block for rich content" do
-    html = badge(colors: "bg-blue-100 text-blue-700") { "inner content" }
-    assert_match /rounded-full/, html
-    assert_match /inner content/, html
-    assert_match /bg-blue-100/, html
+    html = badge(colors: "info") { "inner content" }
+    assert_match(/pill/, html)
+    assert_match(/inner content/, html)
+    assert_match(/class="[^"]*\bbadge\b[^"]*\binfo\b/, html)
   end
 
   # -- removable_badge --
 
   test "removable_badge renders text with a delete button" do
-    html = removable_badge("Tag", remove_path: "/remove/1", colors: "bg-red-100 text-red-700")
-    assert_match /Tag/, html
-    assert_match /action="\/remove\/1"/, html
-    assert_match /method/, html
+    html = removable_badge("Tag", remove_path: "/remove/1", colors: "danger")
+    assert_match(/Tag/, html)
+    assert_match(/action="\/remove\/1"/, html)
+    assert_match(/method/, html)
   end
 
   test "loading_skeleton with no title and 3 rows" do
     html = loading_skeleton(rows: 3, title: false)
-    assert_match /animate-pulse/, html
-    refute_match /h-8/, html
-    assert_equal 3, html.scan(/h-10/).length
+    assert_match(/skeleton/, html)
+    refute_match(/skeleton-title/, html)
+    assert_equal 3, html.scan(/class="skeleton-row"/).length
+  end
+
+  test "truncated_text uses static line clamp class with a CSS variable" do
+    html = truncated_text("Long text", lines: 7)
+
+    assert_match(/line-clamp/, html)
+    refute_match(/line-clamp-7/, html)
+    assert_match(/--bulkhead-line-clamp: 7/, html)
+  end
+
+  test "render_markdown preserves safe GitHub-flavored markdown attributes" do
+    html = render_markdown(<<~MARKDOWN)
+      [Bulkhead](https://example.com "Docs")
+
+      | Name | Value |
+      | ---- | :---: |
+      | One | Two |
+
+      - [x] Done
+    MARKDOWN
+
+    assert_match(/href="https:\/\/example.com"/, html)
+    assert_match(/title="Docs"/, html)
+    assert_match(/align="center"/, html)
+    assert_match(/type="checkbox"/, html)
+    assert_match(/\bchecked(?:="checked"|="")?\b/, html)
+    assert_match(/\bdisabled(?:="disabled"|="")?\b/, html)
+  end
+
+  test "render_markdown emits class based syntax highlighting" do
+    html = render_markdown(<<~MARKDOWN)
+      ```ruby
+      class Demo
+      end
+      ```
+    MARKDOWN
+
+    assert_match(/<pre class="syntax-highlighting">/, html)
+    assert_match(/class="[^"]*\bkeyword\b[^"]*\bcontrol\b/, html)
+    assert_match(/data-controller="code-block-copy"/, html)
+    refute_match(/style="/, html)
+  end
+
+  test "render_markdown removes unsafe markdown URLs" do
+    html = render_markdown("[x](javascript:alert(1))")
+
+    refute_match(/javascript:/, html)
   end
 
   # -- safe_url --

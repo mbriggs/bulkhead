@@ -3,7 +3,7 @@
   <%= h.action "Heroicons", "https://heroicons.com", target: "_blank", icon_name: :arrow_top_right_on_square %>
 <% end %>
 
-<%= page(columns: "") do %>
+<%= page(columns: false) do %>
   <%
     icons = %i[
       plus pencil trash eye arrow_down_tray
@@ -29,12 +29,12 @@
 
   <div class="<%= card_classes %>">
     <%= card_header("Common Icons", "Heroicons used across the app. Reference these names in icon() and icon_name: calls.") %>
-    <div class="p-5">
-      <div class="grid grid-cols-2 @sm:grid-cols-4 @md:grid-cols-6 @lg:grid-cols-8 gap-4">
+    <div class="demo-card-body">
+      <div class="demo-icon-grid">
         <% icons.each do |icon_name| %>
-          <div class="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-colors">
-            <%= icon(icon_name, classes: "h-6 w-6 text-zinc-700 dark:text-zinc-300") %>
-            <span class="text-xs text-zinc-500 dark:text-zinc-400 text-center break-all"><%= icon_name %></span>
+          <div class="demo-icon-tile">
+            <%= icon(icon_name, classes: "demo-icon md") %>
+            <span class="demo-icon-name"><%= icon_name %></span>
           </div>
         <% end %>
       </div>
@@ -42,28 +42,28 @@
   </div>
 
   <div class="<%= card_classes %>">
-    <%= card_header("Icon Sizes", "Control size with Tailwind classes. Match the size to surrounding text.") %>
-    <div class="p-5">
-      <div class="flex items-end gap-6">
-        <div class="text-center">
-          <%= icon(:check_circle, classes: "h-4 w-4 text-zinc-700 dark:text-zinc-300") %>
-          <p class="mt-1 text-xs text-zinc-500">4x4</p>
+    <%= card_header("Icon Sizes", "Control size with authored icon modifiers. Match the size to surrounding text.") %>
+    <div class="demo-card-body">
+      <div class="demo-row end spacious">
+        <div class="demo-center">
+          <%= icon(:check_circle, classes: "demo-icon xs") %>
+          <p class="demo-note demo-offset-xs">4x4</p>
         </div>
-        <div class="text-center">
-          <%= icon(:check_circle, classes: "h-5 w-5 text-zinc-700 dark:text-zinc-300") %>
-          <p class="mt-1 text-xs text-zinc-500">5x5</p>
+        <div class="demo-center">
+          <%= icon(:check_circle, classes: "demo-icon sm") %>
+          <p class="demo-note demo-offset-xs">5x5</p>
         </div>
-        <div class="text-center">
-          <%= icon(:check_circle, classes: "h-6 w-6 text-zinc-700 dark:text-zinc-300") %>
-          <p class="mt-1 text-xs text-zinc-500">6x6</p>
+        <div class="demo-center">
+          <%= icon(:check_circle, classes: "demo-icon md") %>
+          <p class="demo-note demo-offset-xs">6x6</p>
         </div>
-        <div class="text-center">
-          <%= icon(:check_circle, classes: "h-8 w-8 text-zinc-700 dark:text-zinc-300") %>
-          <p class="mt-1 text-xs text-zinc-500">8x8</p>
+        <div class="demo-center">
+          <%= icon(:check_circle, classes: "demo-icon lg") %>
+          <p class="demo-note demo-offset-xs">8x8</p>
         </div>
-        <div class="text-center">
-          <%= icon(:check_circle, classes: "h-12 w-12 text-zinc-700 dark:text-zinc-300") %>
-          <p class="mt-1 text-xs text-zinc-500">12x12</p>
+        <div class="demo-center">
+          <%= icon(:check_circle, classes: "demo-icon xl") %>
+          <p class="demo-note demo-offset-xs">12x12</p>
         </div>
       </div>
     </div>
@@ -71,8 +71,8 @@
 
   <div class="<%= card_classes %>">
     <%= card_header("Icon Links", "Use icon_link_to for action icons in rows or toolbars. Add tooltip_text: for hover labels.") %>
-    <div class="p-5">
-      <div class="flex items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-row lg">
         <%= icon_link_to(:pencil, link_demo_kitchen_sink_path(label: "Edit"), tooltip_text: "Edit") %>
         <%= icon_link_to(:trash, link_demo_kitchen_sink_path(label: "Delete"), tooltip_text: "Delete") %>
         <%= icon_link_to(:eye, link_demo_kitchen_sink_path(label: "View"), tooltip_text: "View") %>

@@ -5,20 +5,20 @@ import { Controller } from "@hotwired/stimulus"
 //
 //   <div data-controller="reader-mode">
 //     <button data-action="reader-mode#open">Expand</button>
-//     <dialog data-reader-mode-target="dialog">...</dialog>
+//     <dialog data-reader-mode-target="dialog">…</dialog>
 //   </div>
 //
 export default class extends Controller {
   static targets = ["dialog"]
 
   disconnect() {
-    document.documentElement.classList.remove("overflow-hidden")
+    document.documentElement.classList.remove("scroll-locked")
   }
 
   open(event) {
     event.preventDefault()
     this.previousFocus = document.activeElement
-    document.documentElement.classList.add("overflow-hidden")
+    document.documentElement.classList.add("scroll-locked")
     this.dialogTarget.showModal()
   }
 
@@ -28,7 +28,7 @@ export default class extends Controller {
   close(event) {
     event?.preventDefault()
     this.dialogTarget.close()
-    document.documentElement.classList.remove("overflow-hidden")
+    document.documentElement.classList.remove("scroll-locked")
     this.previousFocus?.focus()
   }
 }

@@ -1,0 +1,286 @@
+/* Design Tokens */
+@layer theme {
+  :root, :host {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+    /* Display face for page-header-title (and similar display-tier text).
+       Defaults to Inter Tight if the host loads it, then falls through to
+       Inter, then system fonts — so the slot is invisible until a host
+       opts in by loading Inter Tight (or overriding --font-display). */
+    --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+    --color-red-50: oklch(97.1% 0.013 17.38);
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-200: oklch(88.5% 0.062 18.334);
+    --color-red-300: oklch(80.8% 0.114 19.571);
+    --color-red-400: oklch(70.4% 0.191 22.216);
+    --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-red-600: oklch(57.7% 0.245 27.325);
+    --color-red-700: oklch(50.5% 0.213 27.518);
+    --color-red-800: oklch(44.4% 0.177 26.899);
+    --color-red-900: oklch(39.6% 0.141 25.723);
+    --color-red-950: oklch(25.8% 0.092 26.042);
+    --color-orange-100: oklch(95.4% 0.038 75.164);
+    --color-orange-400: oklch(75% 0.183 55.934);
+    --color-orange-700: oklch(55.3% 0.195 38.402);
+    --color-orange-900: oklch(40.8% 0.123 38.172);
+    --color-amber-50: oklch(98.7% 0.022 95.277);
+    --color-amber-100: oklch(96.2% 0.059 95.617);
+    --color-amber-200: oklch(92.4% 0.12 95.746);
+    --color-amber-300: oklch(87.9% 0.169 91.605);
+    --color-amber-400: oklch(82.8% 0.189 84.429);
+    --color-amber-500: oklch(76.9% 0.188 70.08);
+    --color-amber-600: oklch(66.6% 0.179 58.318);
+    --color-amber-700: oklch(55.5% 0.163 48.998);
+    --color-amber-800: oklch(47.3% 0.137 46.201);
+    --color-amber-900: oklch(41.4% 0.112 45.904);
+    --color-amber-950: oklch(27.9% 0.077 45.635);
+    --color-yellow-50: oklch(98.7% 0.026 102.212);
+    --color-yellow-100: oklch(97.3% 0.071 103.193);
+    --color-yellow-300: oklch(90.5% 0.182 98.111);
+    --color-yellow-400: oklch(85.2% 0.199 91.936);
+    --color-yellow-600: oklch(68.1% 0.162 75.834);
+    --color-yellow-700: oklch(55.4% 0.135 66.442);
+    --color-yellow-900: oklch(42.1% 0.095 57.708);
+    --color-green-50: oklch(98.2% 0.018 155.826);
+    --color-green-300: oklch(87.1% 0.15 154.449);
+    --color-green-400: oklch(79.2% 0.209 151.711);
+    --color-green-600: oklch(62.7% 0.194 149.214);
+    --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-green-900: oklch(39.3% 0.095 152.535);
+    --color-emerald-50: oklch(97.9% 0.021 166.113);
+    --color-emerald-100: oklch(95% 0.052 163.051);
+    --color-emerald-200: oklch(90.5% 0.093 164.15);
+    --color-emerald-300: oklch(84.5% 0.143 164.978);
+    --color-emerald-400: oklch(76.5% 0.177 163.223);
+    --color-emerald-500: oklch(69.6% 0.17 162.48);
+    --color-emerald-600: oklch(59.6% 0.145 163.225);
+    --color-emerald-700: oklch(50.8% 0.118 165.612);
+    --color-emerald-800: oklch(43.2% 0.095 166.913);
+    --color-emerald-900: oklch(37.8% 0.077 168.94);
+    --color-emerald-950: oklch(26.2% 0.051 172.552);
+    --color-blue-50: oklch(97% 0.014 254.604);
+    --color-blue-100: oklch(93.2% 0.032 255.585);
+    --color-blue-200: oklch(88.2% 0.059 254.128);
+    --color-blue-300: oklch(80.9% 0.105 251.813);
+    --color-blue-400: oklch(70.7% 0.165 254.624);
+    --color-blue-500: oklch(62.3% 0.214 259.815);
+    --color-blue-600: oklch(54.6% 0.245 262.881);
+    --color-blue-700: oklch(48.8% 0.243 264.376);
+    --color-blue-800: oklch(42.4% 0.199 265.638);
+    --color-blue-900: oklch(37.9% 0.146 265.522);
+    --color-blue-950: oklch(28.2% 0.091 267.935);
+    --color-indigo-50: oklch(96.2% 0.018 272.314);
+    --color-indigo-100: oklch(93% 0.034 272.788);
+    --color-indigo-200: oklch(87% 0.065 274.039);
+    --color-indigo-300: oklch(78.5% 0.115 274.713);
+    --color-indigo-400: oklch(67.3% 0.182 276.935);
+    --color-indigo-500: oklch(58.5% 0.233 277.117);
+    --color-indigo-600: oklch(51.1% 0.262 276.966);
+    --color-indigo-700: oklch(45.7% 0.24 277.023);
+    --color-indigo-800: oklch(39.8% 0.195 277.366);
+    --color-indigo-900: oklch(35.9% 0.144 278.697);
+    --color-indigo-950: oklch(25.7% 0.09 281.288);
+    --color-purple-50: oklch(97.7% 0.014 308.299);
+    --color-purple-100: oklch(94.6% 0.033 307.174);
+    --color-purple-300: oklch(82.7% 0.119 306.383);
+    --color-purple-400: oklch(71.4% 0.203 305.504);
+    --color-purple-500: oklch(62.7% 0.265 303.9);
+    --color-purple-600: oklch(55.8% 0.288 302.321);
+    --color-purple-700: oklch(49.6% 0.265 301.924);
+    --color-purple-900: oklch(38.1% 0.176 304.987);
+    --color-zinc-50: oklch(98.5% 0 0);
+    --color-zinc-100: oklch(96.7% 0.001 286.375);
+    --color-zinc-200: oklch(92% 0.004 286.32);
+    --color-zinc-300: oklch(87.1% 0.006 286.286);
+    --color-zinc-400: oklch(70.5% 0.015 286.067);
+    --color-zinc-500: oklch(55.2% 0.016 285.938);
+    --color-zinc-600: oklch(44.2% 0.017 285.786);
+    --color-zinc-700: oklch(37% 0.013 285.805);
+    --color-zinc-800: oklch(27.4% 0.006 286.033);
+    --color-zinc-900: oklch(21% 0.006 285.885);
+    --color-black: #000;
+    --color-white: #fff;
+    --container-sm: 24rem;
+    --container-md: 28rem;
+    --container-lg: 32rem;
+    --container-3xl: 48rem;
+    --container-7xl: 80rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: 1.75rem;
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --tracking-tight: -0.025em;
+    --tracking-wide: 0.025em;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --space-0:   0;
+    --space-px:  1px;
+    --space-0_5: 0.125rem;
+    --space-1:   0.25rem;
+    --space-1_5: 0.375rem;
+    --space-2:   0.5rem;
+    --space-2_5: 0.625rem;
+    --space-3:   0.75rem;
+    --space-3_5: 0.875rem;
+    --space-4:   1rem;
+    --space-5:   1.25rem;
+    --space-6:   1.5rem;
+    --space-7:   1.75rem;
+    --space-8:   2rem;
+    --space-10:  2.5rem;
+    --space-12:  3rem;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-spin: spin 1s linear infinite;
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+    --color-primary-50: var(--color-indigo-50);
+    --color-primary-100: var(--color-indigo-100);
+    --color-primary-200: var(--color-indigo-200);
+    --color-primary-300: var(--color-indigo-300);
+    --color-primary-400: var(--color-indigo-400);
+    --color-primary-500: var(--color-indigo-500);
+    --color-primary-600: var(--color-indigo-600);
+    --color-primary-700: var(--color-indigo-700);
+    --color-primary-800: var(--color-indigo-800);
+    --color-primary-900: var(--color-indigo-900);
+    --color-danger-50: var(--color-red-50);
+    --color-danger-100: var(--color-red-100);
+    --color-danger-200: var(--color-red-200);
+    --color-danger-300: var(--color-red-300);
+    --color-danger-400: var(--color-red-400);
+    --color-danger-500: var(--color-red-500);
+    --color-danger-600: var(--color-red-600);
+    --color-danger-700: var(--color-red-700);
+    --color-danger-800: var(--color-red-800);
+    --color-danger-900: var(--color-red-900);
+    --color-success-50: var(--color-emerald-50);
+    --color-success-100: var(--color-emerald-100);
+    --color-success-200: var(--color-emerald-200);
+    --color-success-300: var(--color-emerald-300);
+    --color-success-400: var(--color-emerald-400);
+    --color-success-500: var(--color-emerald-500);
+    --color-success-600: var(--color-emerald-600);
+    --color-success-700: var(--color-emerald-700);
+    --color-success-800: var(--color-emerald-800);
+    --color-success-900: var(--color-emerald-900);
+    --color-warning-50: var(--color-amber-50);
+    --color-warning-100: var(--color-amber-100);
+    --color-warning-200: var(--color-amber-200);
+    --color-warning-300: var(--color-amber-300);
+    --color-warning-400: var(--color-amber-400);
+    --color-warning-500: var(--color-amber-500);
+    --color-warning-600: var(--color-amber-600);
+    --color-warning-700: var(--color-amber-700);
+    --color-warning-800: var(--color-amber-800);
+    --color-warning-900: var(--color-amber-900);
+    --color-info-50: var(--color-blue-50);
+    --color-info-100: var(--color-blue-100);
+    --color-info-200: var(--color-blue-200);
+    --color-info-300: var(--color-blue-300);
+    --color-info-400: var(--color-blue-400);
+    --color-info-500: var(--color-blue-500);
+    --color-info-600: var(--color-blue-600);
+    --color-info-700: var(--color-blue-700);
+    --color-info-800: var(--color-blue-800);
+    --color-info-900: var(--color-blue-900);
+
+    /* Semantic surfaces — sit between palette and components.
+       Components reference these so dark-mode is one set of overrides
+       (below) instead of a per-property fan-out in dark.css. */
+    --surface-1: var(--color-white);
+    --surface-2: var(--color-zinc-50);
+    --surface-sunken: var(--color-zinc-100);
+    --surface-overlay: var(--color-white);
+    --text-1: var(--color-zinc-900);
+    --text-2: var(--color-zinc-700);
+    --text-muted: var(--color-zinc-500);
+    --text-inverted: var(--color-white);
+    --border-1: var(--color-zinc-200);
+    --border-strong: var(--color-zinc-300);
+
+    /* Chromatic shadows — primary-tinted drop, neutral hairline ring.
+       The signature recurs on every elevated surface (cards, modals,
+       menus, listboxes) without reading as "blue cards." */
+    --shadow-card:
+      0 1px 2px 0 color-mix(in oklab, var(--color-primary-500) 14%, transparent);
+    --shadow-overlay:
+      0 10px 15px -3px color-mix(in oklab, var(--color-primary-500) 14%, transparent),
+      0 4px 6px -4px color-mix(in oklab, var(--color-primary-500) 12%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-zinc-900) 5%, transparent);
+    --shadow-modal:
+      0 20px 25px -5px color-mix(in oklab, var(--color-primary-500) 14%, transparent),
+      0 8px 10px -6px color-mix(in oklab, var(--color-primary-500) 12%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-zinc-900) 5%, transparent);
+
+    /* Signature focus ring — white halo + primary-500 outer.
+       Stacked box-shadow so it works without clipping on inputs/cards/
+       buttons and recurs on every focusable element. */
+    --focus-ring:
+      0 0 0 2px var(--color-white),
+      0 0 0 4px var(--color-primary-500);
+    --focus-ring-danger:
+      0 0 0 2px var(--color-white),
+      0 0 0 4px var(--color-danger-500);
+  }
+
+  /* Dark mode — same semantic names, dark values.
+     Components don't reference palette zinc colors directly; they
+     reference these tokens, so a single override block here flips them
+     all. Components that resist abstraction (badge color matrix, alert
+     tints) stay on raw palette tokens in dark.css. */
+  html.is-dark {
+    --surface-1: var(--color-zinc-800);
+    --surface-2: var(--color-zinc-900);
+    --surface-sunken: var(--color-zinc-800);
+    --surface-overlay: var(--color-zinc-800);
+    --text-1: var(--color-zinc-100);
+    --text-2: var(--color-zinc-300);
+    --text-muted: var(--color-zinc-400);
+    --text-inverted: var(--color-zinc-900);
+    --border-1: var(--color-zinc-700);
+    --border-strong: var(--color-zinc-600);
+
+    /* Dark drop-shadows: tint with primary-400 so the colored aura
+       reads against zinc-800. Hairline ring stays neutral
+       (zinc-700) so it draws an edge instead of disappearing. */
+    --shadow-card:
+      0 1px 2px 0 color-mix(in oklab, var(--color-primary-400) 30%, transparent);
+    --shadow-overlay:
+      0 10px 15px -3px color-mix(in oklab, var(--color-primary-400) 28%, transparent),
+      0 4px 6px -4px color-mix(in oklab, var(--color-primary-400) 22%, transparent),
+      0 0 0 1px var(--color-zinc-700);
+    --shadow-modal:
+      0 20px 25px -5px color-mix(in oklab, var(--color-primary-400) 30%, transparent),
+      0 8px 10px -6px color-mix(in oklab, var(--color-primary-400) 22%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-white) 10%, transparent);
+
+    /* Halo color flips to the dark surface so the ring punches through
+       the surface rather than glowing white against it. */
+    --focus-ring:
+      0 0 0 2px var(--color-zinc-900),
+      0 0 0 4px var(--color-primary-400);
+    --focus-ring-danger:
+      0 0 0 2px var(--color-zinc-900),
+      0 0 0 4px var(--color-danger-400);
+  }
+}

@@ -5,10 +5,11 @@ import { Controller } from "@hotwired/stimulus"
 // When expanded, "less…" appears inline after the full text.
 //
 // Usage:
-//   <div data-controller="truncate" data-truncate-lines-value="3" class="relative">
-//     <p data-truncate-target="content" class="whitespace-pre-wrap line-clamp-3">Long text…</p>
+//   <div data-controller="truncate" data-truncate-lines-value="3" class="truncate">
+//     <p data-truncate-target="content" class="truncate-text line-clamp"
+//        style="--bulkhead-line-clamp: 3">Long text…</p>
 //     <button data-truncate-target="toggle" data-action="truncate#toggle"
-//       class="hidden absolute bottom-0 right-0 ... bg-gradient-to-l ...">more…</button>
+//       class="hidden truncate-toggle overlay">more…</button>
 //   </div>
 export default class extends Controller {
   static targets = ["content", "toggle"]
@@ -19,14 +20,13 @@ export default class extends Controller {
   }
 
   toggle() {
-    const clampClass = `line-clamp-${this.linesValue}`
-    const wasClamped = this.contentTarget.classList.contains(clampClass)
+    const wasClamped = this.contentTarget.classList.contains("line-clamp")
 
     if (wasClamped) {
-      this.contentTarget.classList.remove(clampClass)
+      this.contentTarget.classList.remove("line-clamp")
       this.#showInline()
     } else {
-      this.contentTarget.classList.add(clampClass)
+      this.contentTarget.classList.add("line-clamp")
       this.#showOverlay()
     }
   }
@@ -43,19 +43,15 @@ export default class extends Controller {
   #showOverlay() {
     const btn = this.toggleTarget
     btn.textContent = "more\u2026"
-    btn.classList.add("absolute", "bottom-0", "right-0")
-    btn.classList.remove("relative", "mt-1")
-    btn.classList.add("bg-gradient-to-l", "from-white", "from-60%", "via-white",
-      "dark:from-zinc-800", "dark:via-zinc-800", "to-transparent", "pl-8", "pr-0.5")
+    btn.classList.add("overlay")
+    btn.classList.remove("inline")
   }
 
   // Position inline after the expanded text
   #showInline() {
     const btn = this.toggleTarget
     btn.textContent = "less\u2026"
-    btn.classList.remove("absolute", "bottom-0", "right-0")
-    btn.classList.add("relative", "mt-1")
-    btn.classList.remove("bg-gradient-to-l", "from-white", "from-60%", "via-white",
-      "dark:from-zinc-800", "dark:via-zinc-800", "to-transparent", "pl-8", "pr-0.5")
+    btn.classList.add("inline")
+    btn.classList.remove("overlay")
   }
 }

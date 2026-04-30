@@ -9,8 +9,8 @@ class PaginationHelperTest < ActionView::TestCase
   test "pagination_info renders count and entity name" do
     pagy = PagyStub.new(count: 42)
     html = pagination_info(pagy, "items")
-    assert_match /42/, html
-    assert_match /items found/, html
+    assert_match(/42/, html)
+    assert_match(/items found/, html)
   end
 
   test "pagination_info returns nil for nil pagy" do
@@ -21,7 +21,7 @@ class PaginationHelperTest < ActionView::TestCase
     pagy = PagyStub.new(count: 5)
     klass = Class.new { def self.name = "Problem" }
     html = pagination_info(pagy, klass)
-    assert_match /5/, html
-    assert_match /problems found/, html
+    assert_match(/5/, html)
+    assert_match(/problems found/, html)
   end
 end

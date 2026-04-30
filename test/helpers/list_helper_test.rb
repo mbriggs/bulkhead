@@ -9,13 +9,11 @@ class ListHelperTest < ActionView::TestCase
 
   test "badge_color_classes returns specific colors for known types" do
     classes = badge_color_classes(:green)
-    assert_includes classes, "bg-green-50"
-    assert_includes classes, "text-green-700"
+    assert_includes classes, "success"
   end
 
   test "badge_color_classes returns default zinc for unknown types" do
     classes = badge_color_classes(:nonexistent)
-    assert_includes classes, "bg-zinc-50"
-    assert_includes classes, "text-zinc-600"
+    assert_includes classes, "default"
   end
 end

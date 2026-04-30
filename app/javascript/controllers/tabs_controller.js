@@ -5,7 +5,6 @@ import { Controller } from "@hotwired/stimulus"
 // query string (set data-tabs-persist-value="true" to enable).
 export default class extends Controller {
   static targets = ["tab", "panel"]
-  static classes = ["active", "inactive"]
   static values = { persist: { type: Boolean, default: false } }
 
   connect() {
@@ -15,29 +14,42 @@ export default class extends Controller {
       : this.tabTargets[0]
 
     this.select({ currentTarget: tab || this.tabTargets[0] })
+
+    this.resizeObserver = new ResizeObserver(() => this.#updateIndicator())
+    this.resizeObserver.observe(this.element)
+  }
+
+  disconnect() {
+    if (this.resizeObserver) this.resizeObserver.disconnect()
   }
 
   select(event) {
+    if (event.currentTarget.getAttribute("aria-selected") === "true") return
+
     const selectedTab = event.currentTarget.dataset.tab
 
     this.tabTargets.forEach(tab => {
       const isActive = tab.dataset.tab === selectedTab
       tab.setAttribute("aria-selected", isActive.toString())
-
-      if (isActive) {
-        this.inactiveClasses.forEach(c => tab.classList.remove(c))
-        this.activeClasses.forEach(c => tab.classList.add(c))
-      } else {
-        this.activeClasses.forEach(c => tab.classList.remove(c))
-        this.inactiveClasses.forEach(c => tab.classList.add(c))
-      }
     })
 
     this.panelTargets.forEach(panel => {
       panel.hidden = panel.dataset.tab !== selectedTab
     })
 
+    this.#updateIndicator()
+
     if (this.persistValue) this.#updateURL(selectedTab)
+  }
+
+  #updateIndicator() {
+    requestAnimationFrame(() => {
+      const list = this.element.querySelector(".tabs-list") || this.element
+      const active = this.tabTargets.find(t => t.getAttribute("aria-selected") === "true")
+      if (!active) return
+      list.style.setProperty("--tab-indicator-left", `${active.offsetLeft}px`)
+      list.style.setProperty("--tab-indicator-width", `${active.offsetWidth}px`)
+    })
   }
 
   #tabFromURL() {

@@ -1,13 +1,12 @@
 # Helpers for a full-page reading overlay using native <dialog>.
 #
-# Wraps content in a Stimulus-controlled reader mode with a sticky header
-# for dismissal. Uses the same rendered markdown — the container CSS controls
-# font size, not a separate render call.
+# The dialog has its own typography optimized for prose; size adjustment is
+# left to native browser zoom.
 #
 #   <%= reader_mode do %>
 #     <%= reader_mode_button(tooltip: "Expand") %>
 #     <%= reader_mode_dialog(title: "Implementation Plan") do %>
-#       <%= render_markdown(text, plan: true) %>
+#       <%= render_markdown(text) %>
 #     <% end %>
 #   <% end %>
 #
@@ -21,7 +20,7 @@ module ReaderModeHelper
   def reader_mode_button(tooltip: "Reader mode")
     tooltip(tooltip) do
       tag.button(
-        icon(:arrows_pointing_out, classes: "h-4 w-4"),
+        icon(:arrows_pointing_out, classes: "reader-mode-button-icon"),
         type: "button",
         class: "link-icon",
         data: { action: "reader-mode#open" }
@@ -29,38 +28,29 @@ module ReaderModeHelper
     end
   end
 
-  # Full-page <dialog> overlay with sticky header and scrollable content.
+  # Full-page <dialog> overlay with a sticky header and scrollable body.
   def reader_mode_dialog(title:, &block)
     body = capture(&block)
 
     tag.dialog(
-      class: "reader-mode-dialog m-0 h-full w-full max-h-full max-w-full " \
-             "bg-white dark:bg-zinc-900 p-0 overflow-y-auto " \
-             "backdrop:bg-white dark:backdrop:bg-zinc-900",
+      class: "reader-mode-dialog",
       data: {
         reader_mode_target: "dialog",
         action: "cancel->reader-mode#close"
       }
     ) do
-      # Sticky header bar
-      header = tag.div(
-        class: "sticky top-0 z-10 flex items-center justify-between " \
-               "px-6 py-3 bg-white dark:bg-zinc-900 " \
-               "border-b border-zinc-200 dark:border-zinc-700"
-      ) do
-        tag.h2(title, class: "text-base font-semibold text-zinc-900 dark:text-zinc-100") +
-        tag.button(
-          icon(:x_mark, classes: "h-5 w-5"),
-          type: "button",
-          class: "link-icon",
-          data: { action: "reader-mode#close" }
-        )
+      header = tag.div(class: "reader-mode-header") do
+        tag.h2(title, class: "reader-mode-title") +
+          tag.button(
+            icon(:x_mark, classes: "reader-mode-close-icon"),
+            type: "button",
+            class: "link-icon",
+            "aria-label": "Close",
+            data: { action: "reader-mode#close" }
+          )
       end
 
-      # Scrollable content area
-      content = tag.div(class: "mx-auto max-w-prose px-6 py-8 reader-mode-body") do
-        body
-      end
+      content = tag.div(class: "reader-mode-body") { body }
 
       header + content
     end

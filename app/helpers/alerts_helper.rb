@@ -1,4 +1,6 @@
 module AlertsHelper
+  ALERT_TONES = %i[info success warning danger].freeze
+
   def notice_alert(title, notice = nil)
     alert(
       title:,
@@ -28,29 +30,11 @@ module AlertsHelper
   end
 
   def alert(icon:, title:, content:, color:, disclosure: false, icon_classes: nil)
-    case color
-    when :yellow
-      container_color = "bg-warning-50 dark:bg-warning-900/20"
-      icon_color = "text-warning-400 dark:text-warning-300"
-      header_color = "text-warning-800 dark:text-warning-200"
-      content_color = "text-warning-700 dark:text-warning-300"
-    when :green
-      container_color = "bg-success-50 dark:bg-success-900/20"
-      icon_color = "text-success-400 dark:text-success-300"
-      header_color = "text-success-800 dark:text-success-200"
-      content_color = "text-success-700 dark:text-success-300"
-    when :red
-      container_color = "bg-danger-50 dark:bg-danger-900/20"
-      icon_color = "text-danger-400 dark:text-danger-300"
-      header_color = "text-danger-800 dark:text-danger-200"
-      content_color = "text-danger-700 dark:text-danger-300"
-    when :blue
-      container_color = "bg-info-50 dark:bg-info-900/20"
-      icon_color = "text-info-400 dark:text-info-300"
-      header_color = "text-info-800 dark:text-info-200"
-      content_color = "text-info-700 dark:text-info-300"
-    else
-      raise "color #{color} not supported"
+    # Strict per the README contract: alerts surface caller bugs (e.g.
+    # color: :sucess) instead of silently rendering an info alert.
+    tone = Bulkhead::Tones.normalize!(color)
+    unless ALERT_TONES.map(&:to_s).include?(tone)
+      raise ArgumentError, "Unsupported alert tone: #{color.inspect}. Allowed: #{ALERT_TONES.inspect}"
     end
 
     # Handle title - check if it's a hash with :html or "html" key
@@ -66,7 +50,7 @@ module AlertsHelper
     end
 
     if content.present? && content.is_a?(Array)
-      content = tag.ul(class: "list-disc space-y-1 pl-5") do
+      content = tag.ul(class: "alert-list") do
         safe_join(content.map do |message|
           # Check if array element is a hash with :html or "html" key
           if message.is_a?(Hash) && (message[:html] || message["html"])
@@ -78,11 +62,11 @@ module AlertsHelper
       end
     end
 
-    rendered_icon = icon(icon, classes: classnames(icon_color, "h-5 w-5", icon_classes))
+    rendered_icon = icon(icon, classes: classnames("alert-icon", icon_classes))
 
     render partial: "shared/ui/alert", locals: {
       icon: rendered_icon, title:, content:,
-      container_color:, header_color:, content_color:,
+      tone:,
       disclosure:
     }
   end

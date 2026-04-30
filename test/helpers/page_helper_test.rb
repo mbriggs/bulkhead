@@ -6,15 +6,14 @@ class PageHelperTest < ActionView::TestCase
 
   test "page_separator renders hr tag" do
     html = page_separator
-    assert_match /<hr/, html
-    assert_match /border-zinc-900/, html
+    assert_match(/<hr/, html)
+    assert_match(/separator/, html)
   end
 
   test "page_separator visible false omits border color classes" do
     html = page_separator(visible: false)
-    assert_match /<hr/, html
-    assert_match /border-0/, html
-    refute_match /border-zinc-900/, html
+    assert_match(/<hr/, html)
+    assert_match(/borderless/, html)
   end
 
   test "custom appends html to custom_entries in to_state" do

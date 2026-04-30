@@ -16,7 +16,7 @@ module TableHelper
 
     sort = field
     sort_order = "d"
-    classes = "w-4 h-4 inline text-zinc-400 dark:text-zinc-500"
+    classes = "table-sort-icon"
 
     sorted = sort_params[:sort] == field.to_s
 
@@ -47,6 +47,12 @@ module TableHelper
   end
 
   class TableBuilder
+    ALIGNMENT_CLASSES = {
+      left: "align-left",
+      right: "align-right",
+      center: "align-center"
+    }.freeze
+
     def initialize(template, sortable: false, sortable_endpoint: nil, style: nil)
       @headers = []
       @template = template
@@ -60,58 +66,30 @@ module TableHelper
       @template
     end
 
-    def column(title = nil, cell: nil, text: :left, classes: nil, &blk)
-      # Set default cell styling based on table style
-      if @style == :data
-        cell ||= ""  # No default styling for data tables
-      else
-        cell ||= "px-3 py-3.5 text-sm font-semibold text-zinc-900 dark:text-zinc-100"
-      end
-
-      case text
-      when :left
-        text = "text-left"
-      when :right
-        text = "text-right"
-      when :center
-        text = "text-center"
-      else
+    private def alignment_class(text)
+      ALIGNMENT_CLASSES.fetch(text) do
         raise ArgumentError, "Invalid text alignment: #{text}"
       end
+    end
 
-      if @style == :data
+    def column(title = nil, cell: "", text: :left, classes: nil, &blk)
+      align = alignment_class(text)
+
+      classes = if @style == :data
         # For data tables, only include essential classes (width, alignment)
-        width_class = classes&.split&.find { |c| c.start_with?("w-") }
-        classes = t.classnames(width_class, text)
+        width_class = classes&.split&.find { |c| c.start_with?("width-") }
+        t.classnames(width_class, align)
       else
-        # Add rounded corners for first and last th elements in default tables
-        corner_classes = "first:rounded-tl-lg last:rounded-tr-lg"
-        classes = t.classnames(cell, classes, text, corner_classes)
+        t.classnames(cell, classes, align)
       end
 
       title = t.capture(&blk) if blk
       @headers << { title:, classes: }
     end
 
-    def cell(value = nil, cell: "whitespace-nowrap px-3 py-4 text-sm text-zinc-700 dark:text-zinc-300", text: :left, classes: nil, span: nil, &)
-      content = value
-
-      if block_given?
-        content = t.capture(&)
-      end
-
-      case text
-      when :left
-        text = "text-left"
-      when :right
-        text = "text-right"
-      when :center
-        text = "text-center"
-      else
-        raise ArgumentError, "Invalid text alignment: #{text}"
-      end
-
-      classes = t.classnames(cell, classes, text)
+    def cell(value = nil, cell: "", text: :left, classes: nil, span: nil, &)
+      content = block_given? ? t.capture(&) : value
+      classes = t.classnames(cell, classes, alignment_class(text))
 
       t.tag.td(content, class: classes, colspan: span)
     end
@@ -150,7 +128,7 @@ module TableHelper
       end
     end
 
-    def sort_handle_cell(classes: "cursor-move", cell: "whitespace-nowrap px-3 py-3 text-sm text-zinc-500 dark:text-zinc-400 align-middle", &)
+    def sort_handle_cell(classes: nil, cell: "sortable-cell", &)
       handle = t.sortable_handle
       content = if block_given?
         t.safe_join([ handle, t.capture(&) ])
@@ -184,7 +162,7 @@ module TableHelper
       # Minimal data table style
       classes = classnames(classes)
 
-      tbody_attrs = { class: "divide-y divide-zinc-100 dark:divide-zinc-700" }
+      tbody_attrs = { class: "" }
       if sortable
         tbody_attrs[:data] = { controller: "sortable" }
         if sortable_endpoint
@@ -202,10 +180,10 @@ module TableHelper
       })
     else
       # Default table style
-      classes = classnames(classes, "mt-8", "flow-root")
+      classes = classnames(classes, "table-shell")
 
       # Build tbody attributes
-      tbody_attrs = { class: "divide-y divide-zinc-200 dark:divide-zinc-700" }
+      tbody_attrs = { class: "" }
       if sortable
         tbody_attrs[:data] = { controller: "sortable" }
         if sortable_endpoint
@@ -214,23 +192,12 @@ module TableHelper
         end
       end
 
-      table_class = ""
-      table_style = ""
-      inner_wrapper_class = ""
-      inner_wrapper_style = ""
-      thead_class = "bg-zinc-50 dark:bg-zinc-700/50"
-
       render(partial: "shared/ui/table", locals: {
         body:,
         headers: state[:headers],
         classes:,
         pager:,
-        tbody_attrs:,
-        table_class:,
-        table_style:,
-        inner_wrapper_class:,
-        inner_wrapper_style:,
-        thead_class:
+        tbody_attrs:
       })
     end
   end

@@ -10,22 +10,22 @@ class ModalHelperTest < ActionView::TestCase
 
   test "modal_open_button renders button with modal#open action" do
     html = modal_open_button("Click me")
-    assert_match /<button/, html
+    assert_match(/<button/, html)
     # The > in Stimulus action is HTML-entity-encoded in attributes
     assert_includes html, "click-&gt;modal#open"
-    assert_match /Click me/, html
+    assert_match(/Click me/, html)
   end
 
   test "modal_wrapper renders div with modal controller" do
     html = modal_wrapper { tag.span("inner") }
-    assert_match /data-controller="modal"/, html
-    assert_match /inner/, html
+    assert_match(/data-controller="modal"/, html)
+    assert_match(/inner/, html)
   end
 
-  test "modal_size_class maps size symbols to max-width classes" do
-    assert_equal "max-w-lg", send(:modal_size_class, :md)
-    assert_equal "max-w-3xl", send(:modal_size_class, :wide)
-    assert_includes send(:modal_size_class, :full), "max-w-[90vw]"
+  test "modal_size_class maps size symbols to panel modifiers" do
+    assert_nil send(:modal_size_class, :md)
+    assert_equal "wide", send(:modal_size_class, :wide)
+    assert_equal "full", send(:modal_size_class, :full)
   end
 
   test "modal_dialog raises when given both partial and block" do

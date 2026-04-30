@@ -6,13 +6,13 @@
   <div class="<%= card_classes %>">
     <%= card_header("Hierarchy", "Primary for the main action on a page. Secondary for supporting actions. Soft for low-emphasis options. Danger for destructive actions like deletes.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Primary Action", type: :primary %>
         <%= button "Secondary Action", type: :secondary %>
         <%= button "Soft Action", type: :soft %>
 
-        <span class="text-zinc-300 dark:text-zinc-600">|</span>
+        <span class="demo-divider">|</span>
         <%= button "Danger", type: :danger %>
       </div>
     </div>
@@ -21,8 +21,8 @@
   <div class="<%= card_classes %>">
     <%= card_header("Sizes", "xs/sm for inline or tight spaces. md is the default. lg/xl for page-level primary actions and headers.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Extra Small", type: :primary, size: :xs %>
         <%= button "Small", type: :primary, size: :sm %>
         <%= button "Medium", type: :primary, size: :md %>
@@ -35,14 +35,14 @@
   <div class="<%= card_classes %>">
     <%= card_header("With Icons", "Add icon_name: to reinforce the action. Use icon_right: true for directional cues like \"Next\".") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Create", type: :primary, icon_name: :plus %>
         <%= button "Download", type: :secondary, icon_name: :arrow_down_tray %>
         <%= button "Settings", type: :soft, icon_name: :cog_6_tooth %>
         <%= button "Next", type: :primary, icon_name: :arrow_right, icon_right: true %>
 
-        <span class="text-zinc-300 dark:text-zinc-600">|</span>
+        <span class="demo-divider">|</span>
         <%= button "Delete", type: :danger, icon_name: :trash %>
       </div>
     </div>
@@ -51,8 +51,8 @@
   <div class="<%= card_classes %>">
     <%= card_header("Link Buttons", "Pass url: to render an anchor styled as a button. Use for navigation that should look like an action.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Primary Link", type: :primary, url: link_demo_kitchen_sink_path(label: "Primary") %>
         <%= button "Secondary Link", type: :secondary, url: link_demo_kitchen_sink_path(label: "Secondary") %>
         <%= button "Soft Link", type: :soft, url: link_demo_kitchen_sink_path(label: "Soft") %>
@@ -63,8 +63,8 @@
   <div class="<%= card_classes %>">
     <%= card_header("With Confirmation", "Pass confirm: with a message string. The browser shows a native confirm dialog before the action fires.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Delete Record", type: :danger, url: confirm_demo_kitchen_sink_path, method: :post, confirm: "Are you sure you want to delete this?" %>
       </div>
     </div>
@@ -73,8 +73,8 @@
   <div class="<%= card_classes %>">
     <%= card_header("Disabled", "Pass disabled: true to prevent interaction. Buttons render at 50% opacity with a not-allowed cursor.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Disabled Primary", type: :primary, disabled: true %>
         <%= button "Disabled Secondary", type: :secondary, disabled: true %>
         <%= button "Disabled Soft", type: :soft, disabled: true %>
@@ -85,8 +85,8 @@
   <div class="<%= card_classes %>">
     <%= card_header("With Tooltips", "Pass tooltip_text: for hover context. Use tooltip_position: to control placement.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Hover Me", type: :primary, tooltip_text: "This is a tooltip" %>
         <%= button "Bottom Tip", type: :secondary, tooltip_text: "Tooltip below", tooltip_position: :bottom %>
       </div>
@@ -96,13 +96,13 @@
   <div class="<%= card_classes %>">
     <%= card_header("Flat (Inside Cards)", "Pass shadow: false for buttons rendered inside cards to avoid stacking shadows.") %>
 
-    <div class="p-5">
-      <div class="flex flex-wrap items-center gap-4">
+    <div class="demo-card-body">
+      <div class="demo-cluster">
         <%= button "Flat Primary", type: :primary, shadow: false %>
         <%= button "Flat Secondary", type: :secondary, shadow: false %>
         <%= button "Flat Soft", type: :soft, shadow: false %>
 
-        <span class="text-zinc-300 dark:text-zinc-600">|</span>
+        <span class="demo-divider">|</span>
         <%= button "Flat Danger", type: :danger, shadow: false %>
       </div>
     </div>

@@ -1,0 +1,418 @@
+/* Dark-mode overrides — only what semantic tokens can't reach.
+   Most surfaces, text, and borders flip via tokens.css. What lives
+   here is what genuinely resists abstraction: button color matrix,
+   badge tint matrix, alert tints, syntax-highlighted code, and a
+   handful of components whose dark values diverge from the simple
+   light shade the semantic token implies. */
+@layer components {
+  /* Theme switching:
+     A small inline script in the layout sets `is-dark` on <html> based on
+     localStorage["theme"] or `prefers-color-scheme`. All dark rules below
+     apply only when that class is present, so toggling is purely class-based
+     and never out-of-sync with the OS preference. */
+
+  /* --- Buttons ---------------------------------------------------- */
+  html.is-dark .button.primary {
+    background-color: var(--color-primary-500);
+  }
+  html.is-dark .button.primary:hover {
+    background-color: var(--color-primary-600);
+  }
+  html.is-dark .button.primary:active {
+    background-color: var(--color-primary-400);
+  }
+  html.is-dark .button.danger {
+    background-color: var(--color-danger-500);
+  }
+  html.is-dark .button.danger:hover {
+    background-color: var(--color-danger-600);
+  }
+  html.is-dark .button.danger:active {
+    background-color: var(--color-danger-400);
+  }
+  html.is-dark .button.secondary {
+    color: var(--color-zinc-300);
+  }
+  html.is-dark .button.secondary:hover {
+    background-color: var(--color-zinc-900);
+  }
+  html.is-dark .button.secondary:active {
+    background-color: var(--color-zinc-700);
+  }
+  html.is-dark .button.soft {
+    color: var(--color-primary-400);
+    background-color: color-mix(in oklab, var(--color-primary-900) 75%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-primary-500) 20%, transparent);
+  }
+  html.is-dark .button.soft:hover {
+    background-color: color-mix(in oklab, var(--color-primary-800) 75%, transparent);
+  }
+  html.is-dark .button.soft:active {
+    background-color: color-mix(in oklab, var(--color-primary-900) 50%, transparent);
+  }
+
+  /* --- Forms ------------------------------------------------------ */
+  html.is-dark .input::placeholder {
+    color: var(--color-zinc-500);
+  }
+  html.is-dark select.input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  }
+  html.is-dark .input:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary-500);
+  }
+  html.is-dark .input.invalid {
+    box-shadow: inset 0 0 0 1px var(--color-danger-500);
+  }
+  html.is-dark .checkbox {
+    color: var(--color-primary-500);
+    background-color: var(--color-zinc-800);
+  }
+  /* Indicator needs to lift off the same-luminance segmented track. */
+  html.is-dark .segmented::after {
+    background: var(--color-zinc-700);
+  }
+  html.is-dark .toggle-switch {
+    background-color: var(--color-zinc-700);
+  }
+  html.is-dark .toggle-switch[aria-checked="true"] {
+    background-color: var(--color-primary-500);
+  }
+  html.is-dark .combobox-option:hover:not([aria-selected="true"]) {
+    background-color: var(--color-zinc-700);
+  }
+
+  /* --- Surfaces & inset ------------------------------------------- */
+  html.is-dark .inset {
+    background-color: color-mix(in oklab, var(--color-zinc-800) 80%, transparent);
+  }
+
+  /* --- Tables ----------------------------------------------------- */
+  html.is-dark .table-frame {
+    box-shadow:
+      0 1px 2px 0 color-mix(in oklab, var(--color-primary-400) 20%, transparent),
+      0 0 0 1px var(--color-zinc-700);
+  }
+  html.is-dark .table thead {
+    background-color: color-mix(in oklab, var(--color-zinc-700) 50%, transparent);
+  }
+  html.is-dark .table td {
+    color: var(--color-zinc-300);
+  }
+  html.is-dark .table.data tbody > tr + tr {
+    border-top-color: var(--color-zinc-800);
+  }
+
+  /* --- Pagination & pagy series-nav ------------------------------- */
+  html.is-dark .pagination {
+    background-color: var(--color-zinc-800);
+  }
+  html.is-dark .pagy.series-nav > a {
+    box-shadow: inset 0 0 0 1px var(--color-zinc-700);
+  }
+  html.is-dark .pagy.series-nav > a:hover {
+    background-color: var(--color-zinc-800);
+  }
+  html.is-dark .pagy.series-nav > a[aria-current="page"] {
+    color: var(--color-primary-400);
+    background-color: color-mix(in oklab, var(--color-primary-900) 75%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-primary-500) 20%, transparent);
+  }
+  html.is-dark .pagy.series-nav > a[aria-disabled="true"][aria-label="Previous"],
+  html.is-dark .pagy.series-nav > a[aria-disabled="true"][aria-label="Next"] {
+    color: var(--color-zinc-600);
+  }
+
+  /* --- Item list / table empty cell ------------------------------- */
+  html.is-dark .item-list-row:hover {
+    background-color: color-mix(in oklab, var(--color-zinc-700) 50%, transparent);
+  }
+  html.is-dark .item-list-media {
+    background-color: var(--color-zinc-700);
+  }
+  html.is-dark .item-list-fallback-icon,
+  html.is-dark .item-list-meta-icon {
+    color: var(--color-zinc-500);
+  }
+
+  /* --- Badge color matrix (irreducible) --------------------------- */
+  html.is-dark .badge.default {
+    color: var(--color-zinc-300);
+    background-color: var(--color-zinc-700);
+    --badge-ring-color: color-mix(in oklab, var(--color-zinc-400) 20%, transparent);
+  }
+  html.is-dark .badge.purple {
+    color: var(--color-purple-300);
+    background-color: color-mix(in oklab, var(--color-purple-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-purple-400) 20%, transparent);
+  }
+  html.is-dark .badge.info,
+  html.is-dark .badge.blue {
+    color: var(--color-info-300);
+    background-color: color-mix(in oklab, var(--color-info-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-info-400) 20%, transparent);
+  }
+  html.is-dark .badge.success,
+  html.is-dark .badge.green {
+    color: var(--color-success-300);
+    background-color: color-mix(in oklab, var(--color-success-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-success-400) 20%, transparent);
+  }
+  html.is-dark .badge.danger,
+  html.is-dark .badge.red {
+    color: var(--color-danger-300);
+    background-color: color-mix(in oklab, var(--color-danger-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-danger-400) 20%, transparent);
+  }
+  html.is-dark .badge.warning,
+  html.is-dark .badge.yellow {
+    color: var(--color-warning-300);
+    background-color: color-mix(in oklab, var(--color-warning-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-warning-400) 20%, transparent);
+  }
+  html.is-dark .badge.primary {
+    color: var(--color-primary-300);
+    background-color: color-mix(in oklab, var(--color-primary-900) 20%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-primary-400) 20%, transparent);
+  }
+  html.is-dark .badge.high {
+    color: var(--color-orange-400);
+    background-color: color-mix(in oklab, var(--color-orange-900) 30%, transparent);
+    --badge-ring-color: color-mix(in oklab, var(--color-orange-400) 20%, transparent);
+  }
+  html.is-dark .badge-remove:hover {
+    color: var(--color-primary-200);
+  }
+
+  /* --- Admin nav / page header (specific palette colors) --------- */
+  html.is-dark .admin-nav-item {
+    color: var(--color-zinc-400);
+  }
+  html.is-dark .admin-nav-item:hover {
+    color: var(--color-zinc-200);
+    background-color: color-mix(in oklab, var(--color-zinc-700) 50%, transparent);
+  }
+  html.is-dark .admin-nav-item.active {
+    color: var(--color-primary-400);
+    background-color: color-mix(in oklab, var(--color-primary-900) 30%, transparent);
+  }
+  html.is-dark .admin-nav-tabs-tab.active {
+    color: var(--color-primary-400);
+    border-bottom-color: var(--color-primary-500);
+  }
+  html.is-dark .admin-stat[href]:hover,
+  html.is-dark .admin-tabs-tab {
+    background-color: color-mix(in oklab, var(--color-zinc-700) 50%, transparent);
+  }
+  html.is-dark .admin-tabs-tab:hover {
+    background-color: var(--color-zinc-600);
+  }
+  html.is-dark .admin-tabs-tab.active {
+    color: var(--color-primary-300);
+    background-color: color-mix(in oklab, var(--color-primary-900) 30%, transparent);
+  }
+  html.is-dark .admin-tabs-count {
+    color: var(--color-zinc-200);
+    background-color: var(--color-zinc-600);
+  }
+  html.is-dark .admin-tabs-tab.active .admin-tabs-count {
+    color: var(--color-primary-200);
+    background-color: var(--color-primary-800);
+  }
+
+  /* --- Tooltip (inverts in dark) ---------------------------------- */
+  html.is-dark .tooltip-content {
+    color: var(--color-zinc-900);
+    background-color: var(--color-zinc-100);
+  }
+  html.is-dark .tooltip-arrow-shape.top { border-top-color: var(--color-zinc-100); }
+  html.is-dark .tooltip-arrow-shape.bottom { border-bottom-color: var(--color-zinc-100); }
+  html.is-dark .tooltip-arrow-shape.left { border-left-color: var(--color-zinc-100); }
+  html.is-dark .tooltip-arrow-shape.right { border-right-color: var(--color-zinc-100); }
+
+  /* --- Status text ------------------------------------------------ */
+  html.is-dark .status-text.active {
+    color: var(--color-success-400);
+  }
+  html.is-dark .status-text.inactive {
+    color: var(--color-zinc-500);
+  }
+
+  /* --- Skeleton bg differs slightly from border-1 ----------------- */
+  html.is-dark .skeleton-title,
+  html.is-dark .skeleton-row {
+    background-color: var(--color-zinc-700);
+  }
+
+  /* --- Modal close ------------------------------------------------ */
+  html.is-dark .modal-close {
+    color: var(--color-zinc-500);
+  }
+  html.is-dark .modal-close:hover {
+    color: var(--color-zinc-300);
+  }
+
+  /* --- Page menu hover (needs lighter than overlay surface) ------- */
+  html.is-dark .page-menu-item:hover {
+    background-color: var(--color-zinc-700);
+  }
+  html.is-dark .page-menu-divider {
+    border-color: var(--color-zinc-700);
+  }
+
+  /* --- Form-cancel-button in compact layout ----------------------- */
+  @container (width >= 24rem) {
+    html.is-dark .button.form-cancel-button {
+      color: var(--color-zinc-300);
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  /* --- Page-header sticky in dark uses zinc-900, not surface-1 ---- */
+  html.is-dark .page-header-inner.scrolled,
+  html.is-dark .reader-mode-dialog,
+  html.is-dark .reader-mode-header,
+  html.is-dark .reader-mode-dialog::backdrop {
+    background-color: var(--color-zinc-900);
+  }
+  html.is-dark .reader-mode-header {
+    border-bottom-color: var(--color-zinc-700);
+  }
+
+  /* --- Shell ------------------------------------------------------ */
+  html.is-dark .shell-content {
+    background-color: var(--color-zinc-950);
+  }
+  html.is-dark .shell-mobile-header {
+    background-color: var(--color-zinc-900);
+    border-bottom-color: var(--color-zinc-800);
+  }
+  html.is-dark .shell-icon-button {
+    color: var(--color-zinc-300);
+  }
+  html.is-dark .shell-icon-button:hover {
+    background-color: var(--color-zinc-800);
+  }
+
+  /* --- Demo classes (kitchen-sink) -------------------------------- */
+  html.is-dark .reader-mode-title,
+  html.is-dark .demo-title,
+  html.is-dark .demo-definition-details,
+  html.is-dark .demo-monospace-value,
+  html.is-dark .demo-table-heading {
+    color: var(--color-zinc-100);
+  }
+  html.is-dark .demo-card-link:hover {
+    border-color: var(--color-zinc-600);
+    box-shadow: 0 4px 10px -4px color-mix(in oklab, var(--color-primary-400) 30%, transparent);
+  }
+  html.is-dark .demo-card-link:hover .demo-title {
+    color: var(--color-primary-400);
+  }
+  html.is-dark .demo-box,
+  html.is-dark .demo-code-sample,
+  html.is-dark .demo-inline-code {
+    background-color: var(--color-zinc-700);
+    color: var(--color-zinc-200);
+  }
+  html.is-dark .demo-box,
+  html.is-dark .demo-icon-tile,
+  html.is-dark .demo-divider,
+  html.is-dark .demo-table-cell {
+    border-color: var(--color-zinc-700);
+  }
+  html.is-dark .demo-text,
+  html.is-dark .demo-table-cell {
+    color: var(--color-zinc-300);
+  }
+  html.is-dark .demo-text.primary {
+    color: var(--color-primary-300);
+  }
+  html.is-dark .demo-text.danger {
+    color: var(--color-danger-400);
+  }
+  html.is-dark .demo-muted,
+  html.is-dark .demo-note,
+  html.is-dark .demo-definition-details.muted,
+  html.is-dark .demo-icon-name,
+  html.is-dark .demo-label,
+  html.is-dark .demo-definition-term {
+    color: var(--color-zinc-400);
+  }
+  html.is-dark .demo-callout.primary {
+    background-color: color-mix(in oklab, var(--color-primary-900) 35%, transparent);
+  }
+
+  /* --- Status / stepper / stage-bar (dark-specific palette flips) */
+  html.is-dark .status-circle.pending {
+    border-color: var(--color-zinc-600);
+  }
+  html.is-dark .status-circle.pending .status-circle-dot {
+    background-color: var(--color-zinc-600);
+  }
+  html.is-dark .stepper-line {
+    background-color: var(--color-zinc-700);
+  }
+  html.is-dark .stepper-line.completed {
+    background-color: var(--color-success-500);
+  }
+  html.is-dark .stepper-line.failed {
+    background-color: var(--color-danger-300);
+  }
+  html.is-dark .stepper-label.active {
+    color: var(--color-info-400);
+  }
+  html.is-dark .stepper-label.failed {
+    color: var(--color-danger-400);
+  }
+  html.is-dark .stepper-label.pending,
+  html.is-dark .stepper-time,
+  html.is-dark .stage-bar-label,
+  html.is-dark .stage-bar-hint {
+    color: var(--color-zinc-400);
+  }
+  html.is-dark .stepper-detail,
+  html.is-dark .truncate-toggle {
+    color: var(--color-primary-400);
+  }
+  html.is-dark .stepper-error {
+    background-color: color-mix(in oklab, var(--color-danger-900) 20%, transparent);
+  }
+  html.is-dark .stepper-error-toggle,
+  html.is-dark .stepper-error-details {
+    color: var(--color-danger-400);
+  }
+  html.is-dark .truncate-toggle.overlay {
+    background-image: linear-gradient(to left, var(--color-zinc-800) 60%, color-mix(in oklab, var(--color-zinc-800) 0%, transparent));
+  }
+  html.is-dark .stage-bar-connector {
+    border-color: var(--color-zinc-600);
+  }
+  html.is-dark .stage-bar-icon.completed {
+    color: var(--color-success-400);
+  }
+  html.is-dark .stage-bar-icon.failed {
+    color: var(--color-danger-400);
+  }
+  html.is-dark .stage-bar-dot.active {
+    background-color: var(--color-primary-400);
+  }
+  html.is-dark .stage-bar-dot.pending {
+    border-color: var(--color-zinc-600);
+  }
+  html.is-dark .stage-bar-label.completed {
+    color: var(--color-zinc-300);
+  }
+  html.is-dark .stage-bar-label.failed {
+    color: var(--color-danger-400);
+  }
+  html.is-dark .stage-bar-label.current {
+    text-decoration-color: var(--color-primary-400);
+  }
+  html.is-dark .stage-bar-hint.failed {
+    color: var(--color-danger-400);
+  }
+
+  /* --- Shadow toggle: card.shadow drop-only in dark works via tokens -- */
+}

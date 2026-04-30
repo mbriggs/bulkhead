@@ -13,7 +13,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Default Table", "Standard table with column headers, badges, and dates. Use for primary data views.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= table do |t| %>
         <% t.column "Name" %>
         <% t.column "Email" %>
@@ -36,7 +36,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Data Table (Minimal Style)", "Pass :data as the table style for compact tables without row borders.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= table(:data) do |t| %>
         <% t.column "Name" %>
         <% t.column "Email" %>
@@ -55,13 +55,13 @@
   <div class="<%= card_classes %>">
     <%= card_header("Empty Table", "Show a centered message spanning all columns when the collection is empty.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= table do |t| %>
         <% t.column "Name" %>
         <% t.column "Email" %>
         <% t.column "Status" %>
         <%= tag.tr do %>
-          <%= t.cell("No records found.", span: 3, text: :center, cell: "px-3 py-8 text-sm text-zinc-500 dark:text-zinc-400") %>
+          <%= t.cell("No records found.", span: 3, text: :center, cell: "table-empty-cell") %>
         <% end %>
       <% end %>
     </div>
@@ -70,7 +70,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Convenience Cells", "t.time(timestamp) and t.link(text, url) save repetitive time_ago_in_words and link_to wrapping.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= table do |t| %>
         <% t.column "Name" %>
         <% t.column "Email" %>
@@ -89,7 +89,7 @@
   <div class="<%= card_classes %>">
     <%= card_header("Sortable Columns", "sort_field(:name) generates links with ?sort=&sort_order= params and shows a chevron on the active column.") %>
 
-    <div class="p-5">
+    <div class="demo-card-body">
       <%= table do |t| %>
         <% t.column { sort_field(:name) } %>
         <% t.column { sort_field(:email) } %>

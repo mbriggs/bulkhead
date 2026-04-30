@@ -1,17 +1,17 @@
 <div class="<%= container_classes %>">
   <% if title.present? %>
     <% if header_action_content.present? %>
-      <div class="flex items-center justify-between">
-        <h2 class="text-sm font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500"><%= title %></h2>
+      <div class="section-header">
+        <h2 class="section-title"><%= title %></h2>
         <%= header_action_content %>
       </div>
     <% else %>
-      <h2 class="text-sm font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500"><%= title %></h2>
+      <h2 class="section-title"><%= title %></h2>
     <% end %>
   <% end %>
 
   <% if text.present? %>
-    <p class="mt-1 text-sm/6 text-zinc-600 dark:text-zinc-400"><%= text %></p>
+    <p class="section-text"><%= text %></p>
   <% end %>
 
   <div class="<%= section_classes %>">

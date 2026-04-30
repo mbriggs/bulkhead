@@ -1,20 +1,20 @@
 <%# Card wrapper with sidebar navigation for admin pages.
     Sidebar visible on @md+ container widths, collapses to horizontal tabs on narrow. %>
-<div class="@container bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm">
-  <div class="flex min-h-0">
+<div class="admin-page">
+  <div class="admin-page-layout">
     <%# Sidebar — visible on medium+ container widths %>
-    <nav class="hidden @md:flex flex-col w-56 shrink-0 border-r border-zinc-200 dark:border-zinc-700 py-4">
+    <nav class="admin-page-sidebar">
       <%= render partial: "admin/shared/nav", locals: { current: current } %>
     </nav>
 
     <%# Content column — tabs on narrow, then body %>
-    <div class="flex-1 min-w-0">
+    <div class="admin-page-content">
       <%# Mobile tabs — visible on narrow containers %>
-      <div class="@md:hidden">
+      <div class="admin-page-mobile-nav">
         <%= render partial: "admin/shared/nav_tabs", locals: { current: current } %>
       </div>
 
-      <div class="p-4 @md:p-6">
+      <div class="admin-page-body">
         <%= body %>
       </div>
     </div>

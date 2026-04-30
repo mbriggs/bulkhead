@@ -29,7 +29,7 @@
 # -------------------
 # - `extract_label`      — pulls `label:` from kwargs, falls back to humanized
 #                          method name, returns nil for `label: false`
-# - `element_classes`    — Tailwind classes for text inputs, with error ring
+# - `element_classes`    — CSS classes for text inputs, with error ring
 # - `checkbox_classes`   — same idea, checkbox-specific classes
 # - `with_error_classes` — shared conditional: error ring vs normal ring
 # - `form_group`         — the label + input + hint + errors container
@@ -48,9 +48,9 @@ module FormHelper
 
     # Build custom classes or use defaults (pass false to opt out)
     custom_classes = []
-    custom_classes << default_class(spacing, "space-y-12")
-    custom_classes << default_class(size, "max-w-prose")
-    custom_classes << default_class(padding, "px-4 @sm:px-6 @lg:px-8")
+    custom_classes << default_class(spacing, "spaced")
+    custom_classes << default_class(size, "form")
+    custom_classes << padding if padding
 
     append_class!(kwargs, custom_classes.join(" "))
 
@@ -128,11 +128,11 @@ module FormHelper
   # Builds a DOM-safe field ID from an object name and method, for use outside
   # of FormBuilder (which has its own `field_id` from Rails).
   def sanitized_field_id(object_name, method)
-    "#{object_name}_#{method}".tr("[]", "_").gsub(/[^-a-zA-Z0-9_]/, "_").squeeze("_")
+    "#{object_name}_#{method}".gsub(/[^-a-zA-Z0-9_]/, "_").squeeze("_")
   end
 
   # Custom form builder that wraps every standard Rails field helper with
-  # Tailwind styling, label/hint rendering, and inline error display.
+  # Bulkhead styling, label/hint rendering, and inline error display.
   class FormBuilder < ActionView::Helpers::FormBuilder
     include ActionView::Helpers::TagHelper
     include ActionView::Helpers::UrlHelper
@@ -144,17 +144,16 @@ module FormHelper
     attr_accessor :compact
 
     def link_action(*, **kwargs)
-      tag.div(class: "@sm:ml-0 inline") do
-        append_class!(kwargs, "text-zinc-700 dark:text-zinc-300", "text-sm")
+      tag.div(class: "form-link-action") do
         link_to(*, **kwargs)
       end
     end
 
     def cancel_link(url = "", **kwargs)
       if url == :close
-        tag.div(class: "w-full @sm:w-auto @sm:ml-0") do
+        tag.div(class: "form-cancel-wrap") do
           tag.button("Cancel", type: "button",
-                     class: "w-full @sm:w-auto px-3 py-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 rounded-md shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 @sm:text-zinc-700 @sm:dark:text-zinc-300 @sm:bg-transparent @sm:shadow-none @sm:ring-0 @sm:hover:bg-transparent cursor-pointer",
+                     class: "button secondary md shadow form-cancel-button",
                      data: { action: "modal#close" }, **kwargs)
         end
       else
@@ -168,16 +167,15 @@ module FormHelper
 
     def modal_actions(**kwargs, &)
       kwargs[:margin_classes] ||= []
-      kwargs[:classes] = classnames(kwargs[:classes],
-        "border-t border-zinc-200 dark:border-zinc-700 px-4 py-3 @sm:px-6")
+      kwargs[:classes] = classnames(kwargs[:classes], "form-actions modal")
       actions(**kwargs, &)
     end
 
     def actions(classes: "", margin_classes: nil, &)
-      margin_classes ||= compact ? [ "mt-10" ] : [ "-mt-5", "pb-5" ]
+      margin_classes ||= compact ? [ "form-actions compact" ] : [ "form-actions default" ]
       raise ArgumentError, "Block is required for actions" unless block_given?
 
-      default_classes = [ "flex", "items-center", "justify-start", "gap-x-3" ]
+      default_classes = [ "form-actions" ]
       classes = classnames(classes, default_classes, margin_classes)
 
       content = @template.capture(&)
@@ -200,22 +198,22 @@ module FormHelper
       end
     end
 
-    def section(title = nil, text = nil, grid: true, separator: true, margin: "mt-6", classes: "", &)
+    def section(title = nil, text = nil, grid: true, separator: true, margin: "spaced", classes: "", &)
       builder = SectionBuilder.new(@template)
       body_content = @template.capture { yield(builder) }
       header_action_content = builder.header_action_content
 
       container_classes = classnames(
-        separator ? "mt-10 pt-8 border-t border-zinc-900/10 dark:border-zinc-700" : margin
+        separator ? "section separated" : classnames("section", margin)
       ).presence
 
       section_classes = classes.dup
-      section_classes = classnames(section_classes, "mt-6") if title
+      section_classes = classnames(section_classes, "section-body", { "with-title" => title })
 
       if grid
-        section_classes = classnames(section_classes, "grid grid-cols-1 gap-x-6 gap-y-8 @sm:grid-cols-12")
+        section_classes = classnames(section_classes, "grid")
       else
-        section_classes = classnames(section_classes, "flex flex-col space-y-8")
+        section_classes = classnames(section_classes, "stack")
       end
 
       @template.concat @template.render("shared/forms/section",
@@ -228,9 +226,9 @@ module FormHelper
     end
 
     def form_group(input, method, label, label_tag: true, label_before: true, label_after: false, size: nil)
-      size = @template.default_class(size, "@sm:col-span-6")
+      size = @template.classnames("field", @template.default_class(size, "half"))
       if label_tag && label
-        label = tag.label(label, for: field_id(method), class: "block text-sm/6 font-medium text-zinc-900 dark:text-zinc-100")
+        label = tag.label(label, for: field_id(method), class: "field-label")
       end
 
       content = []
@@ -241,7 +239,7 @@ module FormHelper
 
       # if we don't have a label, just assume we don't want a form group at all
       if label
-        content << tag.div(input, class: "mt-2")
+        content << tag.div(input, class: "field-control")
       else
         content << input
       end
@@ -252,23 +250,14 @@ module FormHelper
 
       if object && object.errors[method].any?
         errors = object.errors[method]
-        content << tag.p(@template.safe_join(errors, tag.br), class: "mt-2 text-sm text-danger-600 dark:text-danger-400")
+        content << tag.p(@template.safe_join(errors, tag.br), class: "field-error")
       end
 
       tag.div(@template.safe_join(content, " "), class: size)
     end
 
     def element_classes(method)
-      with_error_classes(method,
-        [ "block", "w-full", "py-1.5",
-          "rounded-md", "border-0", "text-zinc-900",
-          "ring-1", "ring-inset",
-          "placeholder:text-zinc-400",
-          "focus:ring-2", "focus:ring-inset", "@sm:text-sm/6",
-          "dark:bg-zinc-800", "dark:border-zinc-600", "dark:text-zinc-100",
-          "dark:placeholder:text-zinc-500" ],
-        error: %w[ring-danger-300 dark:ring-danger-500 focus:ring-danger-600 dark:focus:ring-danger-400],
-        normal: %w[ring-zinc-300 dark:ring-zinc-600 focus:ring-primary-600 dark:focus:ring-primary-500])
+      with_error_classes(method, [ "input" ], error: %w[invalid], normal: [])
     end
 
     # all these have the same idea of params with a single options at the end
@@ -285,7 +274,7 @@ module FormHelper
         input = super(method, *args, **kwargs, &blk)
 
         if hint
-          input += tag.p(hint, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400")
+          input += tag.p(hint, class: "field-hint")
         end
 
         form_group(input, method, label, size:)
@@ -303,7 +292,7 @@ module FormHelper
       input = super
 
       if hint
-        input += tag.p(hint, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400")
+        input += tag.p(hint, class: "field-hint")
       end
 
       form_group(input, method, label, size:)
@@ -323,13 +312,13 @@ module FormHelper
         hint = kwargs.delete(:hint)
 
         append_class!(kwargs, element_classes(method), {
-          "px-2.5 bg-white dark:bg-zinc-800 h-9" => helper == :color_field
+          "color" => helper == :color_field
         })
 
         input = super(method, *args, **kwargs, &blk)
 
         if hint
-          input += tag.p(hint, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400")
+          input += tag.p(hint, class: "field-hint")
         end
 
         form_group(input, method, label, size:)
@@ -339,21 +328,21 @@ module FormHelper
     alias check_box! check_box
     def check_box(method, label = nil, *, **kwargs, &)
       label ||= extract_label(method, kwargs)
-      size = kwargs.delete(:size) || "@sm:col-span-6"
+      size = @template.classnames("field", kwargs.delete(:size) || "half")
 
       append_class!(kwargs, checkbox_classes(method))
 
       input = super(method, *, **kwargs, &)
-      label_el = tag.label(label, for: field_id(method), class: "text-sm/6 font-medium text-zinc-900 dark:text-zinc-100")
+      label_el = tag.label(label, for: field_id(method), class: "field-label")
 
       content = []
-      content << tag.div(class: "flex items-center gap-2 mt-2") do
+      content << tag.div(class: "check-field") do
         @template.safe_join([ input, label_el ])
       end
 
       if object && object.errors[method].any?
         errors = object.errors[method]
-        content << tag.p(@template.safe_join(errors, tag.br), class: "mt-2 text-sm text-danger-600 dark:text-danger-400")
+        content << tag.p(@template.safe_join(errors, tag.br), class: "field-error")
       end
 
       tag.div(@template.safe_join(content), class: size)
@@ -423,50 +412,26 @@ module FormHelper
 
     alias select! select
     def select(method, choices = nil, options = {}, html_options = {})
-      if options.delete(:search)
-        append_controller!(:select, html_options)
-      else
-        append_class!(html_options, element_classes(method))
-      end
-
-      submit_on_select = options.delete(:submit_on_select)
-
-      # Add data-select-submit-on-select-value attribute if true
-      if submit_on_select
-        html_options[:data] ||= {}
-        html_options[:data][:select_submit_on_select_value] = "true"
-      end
-
+      apply_select_enhancements!(method, options, html_options)
       size = options.delete(:size)
       hint = options.delete(:hint)
-
       label = extract_label(method, options)
-      input = super
 
-      if hint
-        input += tag.p(hint, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400")
-      end
+      input = super
+      input += tag.p(hint, class: "field-hint") if hint
 
       form_group(input, method, label, size:)
     end
 
     alias collection_select! collection_select
     def collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
-      if options.delete(:search)
-        append_controller!(:select, html_options)
-      else
-        append_class!(html_options, element_classes(method))
-      end
-
+      apply_select_enhancements!(method, options, html_options)
       size = options.delete(:size)
       hint = options.delete(:hint)
-
       label = extract_label(method, options)
-      input = super
 
-      if hint
-        input += tag.p(hint, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400")
-      end
+      input = super
+      input += tag.p(hint, class: "field-hint") if hint
 
       form_group(input, method, label, size:)
     end
@@ -493,18 +458,31 @@ module FormHelper
 
     def checkbox_classes(method)
       with_error_classes(method,
-        [ "h-5 w-5", "rounded",
-          "border-zinc-300", "dark:border-zinc-600",
-          "text-primary-600", "dark:text-primary-500",
-          "dark:bg-zinc-800",
-          "focus:ring-2", "focus:ring-offset-0" ],
-        error: %w[focus:ring-danger-600 dark:focus:ring-danger-400],
-        normal: %w[focus:ring-primary-600 dark:focus:ring-primary-500])
+        [ "checkbox" ],
+        error: %w[invalid],
+        normal: [])
     end
 
     def with_error_classes(method, base, error:, normal:)
       has_errors = object.respond_to?(:errors) && object.errors[method].any?
       base + [ has_errors ? error : normal ]
+    end
+
+    # Shared select/collection_select option-extraction:
+    # mounts the Stimulus select controller and forwards `search:` /
+    # `submit_on_select:` flags as data-values on the underlying element.
+    def apply_select_enhancements!(method, options, html_options)
+      search = options.delete(:search)
+      submit_on_select = options.delete(:submit_on_select)
+
+      append_class!(html_options, element_classes(method))
+
+      if search || submit_on_select
+        append_controller!(:select, html_options)
+      end
+
+      append_value!(:select_search, true, html_options) if search
+      append_value!(:select_submit_on_select, true, html_options) if submit_on_select
     end
 
     def submit_classes

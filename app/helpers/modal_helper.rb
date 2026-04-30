@@ -70,12 +70,12 @@ module ModalHelper
 
   private
 
-  # Tailwind max-width class for the modal content panel
+  # Max-width class for the modal content panel.
   def modal_size_class(size)
     case size.to_sym
-    when :wide then "max-w-3xl"
-    when :full then "max-w-[90vw] max-h-[85vh]"
-    else "max-w-lg"
+    when :wide then "wide"
+    when :full then "full"
+    else nil
     end
   end
 end

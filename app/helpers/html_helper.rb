@@ -1,8 +1,8 @@
 module HtmlHelper
   # Returns the default class unless the caller explicitly opts out with false.
-  #   default_class(nil, "max-w-prose")   => "max-w-prose"
-  #   default_class("max-w-lg", "max-w-prose") => "max-w-lg"
-  #   default_class(false, "max-w-prose") => nil
+  #   default_class(nil, "form") => "form"
+  #   default_class("wide", "form") => "wide"
+  #   default_class(false, "form") => nil
   def default_class(value, default)
     return nil if value == false
     value || default
@@ -16,16 +16,10 @@ module HtmlHelper
       when String, Symbol
         classes << arg.to_s
       when Hash
-        arg.each do |key, value|
-          classes << key.to_s if value
-        end
+        arg.each { |key, value| classes << key.to_s if value }
       when Array
         classes << classnames(*arg)
       end
-    end
-
-    if classes.length == 1
-      return classes.first
     end
 
     classes.compact.uniq.join(" ")

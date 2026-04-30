@@ -1,2 +1,7 @@
 /tags
 /test/log/
+/test/tmp/
+/test/dummy/log/
+/test/dummy/tmp/
+/log/
+/tmp/

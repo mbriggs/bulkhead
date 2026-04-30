@@ -1,41 +1,33 @@
 module UiHelper
-  def sortable_handle(icon_name: :bars_3, classes: "h-5 w-5 text-zinc-400 dark:text-zinc-500")
+  TOOLTIP_POSITIONS = %i[top bottom left right].freeze
+
+  def sortable_handle(icon_name: :bars_3, classes: "sortable-handle")
     icon(icon_name, classes:, data: { sortable_target: "handle" })
   end
 
-  TOOLTIP_POSITIONS = {
-    top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
-    bottom: "top-full left-1/2 mt-2 -translate-x-1/2",
-    left: "right-full top-1/2 mr-2 -translate-y-1/2",
-    right: "left-full top-1/2 ml-2 -translate-y-1/2"
-  }.freeze
-
-  TOOLTIP_ARROWS = {
-    top: "top-full left-1/2 -mt-1 -translate-x-1/2",
-    bottom: "bottom-full left-1/2 -mb-1 -translate-x-1/2",
-    left: "left-full top-1/2 -ml-1 -translate-y-1/2",
-    right: "right-full top-1/2 -mr-1 -translate-y-1/2"
-  }.freeze
-
-  TOOLTIP_ARROW_BORDERS = {
-    top: "border-t-zinc-900 dark:border-t-zinc-100",
-    bottom: "border-b-zinc-900 dark:border-b-zinc-100",
-    left: "border-l-zinc-900 dark:border-l-zinc-100",
-    right: "border-r-zinc-900 dark:border-r-zinc-100"
-  }.freeze
-
   def tooltip(text, position: :top, classes: nil, &block)
-    # Default to inline-block for standalone tooltips, but allow override for flex contexts
-    css_classes = classes || "inline-block"
-    content_tag(:div, class: "group relative #{css_classes}".strip) do
+    raise ArgumentError, "Unknown tooltip position: #{position}" unless TOOLTIP_POSITIONS.include?(position)
+
+    pos = position.to_s
+    css_classes = classes || "inline"
+
+    # tabindex makes the wrapper focusable so keyboard users can reveal
+    # the bubble via :focus-within. role/aria-describedby give the
+    # tooltip text a programmatic association with its trigger.
+    bubble_id = "tooltip-#{SecureRandom.hex(4)}"
+
+    content_tag(:div,
+      class: classnames("tooltip", css_classes),
+      tabindex: 0,
+      "aria-describedby": bubble_id) do
       concat(capture(&block))
       concat(
-        content_tag(:div, class: "absolute #{TOOLTIP_POSITIONS[position]} transform opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10") do
-          content_tag(:div, class: "rounded bg-zinc-900 dark:bg-zinc-100 px-2 py-1 text-xs text-white dark:text-zinc-900 whitespace-nowrap") do
+        content_tag(:div, id: bubble_id, role: "tooltip", class: classnames("tooltip-bubble", pos)) do
+          content_tag(:div, class: "tooltip-content") do
             concat(text)
             concat(
-              content_tag(:div, class: "absolute #{TOOLTIP_ARROWS[position]} transform") do
-                content_tag(:div, "", class: "border-4 border-transparent #{TOOLTIP_ARROW_BORDERS[position]}")
+              content_tag(:div, class: classnames("tooltip-arrow", pos)) do
+                content_tag(:div, "", class: classnames("tooltip-arrow-shape", pos))
               end,
             )
           end
@@ -48,7 +40,7 @@ module UiHelper
   # Semantic helpers (status_badge) delegate here.
   # Accepts a block for rich content (e.g. text + remove button).
   def badge(text = nil, colors:, &block)
-    css = "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium #{colors}"
+    css = "badge pill #{colors}"
     if block
       tag.span(class: css, &block)
     else
@@ -59,14 +51,14 @@ module UiHelper
   # Badge with an inline remove button. Submits a DELETE to the given path.
   #
   #   removable_badge("iheartjane", remove_path: project_repository_path(@project, pr),
-  #                   colors: "bg-primary-50 ...", turbo_frame: "repositories_123")
+  #                   colors: "primary", turbo_frame: "repositories_123")
   def removable_badge(text, remove_path:, colors:, turbo_frame: nil)
     badge(colors:) do
       remove_btn = button_to(remove_path,
         method: :delete,
-        class: "ml-0.5 inline-flex items-center hover:text-primary-900 dark:hover:text-primary-200",
+        class: "badge-remove",
         data: { turbo_frame: }.compact) do
-        icon(:x_mark, classes: "h-3 w-3")
+        icon(:x_mark, classes: "badge-remove-icon")
       end
       safe_join([ text, remove_btn ])
     end
@@ -75,17 +67,17 @@ module UiHelper
   # Shared severity-level color classes for badges.
   # Normalizes "moderate" → "medium" so callers can use either vocabulary.
   #
-  #   severity_colors("high")     # => "bg-orange-100 text-orange-700 ..."
-  #   severity_colors("moderate") # => "bg-yellow-100 text-yellow-700 ..."
+  #   severity_colors("high")     # => "high"
+  #   severity_colors("moderate") # => "warning"
   SEVERITY_LEVEL_COLORS = {
-    "low"      => "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400",
-    "medium"   => "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-    "moderate" => "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-    "high"     => "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-    "critical" => "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
+    "low"      => "success",
+    "medium"   => "warning",
+    "moderate" => "warning",
+    "high"     => "high",
+    "critical" => "danger"
   }.freeze
 
-  # Returns Tailwind color classes for a severity level string.
+  # Returns color classes for a severity level string.
   def severity_colors(level)
     SEVERITY_LEVEL_COLORS.fetch(level.to_s, SEVERITY_LEVEL_COLORS["low"])
   end
@@ -105,24 +97,25 @@ module UiHelper
 
     case style
     when :badge
-      colors = if active
-        "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400"
-      else
-        "bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300"
-      end
+      colors = active ? "success" : "default"
       badge(label, colors:)
     when :text
-      colors = active ? "text-success-600 dark:text-success-400" : "text-zinc-400 dark:text-zinc-500"
+      colors = active ? "status-text active" : "status-text inactive"
       tag.span(label, class: colors)
     else
       raise ArgumentError, "Unknown style: #{style}. Use :badge or :text"
     end
   end
 
+  EMPTY_STATE_ILLUSTRATIONS = %i[no_results empty_inbox no_data error success permission loading].freeze
+
   # Empty state placeholder for lists and collections.
   #
   # @param message [String] Required description text
-  # @param icon [Symbol] Heroicon name, defaults to :inbox
+  # @param illustration [Symbol] Named line illustration; one of
+  #   EMPTY_STATE_ILLUSTRATIONS. When set, supersedes `icon:`.
+  # @param icon [Symbol] Heroicon name, defaults to :inbox. Used as
+  #   fallback when `illustration:` is not given.
   # @param title [String] Optional main heading
   # @param action_text [String] Optional button text
   # @param action_path [String] Optional button URL
@@ -130,11 +123,16 @@ module UiHelper
   #
   # Examples:
   #   empty_state("No items found")
-  #   empty_state("No orders yet", icon: :shopping_bag, title: "Your cart is empty")
-  #   empty_state("Add items to get started", action_text: "Add Item", action_path: new_item_path)
-  def empty_state(message, icon: :inbox, title: nil, action_text: nil, action_path: nil, classes: "py-12")
+  #   empty_state("No orders yet", illustration: :empty_inbox, title: "Your cart is empty")
+  #   empty_state("Couldn't find a match", illustration: :no_results)
+  def empty_state(message, illustration: nil, icon: :inbox, title: nil, action_text: nil, action_path: nil, classes: "default-spacing")
+    if illustration && !EMPTY_STATE_ILLUSTRATIONS.include?(illustration)
+      raise ArgumentError, "Unknown empty-state illustration: #{illustration.inspect}. Allowed: #{EMPTY_STATE_ILLUSTRATIONS.inspect}"
+    end
+
     render "shared/ui/empty_state",
       message:,
+      illustration:,
       icon:,
       title:,
       action_text:,
@@ -143,15 +141,23 @@ module UiHelper
   end
 
   # Image tag with a block fallback shown when the image fails to load.
+  # Mounts the avatar Stimulus controller on the `<img>` itself (no wrapper
+  # element, so existing layouts that expect img + fallback as direct children
+  # of the parent stay intact) and locates the fallback by id. Caller-supplied
+  # data attributes are merged, not clobbered: `data: { controller: "tooltip" }`
+  # combines with the avatar controller via space-separated values.
   #
-  #   <%= avatar_img("https://example.com/photo.jpg", class: "h-8 w-8 rounded-full") do %>
-  #     <span class="text-xs font-medium text-white">M</span>
+  #   <%= avatar_img("https://example.com/photo.jpg", class: "avatar sm") do %>
+  #     <span class="avatar-fallback">M</span>
   #   <% end %>
   def avatar_img(url, **options, &block)
     fallback_id = "avatar-fallback-#{SecureRandom.hex(4)}"
-    onerror = "this.style.display='none';document.getElementById('#{fallback_id}').style.display=''"
 
-    img = tag.img(src: url, alt: "", onerror:, **options)
+    append_controller!(:avatar, options)
+    append_value!(:avatar_fallback_id, fallback_id, options)
+    options[:data][:action] = [ options[:data][:action], "error->avatar#fail" ].compact.join(" ").strip
+
+    img = tag.img(src: url, alt: "", **options)
     fallback_span = tag.span(id: fallback_id, style: "display:none", &block)
 
     img + fallback_span
@@ -177,7 +183,7 @@ module UiHelper
 
   # -- Markdown rendering pipeline -----------------------------------------
 
-  # Renders markdown text as HTML with prose styling.
+  # Renders markdown text as HTML with rich-text styling.
   # Defense-in-depth: sanitize with an allowlist after Commonmarker rendering
   # so a parser bypass can't escalate to stored XSS.
   #
@@ -188,11 +194,12 @@ module UiHelper
   def render_markdown(text, compact: false, sidebar: false, plan: false)
     return "".html_safe if text.blank?
     clean = sanitize_markdown(text)
-    classes = "prose prose-sm dark:prose-invert"
-    classes += " max-w-none" unless plan
-    classes += " prose-compact" if compact
-    classes += " prose-sidebar" if sidebar
-    classes += " prose-plan" if plan
+    classes = classnames("rich-text", {
+      "unconstrained" => !plan,
+      "compact"       => compact,
+      "sidebar"       => sidebar,
+      "plan"          => plan
+    })
     data = sidebar ? {} : { controller: "code-block-copy" }
     tag.div(clean, class: classes, data: data)
   end
@@ -207,36 +214,28 @@ module UiHelper
     table thead tbody tfoot tr th td
   ].freeze
 
-  MARKDOWN_ATTRIBUTES = {
-    "a" => %w[href title],
-    "img" => %w[src alt title],
-    "th" => %w[align],
-    "td" => %w[align],
-    "code" => %w[class],
-    "span" => %w[class],
-    "pre" => %w[lang],
-    "input" => %w[type checked disabled]
-  }.freeze
+  MARKDOWN_ATTRIBUTES = %w[
+    href title src alt align class lang
+    type checked disabled
+  ].freeze
 
   # Renders markdown to HTML and sanitizes with an allowlist.
   # Single point of control for the Commonmarker → sanitize pipeline.
-  # Used by ProblemHelper (render_markdown, truncated_markdown) and the
-  # research stepper for agent run summaries.
+  # Commonmarker is loaded lazily so hosts that don't render markdown
+  # don't pay for the dependency.
   def sanitize_markdown(text)
-    cache_key = "markdown/#{Digest::SHA256.hexdigest(text)}"
-    Rails.cache.fetch(cache_key, expires_in: 1.hour) {
-      html = Commonmarker.to_html(
-        text,
-        options: { render: { unsafe: false } },
-        plugins: { syntax_highlighter: { theme: "base16-ocean.dark" } }
-      )
-      sanitize(html, tags: MARKDOWN_TAGS, attributes: MARKDOWN_ATTRIBUTES)
-    }.html_safe
+    require_commonmarker!
+    html = Commonmarker.to_html(
+      text,
+      options: { render: { unsafe: false } },
+      plugins: { syntax_highlighter: { theme: "" } }
+    )
+    sanitize(html, tags: MARKDOWN_TAGS, attributes: MARKDOWN_ATTRIBUTES)
   end
 
   # Horizontal rule with spacing above and below.
   def spacer(classes: nil)
-    tag.hr(class: classnames("border-zinc-200 dark:border-zinc-700 mt-3 mb-5", classes))
+    tag.hr(class: classnames("spacer", classes))
   end
 
   # Truncates long text to a number of lines with an inline "more…" / "less…" toggle.
@@ -244,34 +243,55 @@ module UiHelper
   #   <%= truncated_text("Long text here...", lines: 3) %>
   #
   def truncated_text(text, lines: 3)
-    tag.div(data: { controller: "truncate", truncate_lines_value: lines }, class: "relative") do
-      tag.p(text, class: "whitespace-pre-wrap line-clamp-#{lines}", data: { truncate_target: "content" }) +
+    lines = [ lines.to_i, 1 ].max
+
+    tag.div(data: { controller: "truncate", truncate_lines_value: lines }, class: "truncate") do
+      tag.p(text,
+        class: "truncate-text sm line-clamp",
+        style: "--bulkhead-line-clamp: #{lines}",
+        data: { truncate_target: "content" }) +
       tag.button("more\u2026",
         data: { truncate_target: "toggle", action: "truncate#toggle" },
-        class: "hidden absolute bottom-0 right-0 text-sm text-primary-600 dark:text-primary-400 " \
-               "hover:underline cursor-pointer bg-gradient-to-l from-white from-60% via-white " \
-               "dark:from-zinc-800 dark:via-zinc-800 to-transparent pl-8 pr-0.5")
+        class: "hidden truncate-toggle overlay truncate-text sm")
     end
   end
 
   # Loading skeleton helper for Turbo Frame placeholders
   def loading_skeleton(rows: 2, title: true)
-    content_tag(:div, class: "animate-pulse") do
+    content_tag(:div, class: "skeleton") do
       content = []
 
       # Add title skeleton if requested
       if title
-        content << content_tag(:div, "", class: "h-8 bg-zinc-200 dark:bg-zinc-700 rounded mb-4")
+        content << content_tag(:div, "", class: "skeleton-title")
       end
 
       # Add row skeletons
       if rows.positive?
-        content << content_tag(:div, class: "space-y-3") do
-          safe_join(Array.new(rows) { content_tag(:div, "", class: "h-10 bg-zinc-200 dark:bg-zinc-700 rounded") })
+        content << content_tag(:div, class: "skeleton-rows") do
+          safe_join(Array.new(rows) { content_tag(:div, "", class: "skeleton-row") })
         end
       end
 
       safe_join(content)
     end
+  end
+
+  private
+
+  # Lazy-loads Commonmarker. Raises a friendly LoadError pointing at the
+  # remediation step so hosts that don't render markdown don't carry the
+  # dependency, and hosts that do render get an actionable failure mode.
+  def require_commonmarker!
+    return if defined?(Commonmarker)
+    require "commonmarker"
+  rescue LoadError
+    raise LoadError, <<~MSG.chomp
+      Bulkhead's render_markdown / sanitize_markdown require the "commonmarker" gem.
+
+      Add it to your Gemfile and run bundle install:
+
+        gem "commonmarker"
+    MSG
   end
 end

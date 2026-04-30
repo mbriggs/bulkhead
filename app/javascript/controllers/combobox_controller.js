@@ -277,10 +277,9 @@ export default class extends Controller {
     li.dataset.action = "click->combobox#select"
     li.dataset.value = value
     li.textContent = label
-    const textColor = blank
-      ? "text-zinc-500 dark:text-zinc-400"
-      : "text-zinc-900 dark:text-zinc-100"
-    li.className = `cursor-pointer select-none px-3 py-2 ${textColor} hover:bg-primary-600 hover:text-white dark:hover:bg-primary-500`
+    li.className = blank
+      ? "combobox-option blank"
+      : "combobox-option"
     return li
   }
 
@@ -303,7 +302,7 @@ export default class extends Controller {
     if (this.activeIndex >= visible.length) this.activeIndex = 0
 
     const option = visible[this.activeIndex]
-    option.classList.add("bg-primary-600", "text-white", "dark:bg-primary-500")
+    option.setAttribute("aria-selected", "true")
     option.id = `${this.inputTarget.id}-active`
     this.inputTarget.setAttribute("aria-activedescendant", option.id)
     option.scrollIntoView({ block: "nearest" })
@@ -311,7 +310,7 @@ export default class extends Controller {
 
   _clearHighlight() {
     this.optionTargets.forEach(option => {
-      option.classList.remove("bg-primary-600", "text-white", "dark:bg-primary-500")
+      option.removeAttribute("aria-selected")
       option.removeAttribute("id")
     })
     this.inputTarget.removeAttribute("aria-activedescendant")

@@ -1,30 +1,29 @@
 module PaginationHelper
-  def paginate(pagy, classes: nil, table: false)
-    if pagy.nil?
-      return
-    end
+  # Renders Pagy's `series_nav` with bulkhead chrome (border, optional info_tag).
+  # Returns nothing when there's only a single page so callers can render
+  # surrounding markup unconditionally.
+  def paginate(pagy, classes: nil, table: false, info: true)
+    return if pagy.nil? || pagy.last <= 1
 
     classes = classnames(
-      "flex", "items-center", "justify-between",
-      "border-zinc-200", "dark:border-zinc-700",
-      "bg-white", "dark:bg-zinc-800",
-      "px-3", "py-4", "w-full",
-      { "border-t" => !table },
+      "pagination",
+      { "bordered" => !table },
       classes
     )
 
     render partial: "shared/ui/paginate", locals: {
-      pagy:, classes:
+      pagy:, classes:, show_info: info
     }
   end
 
   def table_paginate(pagy, columns: nil, classes: nil)
+    pagination = paginate(pagy, classes:, table: true)
+    return if pagination.blank?
+
     row_classes = nil
     if !(pagy.next || pagy.previous)
-      row_classes = "hidden @sm:table-row"
+      row_classes = "pagination-row available"
     end
-
-    pagination = paginate(pagy, classes:, table: true)
 
     tag.tr(class: row_classes) do
       tag.td(pagination, colspan: columns)
@@ -41,13 +40,5 @@ module PaginationHelper
     end
 
     tag.em { safe_join([ tag.strong(pagy.count), " #{entity} found" ]) }
-  end
-
-  def paginate_prev_url(pagy)
-    pagy.previous ? pagy.page_url(pagy.previous) : nil
-  end
-
-  def paginate_next_url(pagy)
-    pagy.next ? pagy.page_url(pagy.next) : nil
   end
 end

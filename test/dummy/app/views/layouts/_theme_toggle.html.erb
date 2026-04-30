@@ -1,0 +1,6 @@
+<div data-controller="theme">
+  <button type="button" class="<%= local_assigns[:classes] || "shell-icon-button" %>" data-action="theme#toggle" aria-label="Toggle theme">
+    <span data-theme-target="moon"><%= icon(:moon, classes: "shell-icon") %></span>
+    <span data-theme-target="sun" hidden><%= icon(:sun, classes: "shell-icon") %></span>
+  </button>
+</div>

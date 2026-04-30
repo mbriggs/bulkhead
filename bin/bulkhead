@@ -82,16 +82,43 @@ FileUtils.chdir APP_ROOT do
       puts "\n== Gemfile already has bulkhead, skipping =="
     end
 
-    # application.css — add bulkhead engine import
-    css_path = "app/assets/tailwind/application.css"
-    css = File.read(css_path)
-    bulkhead_import = '@import "../builds/tailwind/bulkhead";'
-    unless css.include?(bulkhead_import)
-      puts "\n== Patching application.css =="
-      css.sub!(%r{^(@import "tailwindcss";)$}m, "\\1\n#{bulkhead_import}")
-      File.write(css_path, css)
+    # Layout — add the static Bulkhead stylesheet from the engine asset path.
+    layout_path = "app/views/layouts/application.html.erb"
+    bulkhead_link = '<%= stylesheet_link_tag "bulkhead", "data-turbo-track": "reload" %>'
+    if File.exist?(layout_path)
+      layout = File.read(layout_path)
+
+      if layout.match?(/stylesheet_link_tag\b.*["']bulkhead["']/)
+        puts "\n== Layout already links bulkhead.css, skipping =="
+      else
+        puts "\n== Patching application layout =="
+        patched = layout.sub(/^([ \t]*)<%= stylesheet_link_tag .*%>\s*$/) do |line|
+          "#{line}\n#{Regexp.last_match(1)}#{bulkhead_link}"
+        end
+
+        if patched == layout
+          patched = layout.sub(%r{([ \t]*)</head>}, "\\1#{bulkhead_link}\n\\1</head>")
+        end
+
+        if patched == layout
+          puts <<~MSG
+
+            Could not find a stylesheet tag or </head>. Add this inside your layout <head>:
+
+              #{bulkhead_link}
+          MSG
+        else
+          File.write(layout_path, patched)
+        end
+      end
     else
-      puts "\n== application.css already patched, skipping =="
+      puts <<~MSG
+
+        == Add Bulkhead stylesheet manually ==
+        Could not find #{layout_path}. Add this inside your layout <head>:
+
+          #{bulkhead_link}
+      MSG
     end
 
     puts "\n== Installing bundle =="
@@ -120,7 +147,11 @@ FileUtils.chdir APP_ROOT do
                  end
                end
 
-          2. Define admin_nav_sections in a host app helper
+          2. Confirm your layout includes the Bulkhead stylesheet:
+
+               <%= stylesheet_link_tag "bulkhead", "data-turbo-track": "reload" %>
+
+          3. Define admin_nav_sections in a host app helper
              (see ApplicationHelper for an example)
 
           bin/bulkhead pull   — pull upstream changes

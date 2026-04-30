@@ -1,0 +1,68 @@
+<%#
+  Inline SVG line illustrations for empty_state. Two-color: base uses
+  currentColor (set on .empty-state-illustration); accent uses
+  var(--illustration-accent). Both flip in dark mode via CSS.
+
+  Usage:
+    render "shared/ui/empty_state_illustration", name: :no_results
+
+  Names: no_results, empty_inbox, no_data, error, success, permission,
+  loading.
+%>
+<%
+  svg_attrs = {
+    class: "empty-state-illustration",
+    viewBox: "0 0 96 96",
+    fill: "none",
+    "stroke-width": "1.5",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    xmlns: "http://www.w3.org/2000/svg",
+    "aria-hidden": "true"
+  }
+%>
+<%= tag.svg(**svg_attrs) do %>
+  <% case name %>
+  <% when :no_results %>
+    <%# Magnifying glass with a subtle 'no match' line through the lens %>
+    <%= tag.line(x1: 16, y1: 80, x2: 80, y2: 80, stroke: "var(--illustration-accent)", "stroke-dasharray": "3 5") %>
+    <%= tag.circle(cx: 40, cy: 40, r: 20, stroke: "currentColor") %>
+    <%= tag.line(x1: 55, y1: 55, x2: 74, y2: 74, stroke: "currentColor") %>
+    <%= tag.line(x1: 30, y1: 40, x2: 50, y2: 40, stroke: "var(--illustration-accent)") %>
+  <% when :empty_inbox %>
+    <%# Inbox tray: bottom box + sloped lid lines + slot %>
+    <%= tag.path(d: "M16 60 L30 44 L66 44 L80 60", stroke: "currentColor") %>
+    <%= tag.path(d: "M16 60 L16 76 Q16 80 20 80 L76 80 Q80 80 80 76 L80 60 Z", stroke: "currentColor") %>
+    <%= tag.line(x1: 16, y1: 60, x2: 32, y2: 60, stroke: "currentColor") %>
+    <%= tag.line(x1: 64, y1: 60, x2: 80, y2: 60, stroke: "currentColor") %>
+    <%= tag.line(x1: 36, y1: 60, x2: 60, y2: 60, stroke: "var(--illustration-accent)", "stroke-width": 2) %>
+  <% when :no_data %>
+    <%# Bar chart with vanishing bars and an axis %>
+    <%= tag.line(x1: 16, y1: 76, x2: 80, y2: 76, stroke: "currentColor") %>
+    <%= tag.line(x1: 16, y1: 76, x2: 16, y2: 22, stroke: "currentColor") %>
+    <%= tag.rect(x: 26, y: 56, width: 10, height: 20, rx: 1, stroke: "currentColor") %>
+    <%= tag.rect(x: 42, y: 44, width: 10, height: 32, rx: 1, stroke: "currentColor") %>
+    <%= tag.rect(x: 58, y: 64, width: 10, height: 12, rx: 1, stroke: "var(--illustration-accent)") %>
+    <%= tag.path(d: "M22 28 L46 28", stroke: "var(--illustration-accent)", "stroke-dasharray": "3 4") %>
+  <% when :error %>
+    <%# Triangle with an exclamation %>
+    <%= tag.path(d: "M48 18 L82 76 L14 76 Z", stroke: "currentColor") %>
+    <%= tag.line(x1: 48, y1: 38, x2: 48, y2: 58, stroke: "var(--illustration-accent)", "stroke-width": 2) %>
+    <%= tag.circle(cx: 48, cy: 68, r: 1.5, fill: "var(--illustration-accent)", stroke: "var(--illustration-accent)") %>
+  <% when :success %>
+    <%# Circle with checkmark %>
+    <%= tag.circle(cx: 48, cy: 48, r: 28, stroke: "currentColor") %>
+    <%= tag.path(d: "M34 48 L44 58 L62 38", stroke: "var(--illustration-accent)", "stroke-width": 2.25) %>
+  <% when :permission %>
+    <%# Padlock %>
+    <%= tag.path(d: "M34 44 L34 32 Q34 20 48 20 Q62 20 62 32 L62 44", stroke: "currentColor") %>
+    <%= tag.rect(x: 26, y: 44, width: 44, height: 34, rx: 4, stroke: "currentColor") %>
+    <%= tag.line(x1: 48, y1: 56, x2: 48, y2: 66, stroke: "var(--illustration-accent)", "stroke-width": 2) %>
+    <%= tag.circle(cx: 48, cy: 56, r: 2, fill: "var(--illustration-accent)", stroke: "var(--illustration-accent)") %>
+  <% when :loading %>
+    <%# Ring with one accent arc %>
+    <%= tag.circle(cx: 48, cy: 48, r: 24, stroke: "currentColor", "stroke-dasharray": "3 5") %>
+    <%= tag.path(d: "M48 24 A24 24 0 0 1 72 48", stroke: "var(--illustration-accent)", "stroke-width": 2.5) %>
+    <%= tag.circle(cx: 48, cy: 48, r: 4, fill: "var(--illustration-accent)", stroke: "var(--illustration-accent)") %>
+  <% end %>
+<% end %>

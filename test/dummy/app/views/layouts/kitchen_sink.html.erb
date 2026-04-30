@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bulkhead Kitchen Sink</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <script>
+      // FOUC guard: apply theme synchronously before paint.
+      (function () {
+        var saved = localStorage.getItem("theme");
+        var prefers = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var dark = saved === "dark" || (saved !== "light" && prefers);
+        if (dark) document.documentElement.classList.add("is-dark");
+      })();
+    </script>
+
+    <%= stylesheet_link_tag "bulkhead", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body data-controller="shell">
+    <div class="shell">
+      <aside class="shell-sidebar" data-shell-target="sidebar">
+        <div class="shell-sidebar-header">
+          <%= link_to kitchen_sink_path, class: "shell-sidebar-header-link" do %>
+            <%= icon(:sparkles, classes: "shell-nav-icon") %>
+            <span class="shell-sidebar-brand">Bulkhead</span>
+          <% end %>
+          <%= render "layouts/theme_toggle", classes: "shell-sidebar-theme-toggle" %>
+        </div>
+        <nav class="shell-sidebar-nav">
+          <% kitchen_sink_sections.each do |group_label, items| %>
+            <%= shell_nav_section(group_label) if group_label %>
+            <% items.each do |s| %>
+              <%= menu_item s[:icon], s[:name], s[:path], exact: s[:path] == kitchen_sink_path %>
+            <% end %>
+          <% end %>
+        </nav>
+      </aside>
+
+      <div class="shell-scrim" data-shell-target="scrim" data-action="click->shell#close"></div>
+
+      <main class="shell-content">
+        <header class="shell-mobile-header">
+          <button type="button" class="shell-icon-button" data-action="shell#toggle" aria-label="Open menu">
+            <%= icon(:bars_3, classes: "shell-icon") %>
+          </button>
+          <%= render "layouts/theme_toggle" %>
+        </header>
+
+        <div class="shell-content-inner">
+          <% if flash[:notice] %>
+            <div class="flash-notice" role="alert"><%= flash[:notice] %></div>
+          <% end %>
+          <% if flash[:alert] %>
+            <div class="flash-alert" role="alert"><%= flash[:alert] %></div>
+          <% end %>
+
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

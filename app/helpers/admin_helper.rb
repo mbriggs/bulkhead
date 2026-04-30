@@ -21,18 +21,11 @@ module AdminHelper
 
   # Sidebar nav link with active/inactive states.
   def admin_nav_item(label, path, is_current, icon: nil)
-    classes = if is_current
-      "flex items-center gap-x-2 px-3 py-1.5 mx-2 text-sm font-medium rounded-md " \
-      "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400"
-    else
-      "flex items-center gap-x-2 px-3 py-1.5 mx-2 text-sm font-medium rounded-md " \
-      "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 " \
-      "dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-200"
-    end
+    classes = classnames("admin-nav-item", { "active" => is_current })
 
     link_to path, class: classes do
       out = "".html_safe
-      out += icon(icon, classes: "h-4 w-4") if icon
+      out += icon(icon, classes: "admin-nav-icon") if icon
       out += content_tag(:span, label)
       out
     end
@@ -41,11 +34,8 @@ module AdminHelper
   # Mobile tab link with active/inactive states.
   def admin_nav_tab(label, path, is_current)
     classes = classnames(
-      "inline-flex items-center px-3 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap",
-      {
-        "border-primary-500 text-primary-600 dark:text-primary-400" => is_current,
-        "border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-300" => !is_current
-      }
+      "admin-nav-tabs-tab",
+      { "active" => is_current }
     )
 
     link_to label, path, class: classes
@@ -88,10 +78,10 @@ module AdminHelper
   # Titled section wrapper with optional description.
   def admin_section(title, description: nil, &block)
     body = capture(&block)
-    tag.div(class: "mt-8") do
-      header = tag.div(class: "mb-4") do
-        h = tag.h3(title, class: "text-lg font-medium text-zinc-900 dark:text-zinc-100")
-        h += tag.p(description, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400") if description
+    tag.div(class: "admin-section") do
+      header = tag.div(class: "admin-section-header") do
+        h = tag.h3(title, class: "admin-section-title")
+        h += tag.p(description, class: "admin-section-description") if description
         h
       end
       header + body
@@ -103,14 +93,14 @@ module AdminHelper
   # Callout card with title and description, plus optional action block.
   # Uses shadow: false since it's nested inside the admin page card.
   def admin_action_card(title, description: nil, &block)
-    tag.div(class: card_classes("p-4 @sm:p-6", shadow: false)) do
-      content = tag.div(class: "flex items-center justify-between") do
+    tag.div(class: card_classes("padded", shadow: false)) do
+      content = tag.div(class: "admin-action") do
         left = tag.div do
-          h = tag.h4(title, class: "text-sm font-medium text-zinc-900 dark:text-zinc-100")
-          h += tag.p(description, class: "mt-1 text-sm text-zinc-500 dark:text-zinc-400") if description
+          h = tag.h4(title, class: "admin-action-title")
+          h += tag.p(description, class: "admin-action-description") if description
           h
         end
-        right = block_given? ? tag.div(class: "ml-4 flex-shrink-0") { capture(&block) } : "".html_safe
+        right = block_given? ? tag.div(class: "admin-action-controls") { capture(&block) } : "".html_safe
         left + right
       end
       content
@@ -119,10 +109,20 @@ module AdminHelper
 
   # ── Alert ──────────────────────────────────────────────────────────────
 
-  # Delegates to AlertsHelper#alert.
+  ADMIN_ALERT_ICONS = {
+    info:    :information_circle,
+    success: :check_circle,
+    warning: :exclamation_triangle,
+    error:   :x_circle
+  }.freeze
+  ADMIN_ALERT_TYPES = ADMIN_ALERT_ICONS.keys.freeze
+
+  # Delegates to AlertsHelper#alert. Restricted to a small, opinionated set of
+  # types so the icon mapping and tone stay in lockstep.
   def admin_alert(type, title:, description: nil)
-    color = { info: :blue, success: :green, warning: :yellow, error: :red }.fetch(type)
-    alert(icon: alert_icon(type), title: title, content: description, color: color)
+    icon_name = ADMIN_ALERT_ICONS[type] or raise ArgumentError,
+      "admin_alert type must be one of #{ADMIN_ALERT_TYPES.inspect}, got #{type.inspect}"
+    alert(icon: icon_name, title: title, content: description, color: type)
   end
 
   # ── Definition List ────────────────────────────────────────────────────
@@ -159,21 +159,17 @@ module AdminHelper
 
   # ── Progress Bar ───────────────────────────────────────────────────────
 
-  PROGRESS_COLORS = {
-    green:  "bg-success-500",
-    blue:   "bg-info-500",
-    yellow: "bg-warning-500",
-    red:    "bg-danger-500",
-    zinc:   "bg-zinc-500"
-  }.freeze
+  PROGRESS_BAR_TONES = %i[info primary success warning danger default].freeze
 
-  # Horizontal progress bar.
-  def admin_progress_bar(percentage, color: :blue)
-    bar_color = PROGRESS_COLORS.fetch(color, PROGRESS_COLORS[:blue])
+  # Horizontal progress bar. `color` accepts a canonical tone (e.g. :success,
+  # :warning, :danger, :info, :primary, :default) or its alias (:green, :red,
+  # :blue, :zinc). Unknown values fall back to :info.
+  def admin_progress_bar(percentage, color: :info)
+    tone = Bulkhead::Tones.coerce(color, allow: PROGRESS_BAR_TONES, default: :info)
     clamped = [ [ percentage.to_f, 0 ].max, 100 ].min
 
-    tag.div(class: "w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2") do
-      tag.div("", class: "#{bar_color} h-2 rounded-full", style: "width: #{clamped}%")
+    tag.div(class: "progress") do
+      tag.div("", class: classnames("progress-bar", tone), style: "width: #{clamped}%")
     end
   end
 
@@ -217,14 +213,4 @@ module AdminHelper
     seconds ? "#{seconds}s" : "\u2014"
   end
 
-  private
-
-  def alert_icon(type)
-    case type
-    when :info    then :information_circle
-    when :success then :check_circle
-    when :warning then :exclamation_triangle
-    when :error   then :x_circle
-    end
-  end
 end

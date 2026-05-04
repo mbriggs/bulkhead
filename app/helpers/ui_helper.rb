@@ -53,7 +53,7 @@ module UiHelper
 
   # Horizontal progress indicator with ARIA attributes. `value` and `total`
   # are numeric; tone controls the fill color.
-  def progress_bar(value, total: 100, tone: :info, size: :md, classes: nil)
+  def progress_bar(value, total: 100, tone: :info, size: :md, classes: nil, label: nil)
     tone = Bulkhead::Tones.coerce(tone, allow: PROGRESS_TONES, default: :info)
     size = size.to_sym
     raise ArgumentError, "Unknown progress size: #{size}" unless PROGRESS_SIZES.include?(size)
@@ -62,10 +62,13 @@ module UiHelper
     current = value.to_i
     pct = total.zero? ? 0 : ((current.to_f / total) * 100).clamp(0, 100)
 
+    aria = { valuenow: current, valuemin: 0, valuemax: total }
+    aria[:label] = label if label.present?
+
     tag.span(
       class: classnames("progress", size, classes),
       role: "progressbar",
-      aria: { valuenow: current, valuemin: 0, valuemax: total }
+      aria:
     ) do
       tag.span("", class: classnames("progress-bar", tone), style: "--progress-value: #{pct.round}%")
     end

@@ -30,6 +30,22 @@ module CardHelper
     end
   end
 
+  # Body region for card content. Keeps card interior spacing consistent across
+  # host apps without forcing callers into a full card builder.
+  def card_body(classes: nil, &block)
+    tag.div(class: classnames("card-body", classes), &block)
+  end
+
+  # Separated card region for secondary content below the main body.
+  def card_section(classes: nil, &block)
+    tag.div(class: classnames("card-section", classes), &block)
+  end
+
+  # Footer region for trailing card actions.
+  def card_footer(classes: nil, &block)
+    tag.div(class: classnames("card-footer", classes), &block)
+  end
+
   class DetailCardBuilder
     def initialize
       @sections = []

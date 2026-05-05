@@ -38,6 +38,32 @@ class UiHelperTest < ActionView::TestCase
     assert_match(/class="[^"]*\bbadge\b[^"]*\binfo\b/, html)
   end
 
+  test "progress_bar renders ARIA progress with tone size and CSS variable" do
+    html = progress_bar(3, total: 4, tone: :success, size: :sm)
+
+    assert_match(/role="progressbar"/, html)
+    assert_match(/aria-valuenow="3"/, html)
+    assert_match(/class="progress sm"/, html)
+    assert_match(/class="progress-bar success"/, html)
+    assert_match(/--progress-value: 75%/, html)
+  end
+
+  test "status_dot renders tone and pulse modifiers" do
+    html = status_dot(tone: :warning, pulse: true)
+
+    assert_match(/class="status-dot warning pulse"/, html)
+    assert_match(/aria-hidden="true"/, html)
+  end
+
+  test "metric_grid renders definition list metrics" do
+    html = metric_grid([["Done", 4, "success"]])
+
+    assert_match(/<dl class="metric-grid">/, html)
+    assert_match(/class="metric success"/, html)
+    assert_match(/<dt>Done<\/dt>/, html)
+    assert_match(/<dd>4<\/dd>/, html)
+  end
+
   # -- removable_badge --
 
   test "removable_badge renders text with a delete button" do

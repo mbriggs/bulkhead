@@ -244,6 +244,48 @@
     height: 0.75rem;
     margin-right: var(--space-1);
   }
+  .compact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-1);
+  }
+  .compact-list > li {
+    border-bottom: 1px solid var(--border-1);
+  }
+  .compact-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2_5) var(--space-4);
+    text-decoration: none;
+    color: inherit;
+  }
+  .compact-row:hover {
+    background: var(--surface-2);
+  }
+  .compact-row-title {
+    flex: 1;
+    min-width: 0;
+    color: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .compact-row-meta {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .compact-row-subitems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1_5);
+    padding: 0 var(--space-4) var(--space-2) 2.5rem;
+  }
   .badge {
     display: inline-flex;
     align-items: center;

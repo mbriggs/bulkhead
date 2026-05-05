@@ -1,4 +1,12 @@
 # Bulkhead engine — registers helpers, static assets, and importmap pins.
+
+# IconHelper#icon delegates to `heroicon`, which the heroicons gem only
+# attaches to ActionView when its engine boots. heroicons is a transitive
+# dep of bulkhead but Bundler does not auto-require transitives, so host
+# apps would otherwise see `undefined method 'heroicon'` until they
+# require the gem themselves. Pull it in here so installs Just Work.
+require "heroicons"
+
 module Bulkhead
   class Engine < ::Rails::Engine
     engine_name "bulkhead"

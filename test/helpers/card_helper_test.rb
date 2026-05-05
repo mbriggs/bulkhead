@@ -52,4 +52,10 @@ class CardHelperTest < ActionView::TestCase
     assert_match(/<h3.*>Title<\/h3>/, html)
     assert_match(/<p.*>Subtitle text<\/p>/, html)
   end
+
+  test "card region helpers render shared card part classes" do
+    assert_match(/class="card-body extra"/, card_body(classes: "extra") { "Body" })
+    assert_match(/class="card-section"/, card_section { "Section" })
+    assert_match(/class="card-footer"/, card_footer { "Footer" })
+  end
 end

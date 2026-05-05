@@ -1,7 +1,25 @@
 require "test_helper"
 
 class ListHelperTest < ActionView::TestCase
+  include HtmlHelper
   include ListHelper
+
+  test "compact_list wraps rows in the shared compact list class" do
+    html = compact_list { "<li>One</li>".html_safe }
+
+    assert_match(/<ul class="compact-list">/, html)
+    assert_match(/<li>One<\/li>/, html)
+  end
+
+  test "compact_row renders linked title and metadata" do
+    html = compact_row(title: "Queued job", href: "/jobs/1", meta: "2m ago")
+
+    assert_match(/href="\/jobs\/1"/, html)
+    assert_match(/class="compact-row"/, html)
+    assert_match(/class="compact-row-title"/, html)
+    assert_match(/Queued job/, html)
+    assert_match(/class="compact-row-meta"/, html)
+  end
 
   test "item_list returns nil for blank collection" do
     assert_nil item_list([]) { |_i, _item| }

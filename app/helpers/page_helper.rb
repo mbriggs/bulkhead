@@ -72,11 +72,37 @@ module PageHelper
     end
   end
 
+  # Renders one datem in the page header's data row. Accepts a nil
+  # icon for iconless datums (e.g. a status badge that already carries
+  # its own visual). When `text` is `html_safe?`, it passes through
+  # unchanged — callers building structured content (hover-cards,
+  # live-duration spans) need data attributes to survive. Plain
+  # strings still get sanitized.
   def page_datem(icon_name, text)
-    svg = icon(icon_name, classes: "page-header-datum-icon")
-    content = svg + sanitize(text)
+    svg = icon_name ? icon(icon_name, classes: "page-header-datum-icon") : "".html_safe
+    body = text.html_safe? ? text : sanitize(text)
 
-    tag.div(content, class: "page-header-datum")
+    tag.div(svg + body, class: "page-header-datum")
+  end
+
+  # Renders a small section header — an uppercase title and optional
+  # meta line side-by-side. Used on operational surfaces (dashboards,
+  # jobs index) where the head sits above a sibling flat card rather
+  # than wrapping the body. Pairs with `section` for cases where the
+  # header and body are one unit.
+  def section_head(title, meta: nil)
+    parts = [ tag.h3(title, class: "section-title") ]
+    parts << tag.p(meta, class: "section-meta") if meta
+    tag.div(safe_join(parts), class: "section-head")
+  end
+
+  # Renders counted pill navigation for filters and small view switches.
+  def pill_nav(items, label:, classes: nil)
+    tag.nav(class: classnames("pill-nav", classes), aria: { label: }) do
+      safe_join(items.map do |item|
+        pill_nav_item(**item)
+      end)
+    end
   end
 
   # Standalone section helper for use outside forms.
@@ -224,4 +250,17 @@ module PageHelper
       sticky:, separator:
     }
   end
+
+  private
+    def pill_nav_item(label:, href:, count: nil, active: false, tone: nil, **options)
+      link_options = options
+      link_options[:class] = classnames("pill-nav-item", tone, { "active" => active }, options[:class])
+      link_options[:"aria-current"] = "page" if active
+
+      link_to href, **link_options do
+        parts = [ tag.span(label, class: "pill-nav-label") ]
+        parts << tag.span(count, class: "pill-nav-count") unless count.nil?
+        safe_join(parts)
+      end
+    end
 end

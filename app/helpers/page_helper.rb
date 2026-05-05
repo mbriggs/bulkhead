@@ -85,6 +85,17 @@ module PageHelper
     tag.div(svg + body, class: "page-header-datum")
   end
 
+  # Renders a small section header — an uppercase title and optional
+  # meta line side-by-side. Used on operational surfaces (dashboards,
+  # jobs index) where the head sits above a sibling flat card rather
+  # than wrapping the body. Pairs with `section` for cases where the
+  # header and body are one unit.
+  def section_head(title, meta: nil)
+    parts = [ tag.h3(title, class: "section-title") ]
+    parts << tag.p(meta, class: "section-meta") if meta
+    tag.div(safe_join(parts), class: "section-head")
+  end
+
   # Renders counted pill navigation for filters and small view switches.
   def pill_nav(items, label:, classes: nil)
     tag.nav(class: classnames("pill-nav", classes), aria: { label: }) do

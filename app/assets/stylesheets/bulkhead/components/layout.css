@@ -422,4 +422,28 @@
     margin-right: auto;
     padding: var(--space-12) var(--space-6);
   }
+
+  /* Small section header — uppercase title with optional meta line.
+   * Sits above a sibling content card on operational surfaces. */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: var(--space-1) 0 var(--space-2);
+  }
+  .section-title {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+  .section-meta {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
 }

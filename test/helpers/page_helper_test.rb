@@ -16,6 +16,19 @@ class PageHelperTest < ActionView::TestCase
     assert_match(/borderless/, html)
   end
 
+  test "section_head renders uppercase title with optional meta" do
+    html = section_head("Last 24 hours", meta: "5 finished")
+    assert_match(%r{<div class="section-head">}, html)
+    assert_match(%r{<h3 class="section-title">Last 24 hours</h3>}, html)
+    assert_match(%r{<p class="section-meta">5 finished</p>}, html)
+  end
+
+  test "section_head omits meta line when meta is nil" do
+    html = section_head("In flight")
+    assert_match(%r{<h3 class="section-title">In flight</h3>}, html)
+    refute_match(/section-meta/, html)
+  end
+
   test "pill_nav renders counted active filter links" do
     html = pill_nav([
       { label: "All", href: "/jobs", count: 3, active: true },

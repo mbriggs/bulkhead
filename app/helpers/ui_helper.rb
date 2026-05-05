@@ -281,6 +281,23 @@ module UiHelper
     tag.hr(class: classnames("spacer", classes))
   end
 
+  # Render an absolute filesystem path with the user's home directory
+  # collapsed to "~" — `/Users/matt/src/hearth` becomes `~/src/hearth`.
+  # Paths outside $HOME are returned unchanged. Use for operator-facing
+  # path display where the literal absolute form would just add noise.
+  def home_relative_path(path)
+    str = path.to_s
+    return str if str.empty?
+    home = Dir.home
+    if str == home
+      "~"
+    elsif str.start_with?("#{home}/")
+      "~#{str.sub(home, '')}"
+    else
+      str
+    end
+  end
+
   # Truncates long text to a number of lines with an inline "more…" / "less…" toggle.
   #
   #   <%= truncated_text("Long text here...", lines: 3) %>

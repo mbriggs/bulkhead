@@ -36,6 +36,28 @@
     </div>
   </div>
 
+  <%# ── Section Head ── %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Section Head", "Compact section header — uppercase title with optional meta line. Sits above a sibling content card on operational surfaces (dashboards, list pages) where the head shouldn't wrap the body.") %>
+    <div class="demo-card-body demo-stack lg">
+      <div>
+        <p class="demo-label">Title only</p>
+        <%= section_head("In flight") %>
+        <div class="<%= card_classes(shadow: false) %> demo-offset">
+          <p class="demo-text">Sibling content card sits below the head.</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="demo-label">Title + meta</p>
+        <%= section_head("Last 24 hours", meta: "5 finished · 100% success") %>
+        <div class="<%= card_classes(shadow: false) %> demo-offset">
+          <p class="demo-text">Meta sits flush right, baseline-aligned with the title.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <%# ── Page Sidebar ── %>
   <div class="<%= card_classes %>">
     <%= card_header("Page Sidebar", "12-column grid with an 8/4 content-sidebar split. Use page(columns: 12) with page_sidebar().") %>

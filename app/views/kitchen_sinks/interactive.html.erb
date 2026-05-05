@@ -22,6 +22,57 @@
   </div>
 
   <div class="<%= card_classes %>">
+    <%= card_header("Hover Card", "Tiny popover toggled by hover or focus. Mount the controller on a wrapper, fire open/close on the trigger element, mark the popover as the target. CSS owns the show/hide transition; the controller just sets data-open.") %>
+    <div class="demo-card-body">
+      <span class="demo-hover-card-wrap" data-controller="hover-card">
+        <span tabindex="0"
+              data-action="mouseenter->hover-card#open mouseleave->hover-card#close focus->hover-card#open blur->hover-card#close">
+          <%= button "Hover or focus me", type: :secondary, size: :sm, shadow: false %>
+        </span>
+        <span class="demo-hover-card-popover" role="tooltip" data-hover-card-target="popover">
+          Popover content — only visible while data-open is set.
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Log Tail", "Pins the page to the bottom as new rows append, but only when the operator is already near the bottom — scrolling up to read history leaves their position alone. Watches childList mutations on the controller's element. Best in a non-scrolling container (turbo-frame, ul) where the window scrolls.") %>
+    <div class="demo-card-body">
+      <p class="demo-text with-gap">Click <strong>Append row</strong> a few times to grow the stream. Scroll the demo container to the top, then append more — the controller leaves you in place. Scroll back down and append again — it pins.</p>
+      <div data-controller="log-tail-demo" class="demo-stack">
+        <%= button "Append row", type: :secondary, size: :sm, shadow: false, data: { action: "log-tail-demo#append" } %>
+        <div class="demo-log-stream" data-controller="log-tail">
+          <div data-log-tail-demo-target="list">
+            <div class="demo-log-row" data-event-id="demo-seed">Seed row — append above to grow the stream.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
+    <%= card_header("Path Display", "home_relative_path collapses the user's home directory to ~ for operator-facing path display. Pure string transform — paths outside $HOME pass through unchanged.") %>
+    <div class="demo-card-body">
+      <%= table do |t| %>
+        <% t.column "Input" %>
+        <% t.column "home_relative_path" %>
+        <% [
+             File.join(Dir.home, "src/hearth"),
+             Dir.home,
+             "/var/log/system.log",
+             ""
+           ].each do |path| %>
+          <%= tag.tr do %>
+            <%= t.cell { tag.code(path.empty? ? "(empty)" : path) } %>
+            <%= t.cell { tag.code(home_relative_path(path).presence || "(empty)") } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
     <%= card_header("Clipboard", "Copy text to the clipboard. Two modes: self-contained (wraps trigger + source) and detached (button carries text directly).") %>
     <div class="demo-card-body demo-stack lg">
       <div>

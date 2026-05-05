@@ -72,10 +72,6 @@
     .admin-definition-list-item.span-4 {
       grid-column: span 2 / span 2;
     }
-    .page-header-content {
-      padding-left: var(--space-6);
-      padding-right: var(--space-6);
-    }
     .page {
       padding-left: var(--space-6);
       padding-right: var(--space-6);
@@ -90,10 +86,20 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    /* From this breakpoint up, lay the header out as title-and-meta on
+       the left, actions on the right. Datems wrap to multiple rows
+       before they fall back to a single vertical column — the
+       asymmetric gap (tight vertical, generous horizontal) keeps a
+       wrapped row reading as a continuation of the first. */
+    .page-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
     .page-header-meta {
       flex-direction: row;
       flex-wrap: wrap;
-      gap: var(--space-6);
+      gap: var(--space-2) var(--space-6);
       margin-top: 0;
     }
     .page-header-actions {
@@ -101,6 +107,8 @@
       align-items: center;
       column-gap: var(--space-3);
       row-gap: 0;
+      margin-top: 0;
+      margin-left: var(--space-4);
     }
     .page-header-desktop-only {
       display: block;
@@ -174,13 +182,6 @@
     .admin-definition-list-item.span-4 {
       grid-column: span 4 / span 4;
     }
-    .page-header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-left: var(--space-8);
-      padding-right: var(--space-8);
-    }
     .page-grid.cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -250,10 +251,6 @@
     }
     .separator.hidden.separator.lg {
       margin-bottom: 2.75rem;
-    }
-    .page-header-actions {
-      margin-top: 0;
-      margin-left: var(--space-4);
     }
     .page-header-title {
       font-size: 2.25rem;

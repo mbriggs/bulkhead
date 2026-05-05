@@ -72,11 +72,17 @@ module PageHelper
     end
   end
 
+  # Renders one datem in the page header's data row. Accepts a nil
+  # icon for iconless datums (e.g. a status badge that already carries
+  # its own visual). When `text` is `html_safe?`, it passes through
+  # unchanged — callers building structured content (hover-cards,
+  # live-duration spans) need data attributes to survive. Plain
+  # strings still get sanitized.
   def page_datem(icon_name, text)
-    svg = icon(icon_name, classes: "page-header-datum-icon")
-    content = svg + sanitize(text)
+    svg = icon_name ? icon(icon_name, classes: "page-header-datum-icon") : "".html_safe
+    body = text.html_safe? ? text : sanitize(text)
 
-    tag.div(content, class: "page-header-datum")
+    tag.div(svg + body, class: "page-header-datum")
   end
 
   # Renders counted pill navigation for filters and small view switches.

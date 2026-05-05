@@ -252,10 +252,11 @@
     background-color: color-mix(in oklab, var(--surface-1) 95%, transparent);
     backdrop-filter: blur(8px);
   }
-  .page-header-content {
-    padding-left: var(--space-4);
-    padding-right: var(--space-4);
-  }
+  /* Page-header content has no horizontal padding of its own — the
+     ambient `.page` wrapper provides it, so the title aligns flush
+     with the body content below. The exception is sticky-fixed mode,
+     where the header is `position: fixed` and detached from `.page`;
+     in that case the inner wrapper's `--space-4` padding stands in. */
   .page-header-main {
     min-width: 0;
     flex: 1;

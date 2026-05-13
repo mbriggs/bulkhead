@@ -1,15 +1,16 @@
 #!/usr/bin/env ruby
 require "fileutils"
+require "tempfile"
 
 # Subtree management for the Bulkhead design system engine.
 # Wraps git-subtree commands to make pull/push/install frictionless.
 #
 # Usage:
-#   bin/bulkhead install                     # first-time subtree add
-#   bin/bulkhead pull                        # pull upstream changes
-#   bin/bulkhead push [--branch NAME] [--pr] # push changes upstream
-#   bin/bulkhead diff [--upstream]           # show bulkhead changes
-#   bin/bulkhead status                      # remote + local + upstream state
+#   bin/bulkhead install                                      # first-time subtree add
+#   bin/bulkhead pull                                         # pull upstream changes
+#   bin/bulkhead push [--branch NAME] [--pr] [-m MSG]         # push changes upstream
+#   bin/bulkhead diff [--upstream]                            # show bulkhead changes
+#   bin/bulkhead status                                       # remote + local + upstream state
 
 # When invoked via symlink (bin/bulkhead → ../bulkhead/bin/bulkhead),
 # $0 is the symlink path. Resolve from the symlink's directory to find the host project root.
@@ -186,6 +187,7 @@ FileUtils.chdir APP_ROOT do
 
     branch = nil
     create_pr = false
+    message = nil
 
     args = ARGV[1..] || []
     i = 0
@@ -198,6 +200,10 @@ FileUtils.chdir APP_ROOT do
       when "--pr"
         create_pr = true
         i += 1
+      when "--message", "-m"
+        message = args[i + 1]
+        abort "Missing message after #{args[i]}" unless message
+        i += 2
       else
         abort "Unknown option: #{args[i]}"
       end
@@ -207,16 +213,76 @@ FileUtils.chdir APP_ROOT do
     if branch == "master" && !ARGV.include?("--branch")
       abort "Refusing to push to master without explicit --branch master"
     end
+
+    puts "== Fetching bulkhead =="
+    system!("git", "fetch", BULKHEAD_REMOTE)
+
+    # The push squashes accumulated subtree-touching commits into one new
+    # commit on top of #{BULKHEAD_REMOTE}/master, then pushes that. Two
+    # reasons:
+    #
+    # 1. The host repo's commits often have host-context-rich subjects
+    #    ("Render job stream per phase", etc) that don't belong in
+    #    bulkhead's history; the squash gives bulkhead a clean single
+    #    commit describing the actual delta.
+    # 2. `git subtree split --rejoin` fails ("refusing to merge unrelated
+    #    histories") after squash-merge pulls, which makes the in-place
+    #    push flow brittle. Building a fresh commit in an isolated worktree
+    #    sidesteps the rejoin entirely.
+    #
+    # The worktree matters: a plain `git checkout` would replace the host
+    # app's working tree with bulkhead's, which removes host-only files
+    # like config/cable.yml. A live dev server reading those files crashes
+    # during the window. A separate worktree leaves the main tree alone.
     split_branch = "bulkhead-split"
+    push_branch  = "bulkhead-push-#{$$}"
+    worktree_path = File.join(APP_ROOT, "tmp", "bulkhead-push-#{$$}")
 
-    puts "== Splitting subtree =="
-    system!("git", "subtree", "split", "--prefix", BULKHEAD_PREFIX, "--rejoin", "-b", split_branch)
+    if system("git", "rev-parse", "--verify", split_branch, out: File::NULL, err: File::NULL)
+      system!("git", "branch", "-D", split_branch)
+    end
 
-    puts "\n== Pushing to bulkhead/#{branch} =="
-    system!("git", "push", BULKHEAD_REMOTE, "#{split_branch}:refs/heads/#{branch}")
+    puts "\n== Splitting subtree =="
+    system!("git", "subtree", "split", "--prefix", BULKHEAD_PREFIX, "-b", split_branch)
 
-    puts "\n== Cleaning up split branch =="
-    system!("git", "branch", "-D", split_branch)
+    diff = `git diff #{BULKHEAD_REMOTE}/master..#{split_branch}`
+    if diff.strip.empty?
+      puts "\n✓ Nothing to push — local subtree matches #{BULKHEAD_REMOTE}/master."
+      system!("git", "branch", "-D", split_branch)
+      exit
+    end
+
+    begin
+      puts "\n== Preparing push worktree =="
+      system!("git", "worktree", "add", "-B", push_branch, worktree_path, "#{BULKHEAD_REMOTE}/master")
+
+      Dir.chdir(worktree_path) do
+        Tempfile.create("bulkhead-push.patch") do |patch|
+          patch.write(diff)
+          patch.close
+          system!("git", "apply", patch.path)
+        end
+        system!("git", "add", "-A")
+        if message
+          system!("git", "commit", "-m", message)
+        else
+          # No -m: let git open $EDITOR so the operator writes the message.
+          # We can't auto-generate something useful — the squashed delta
+          # may represent several host-side commits with different intents.
+          system!("git", "commit")
+        end
+      end
+
+      puts "\n== Pushing to #{BULKHEAD_REMOTE}/#{branch} =="
+      Dir.chdir(worktree_path) do
+        system!("git", "push", BULKHEAD_REMOTE, "#{push_branch}:refs/heads/#{branch}")
+      end
+    ensure
+      puts "\n== Cleaning up =="
+      system("git", "worktree", "remove", "--force", worktree_path) if Dir.exist?(worktree_path)
+      system("git", "branch", "-D", split_branch, out: File::NULL, err: File::NULL)
+      system("git", "branch", "-D", push_branch, out: File::NULL, err: File::NULL)
+    end
 
     if create_pr
       puts "\n== Creating pull request =="

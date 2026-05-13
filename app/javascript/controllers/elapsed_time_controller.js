@@ -1,42 +1,44 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Ticks an elapsed-time label every second from a fixed start timestamp.
+// Server emits the start time so the page is correct on first paint, then
+// the controller updates the label without a server round-trip.
+//
+//   <span data-controller="elapsed-time"
+//         data-elapsed-time-started-at-value="2026-04-29T12:00:00Z">
+//     0s
+//   </span>
+//
+// Tick stops automatically once the element is disconnected (e.g. when
+// the surrounding turbo-frame morph-refreshes it away). Seconds are
+// dropped once the elapsed time crosses the hour mark — at that scale
+// they're visual noise, and the label updates each minute instead.
 export default class extends Controller {
-  static values = {
-    startedAt: String
-  }
+  static values = { startedAt: String }
 
   connect() {
-    this.update()
-    this.timer = setInterval(() => this.update(), 1000)
+    this.start = Date.parse(this.startedAtValue)
+    if (Number.isNaN(this.start)) return
+    this.render()
+    this.interval = setInterval(() => this.render(), 1000)
   }
 
   disconnect() {
-    if (this.timer) {
-      clearInterval(this.timer)
-    }
+    if (this.interval) clearInterval(this.interval)
   }
 
-  update() {
-    if (!this.hasStartedAtValue) return
-
-    const started = new Date(this.startedAtValue)
-    const now = new Date()
-    const elapsed = Math.floor((now - started) / 1000)
-
-    this.element.textContent = this.formatDuration(elapsed)
+  render() {
+    const ms = Date.now() - this.start
+    this.element.textContent = format(ms)
   }
+}
 
-  formatDuration(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m ${seconds}s`
-    } else if (minutes > 0) {
-      return `${minutes}m ${seconds}s`
-    } else {
-      return `${seconds}s`
-    }
-  }
+function format(ms) {
+  if (ms < 0) return "0s"
+  const seconds = Math.floor(ms / 1000)
+  if (seconds < 60) return `${seconds}s`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ${seconds % 60}s`
+  const hours = Math.floor(minutes / 60)
+  return `${hours}h ${minutes % 60}m`
 }

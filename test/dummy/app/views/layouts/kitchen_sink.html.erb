@@ -22,23 +22,27 @@
 
   <body data-controller="shell">
     <div class="shell">
-      <aside class="shell-sidebar" data-shell-target="sidebar">
-        <div class="shell-sidebar-header">
-          <%= link_to kitchen_sink_path, class: "shell-sidebar-header-link" do %>
-            <%= icon(:sparkles, classes: "shell-nav-icon") %>
-            <span class="shell-sidebar-brand">Bulkhead</span>
-          <% end %>
-          <%= render "layouts/theme_toggle", classes: "shell-sidebar-theme-toggle" %>
+      <% sidebar_actions = render("layouts/theme_toggle", classes: "shell-sidebar-theme-toggle") %>
+      <% sidebar_footer = capture do %>
+        <button type="button" class="shell-sidebar-project" aria-label="Switch workspace">
+          <span class="shell-sidebar-project-dot" aria-hidden="true"></span>
+          <span class="shell-sidebar-project-name">Demo workspace</span>
+          <span class="shell-sidebar-project-kbd"><kbd>⌘</kbd><kbd>K</kbd></span>
+        </button>
+        <div class="shell-sidebar-user">
+          <button type="button" class="shell-sidebar-avatar" aria-label="Account menu">BK</button>
         </div>
-        <nav class="shell-sidebar-nav">
-          <% kitchen_sink_sections.each do |group_label, items| %>
-            <%= shell_nav_section(group_label) if group_label %>
-            <% items.each do |s| %>
-              <%= menu_item s[:icon], s[:name], s[:path], exact: s[:path] == kitchen_sink_path %>
-            <% end %>
+      <% end %>
+      <%= shell_sidebar brand: "Bulkhead", brand_href: kitchen_sink_path, brand_icon: :sparkles,
+                        actions: sidebar_actions,
+                        footer: sidebar_footer do %>
+        <% kitchen_sink_sections.each do |group_label, items| %>
+          <%= shell_nav_section(group_label) if group_label %>
+          <% items.each do |s| %>
+            <%= menu_item s[:icon], s[:name], s[:path], exact: s[:path] == kitchen_sink_path %>
           <% end %>
-        </nav>
-      </aside>
+        <% end %>
+      <% end %>
 
       <div class="shell-scrim" data-shell-target="scrim" data-action="click->shell#close"></div>
 

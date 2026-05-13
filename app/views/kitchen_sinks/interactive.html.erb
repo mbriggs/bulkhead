@@ -126,6 +126,30 @@
   </div>
 
   <div class="<%= card_classes %>">
+    <%= card_header("Frame Src", "Updates a turbo-frame's src from a select's value. Use for dependent selects where the second control is a server-rendered fragment that depends on the first.") %>
+    <div class="demo-card-body">
+      <p class="demo-muted with-gap">
+        Pick a label below — the select fires a <code>change</code> action that
+        rewrites the sibling frame's <code>src</code> to
+        <code>/kitchen_sink/link_demo?label=…</code>. Open devtools and watch
+        the <code>turbo-frame[src]</code> attribute update.
+      </p>
+      <select class="input"
+              data-controller="frame-src"
+              data-action="change->frame-src#update"
+              data-frame-src-url-value="<%= link_demo_kitchen_sink_path %>"
+              data-frame-src-frame-value="frame-src-demo-target"
+              data-frame-src-param-value="label">
+        <option value="">Pick a label</option>
+        <option value="alpha">alpha</option>
+        <option value="beta">beta</option>
+        <option value="gamma">gamma</option>
+      </select>
+      <turbo-frame id="frame-src-demo-target" class="demo-offset"></turbo-frame>
+    </div>
+  </div>
+
+  <div class="<%= card_classes %>">
     <%= card_header("Type Confirm", "Require the user to type a confirmation string before enabling a destructive action.") %>
     <div class="demo-card-body">
       <div class="demo-narrow" data-controller="type-confirm" data-type-confirm-expected-value="DELETE">

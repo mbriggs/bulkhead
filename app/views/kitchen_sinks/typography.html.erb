@@ -150,6 +150,29 @@
 %>
 
 <%= page do %>
+  <%# -- Display IDs -- %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Display IDs", "Monospace identifier labels for short record ids. Use display_id(prefix, id) to render an inline pill — fits beside prose and reads as data.") %>
+    <div class="demo-card-body">
+      <div class="demo-row lg">
+        <span class="demo-text">Job ids:</span>
+        <%= display_id("J", 1) %>
+        <%= display_id("J", 42) %>
+        <%= display_id("J", 1024) %>
+      </div>
+      <div class="demo-row lg">
+        <span class="demo-text">Task ids:</span>
+        <%= display_id("T", 7) %>
+        <%= display_id("T", 88) %>
+        <%= display_id("T", 305) %>
+      </div>
+      <p class="demo-muted">
+        Inline with prose: opening <%= display_id("J", 42) %> after the
+        <%= display_id("T", 305) %> task completes.
+      </p>
+    </div>
+  </div>
+
   <%# -- Rich Text Modes Comparison -- %>
   <div class="<%= card_classes %>">
     <%= card_header("Rich Text Modes", "Four rendering modes compared with the same sample content.") %>

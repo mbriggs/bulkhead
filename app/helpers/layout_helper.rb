@@ -37,7 +37,7 @@ module LayoutHelper
     tag.script(script.html_safe, nonce: content_security_policy_nonce)
   end
 
-  def shell_sidebar(brand:, brand_href: "/", brand_icon: :rectangle_stack, actions: nil, &block)
+  def shell_sidebar(brand:, brand_href: "/", brand_icon: :rectangle_stack, actions: nil, footer: nil, &block)
     content_tag(:aside, class: "shell-sidebar", data: { shell_target: "sidebar" }) do
       header = content_tag(:div, class: "shell-sidebar-header") do
         brand_link = link_to(brand_href, class: "shell-sidebar-header-link") do
@@ -47,7 +47,8 @@ module LayoutHelper
         brand_link + (actions || "".html_safe)
       end
       nav = content_tag(:nav, class: "shell-sidebar-nav", &block)
-      header + nav
+      footer_node = footer ? content_tag(:footer, footer, class: "shell-sidebar-footer") : "".html_safe
+      header + nav + footer_node
     end
   end
 

@@ -8,6 +8,13 @@ module UiHelper
     icon(icon_name, classes:, data: { sortable_target: "handle" })
   end
 
+  # Renders a monospace identifier label such as "J42" or "T17".
+  # Use for the short displayable form of a record id — fits inline
+  # with prose and reads as data.
+  def display_id(prefix, id)
+    tag.span("#{prefix}#{id}", class: "display-id")
+  end
+
   def tooltip(text, position: :top, classes: nil, &block)
     raise ArgumentError, "Unknown tooltip position: #{position}" unless TOOLTIP_POSITIONS.include?(position)
 

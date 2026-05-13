@@ -448,4 +448,173 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
+
+  /* Sidebar footer — split layout with a left-side context switcher
+   * (e.g. the active project/workspace) and a right-side user menu.
+   * Sits below the nav, separated by a hairline so it reads as a peer
+   * of the brand header, not a nav item. */
+  .shell-sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.625rem var(--space-3);
+    border-top: 1px solid color-mix(in oklab, var(--border-1) 70%, transparent);
+    background: color-mix(in oklab, var(--surface-1) 60%, transparent);
+  }
+
+  /* Left-side context switcher button — generic shape; host apps fill
+   * in the label and behavior (e.g. opening a command palette). */
+  .shell-sidebar-project {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 0;
+    padding: 0.375rem var(--space-2);
+    border: 0;
+    border-radius: 0.4375rem;
+    background: transparent;
+    color: var(--text-1);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .shell-sidebar-project:hover,
+  .shell-sidebar-project:focus-visible {
+    background: var(--surface-sunken);
+    outline: none;
+  }
+  .shell-sidebar-project-dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 999px;
+    background: var(--project-dot-color, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--project-dot-color, var(--color-primary-500)) 22%, transparent);
+    flex-shrink: 0;
+  }
+  .shell-sidebar-project-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shell-sidebar-project-kbd {
+    display: inline-flex;
+    gap: 0.1875rem;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .shell-sidebar-project:hover .shell-sidebar-project-kbd,
+  .shell-sidebar-project:focus-visible .shell-sidebar-project-kbd {
+    opacity: 1;
+  }
+  .shell-sidebar-project-kbd kbd {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    padding: 0.0625rem 0.3125rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border-1);
+    background: var(--surface-1);
+    color: var(--text-muted);
+    line-height: 1;
+  }
+
+  /* Right-side user menu — avatar button with a flyout panel. The
+   * avatar background defaults to a primary gradient; override
+   * --avatar-bg on .shell-sidebar to brand it. */
+  .shell-sidebar-user {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .shell-sidebar-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--avatar-bg, linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700)));
+    color: var(--color-white);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    user-select: none;
+    cursor: pointer;
+    transition: box-shadow 120ms ease, transform 120ms ease;
+  }
+  .shell-sidebar-avatar:hover,
+  .shell-sidebar-avatar:focus-visible,
+  .shell-sidebar-avatar[aria-expanded="true"] {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--surface-sunken),
+                0 0 0 4px color-mix(in oklab, var(--avatar-focus-ring-color, var(--color-primary-500)) 55%, transparent);
+  }
+
+  /* Flyout menu — anchored above the avatar, right-aligned so the
+   * panel grows leftward into the open sidebar space rather than over
+   * the main content. */
+  .shell-sidebar-user-menu {
+    position: absolute;
+    bottom: calc(100% + var(--space-2));
+    right: 0;
+    min-width: 12rem;
+    padding: 0.375rem;
+    background: var(--surface-1);
+    border: 1px solid var(--border-1);
+    border-radius: 0.5rem;
+    box-shadow: 0 12px 28px -8px rgb(15 23 42 / 0.18),
+                0 4px 10px -4px rgb(15 23 42 / 0.10);
+    z-index: 30;
+  }
+  .shell-sidebar-user-email {
+    padding: 0.375rem var(--space-2) var(--space-2);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-1);
+    margin-bottom: var(--space-1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* button_to wraps the button in a <form>; reset the form so the
+   * button sits flush in the menu. */
+  .shell-sidebar-user-menu form {
+    margin: 0;
+  }
+  .shell-sidebar-user-action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 0.375rem var(--space-2);
+    border: 0;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--text-1);
+    font: inherit;
+    font-size: 0.8125rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .shell-sidebar-user-action:hover,
+  .shell-sidebar-user-action:focus-visible {
+    background: var(--surface-sunken);
+    outline: none;
+  }
+  .shell-sidebar-user-action-icon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
 }

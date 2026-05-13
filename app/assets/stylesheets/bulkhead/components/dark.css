@@ -135,6 +135,10 @@
     color: var(--color-zinc-500);
   }
 
+  html.is-dark .display-id {
+    color: var(--color-zinc-300);
+  }
+
   /* --- Badge color matrix (irreducible) --------------------------- */
   html.is-dark .badge.default {
     color: var(--color-zinc-300);
@@ -412,6 +416,32 @@
   }
   html.is-dark .stage-bar-hint.failed {
     color: var(--color-danger-400);
+  }
+
+  /* --- Sidebar footer ----------------------------------------- */
+  html.is-dark .shell-sidebar-footer {
+    border-top-color: color-mix(in oklab, var(--color-zinc-700) 70%, transparent);
+    background: color-mix(in oklab, var(--color-zinc-800) 50%, transparent);
+  }
+  html.is-dark .shell-sidebar-project:hover,
+  html.is-dark .shell-sidebar-project:focus-visible {
+    background: var(--color-zinc-700);
+  }
+  html.is-dark .shell-sidebar-project-kbd kbd {
+    border-color: var(--color-zinc-700);
+    background: var(--color-zinc-900);
+    color: var(--color-zinc-400);
+  }
+  html.is-dark .shell-sidebar-user-menu {
+    background: var(--color-zinc-800);
+    border-color: var(--color-zinc-700);
+  }
+  html.is-dark .shell-sidebar-user-email {
+    border-bottom-color: var(--color-zinc-700);
+  }
+  html.is-dark .shell-sidebar-user-action:hover,
+  html.is-dark .shell-sidebar-user-action:focus-visible {
+    background: var(--color-zinc-700);
   }
 
   /* --- Shadow toggle: card.shadow drop-only in dark works via tokens -- */

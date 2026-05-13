@@ -114,4 +114,28 @@
       </div>
     </div>
   </div>
+
+  <%# ── Section Gap ── %>
+  <div class="<%= card_classes %>">
+    <%= card_header("Section Gap", "Vertical spacing utilities for detail pages. Apply .section-gap-top on the block that follows a sibling section, or .section-gap-bottom on the block that precedes one.") %>
+    <div class="demo-card-body demo-stack lg">
+      <div>
+        <p class="demo-label">Without gap (baseline)</p>
+        <div class="demo-box dashed">First section</div>
+        <div class="demo-box dashed">Second section (sits flush)</div>
+      </div>
+
+      <div>
+        <p class="demo-label"><code>.section-gap-top</code> on the second block</p>
+        <div class="demo-box dashed">First section</div>
+        <div class="demo-box dashed section-gap-top">Second section (pushed down)</div>
+      </div>
+
+      <div>
+        <p class="demo-label"><code>.section-gap-bottom</code> on the first block</p>
+        <div class="demo-box dashed section-gap-bottom">First section (pushed up)</div>
+        <div class="demo-box dashed">Second section</div>
+      </div>
+    </div>
+  </div>
 <% end %>

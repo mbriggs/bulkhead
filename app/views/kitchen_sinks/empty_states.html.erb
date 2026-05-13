@@ -9,6 +9,11 @@
   </div>
 
   <div class="<%= card_classes %>">
+    <%= card_header("Compact spacing", "Pass classes: \"compact-spacing\" to halve the vertical padding. Use inside detail-page sections where the surrounding card already provides breathing room.") %>
+    <%= empty_state("Nothing to show here yet.", icon: :inbox, title: "Empty", classes: "compact-spacing") %>
+  </div>
+
+  <div class="<%= card_classes %>">
     <%= card_header("With Title", "Add icon: and title: for a prominent empty state when the collection is the main content.") %>
     <%= empty_state("Get started by creating your first project.", icon: :folder_plus, title: "No projects yet") %>
   </div>

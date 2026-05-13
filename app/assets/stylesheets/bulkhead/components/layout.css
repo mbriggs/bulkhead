@@ -446,4 +446,13 @@
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
   }
+
+  /* Vertical breathing room between sibling sections on a detail page.
+   * Pair classes — apply the one that names the side that needs the gap. */
+  .section-gap-top {
+    margin-top: var(--space-6);
+  }
+  .section-gap-bottom {
+    margin-bottom: var(--space-6);
+  }
 }

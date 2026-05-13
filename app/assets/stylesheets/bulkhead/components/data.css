@@ -372,6 +372,10 @@
     padding-top: var(--space-12);
     padding-bottom: var(--space-12);
   }
+  .empty-state.compact-spacing {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
   .empty-state-icon {
     width: 3rem;
     height: 3rem;

@@ -13,6 +13,14 @@ import { Controller } from "@hotwired/stimulus"
 //     <div class="job-event-row">…</div>
 //     <div class="job-event-row">…</div>
 //   </turbo-frame>
+//
+// Tail mode is exited on any upward scroll intent (wheel deltaY < 0,
+// or a scroll event whose scrollTop decreased) rather than waiting
+// until the operator has crossed the bottom threshold. A
+// scroll-event-only approach loses the race when an append fires
+// between the user's wheel input and the resulting scroll event: the
+// mutation observer snaps to bottom because stickToBottom hasn't yet
+// been cleared. Wheel and direction tracking surface intent first.
 const STICK_THRESHOLD_PX = 80
 
 export default class extends Controller {
@@ -23,9 +31,12 @@ export default class extends Controller {
   connect() {
     this.stickToBottom = this.activeValue
     if (this.activeValue) this.scrollToBottom()
+    this.lastScrollTop = this.scroller().scrollTop
 
     this.handleScroll = this.handleScroll.bind(this)
+    this.handleWheel = this.handleWheel.bind(this)
     window.addEventListener("scroll", this.handleScroll, { passive: true })
+    window.addEventListener("wheel", this.handleWheel, { passive: true })
 
     this.observer = new MutationObserver(this.handleMutation.bind(this))
     this.observer.observe(this.element, { childList: true, subtree: true })
@@ -34,10 +45,21 @@ export default class extends Controller {
   disconnect() {
     if (this.observer) this.observer.disconnect()
     window.removeEventListener("scroll", this.handleScroll)
+    window.removeEventListener("wheel", this.handleWheel)
   }
 
   handleScroll() {
-    this.stickToBottom = this.isNearBottom()
+    const scrollTop = this.scroller().scrollTop
+    if (scrollTop < this.lastScrollTop) {
+      this.stickToBottom = false
+    } else if (this.isNearBottom()) {
+      this.stickToBottom = true
+    }
+    this.lastScrollTop = scrollTop
+  }
+
+  handleWheel(event) {
+    if (event.deltaY < 0) this.stickToBottom = false
   }
 
   handleMutation() {
@@ -45,13 +67,17 @@ export default class extends Controller {
   }
 
   isNearBottom() {
-    const scroller = document.scrollingElement || document.documentElement
-    const { scrollTop, scrollHeight, clientHeight } = scroller
+    const { scrollTop, scrollHeight, clientHeight } = this.scroller()
     return scrollHeight - (scrollTop + clientHeight) <= STICK_THRESHOLD_PX
   }
 
   scrollToBottom() {
-    const scroller = document.scrollingElement || document.documentElement
+    const scroller = this.scroller()
     scroller.scrollTop = scroller.scrollHeight
+    this.lastScrollTop = scroller.scrollTop
+  }
+
+  scroller() {
+    return document.scrollingElement || document.documentElement
   }
 }
